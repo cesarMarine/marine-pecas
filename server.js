@@ -1439,6 +1439,9 @@ app.post('/api/config-tecnico', async (req, res) => {
 // ============================================
 // SERVIDOR DE IMAGENS LOCAL
 // ============================================
+a// ============================================
+// SERVIDOR DE IMAGENS LOCAL
+// ============================================
 app.get('/images/*', (req, res) => {
     const imageName = decodeURIComponent(req.params[0]);
     const imagePath = path.join(__dirname, 'esquemas', imageName);
@@ -1470,16 +1473,7 @@ process.on('uncaughtException', (err) => {
     process.exit(1);
 });
 
-process.on('unhandledRejection', (reason, promise) => {
+process.on('unhandledRejection', (reason) => {
     console.error('❌ Promessa rejeitada não tratada:', reason);
     process.exit(1);
-});
-
-// ============================================
-// INICIALIZAÇÃO DO SERVIDOR
-// ============================================
-app.listen(PORT, () => {
-    console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);
-    console.log(`📦 Projeto: Marine Peças`);
-    console.log(`🔗 URL Base: ${BASE_URL}`);
 });
