@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marine Fishing - Produtos</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f0f2f5;
+            color: #333;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .header-top h1 {
+            color: #002B49;
+            font-size: 24px;
+        }
+
+        .btn-voltar {
+            background: #e0e0e0;
+            padding: 8px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #1a1a2e;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .btn-voltar:hover {
+            background: #ccc;
+        }
+
+        .btn-carrinho {
+            background: #1a237e;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-carrinho:hover {
+            background: #0d1555;
+        }
+
+        .badge-carrinho {
+            background: #e94560;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 8px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .info-carrinho {
+            color: #1a237e;
+            font-size: 14px;
+            font-weight: 600;
+            display: none;
+        }
+
+        /* GRUPOS */
+        .grupos-container {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+            padding: 10px 0;
+        }
+
+        .grupo-btn {
+            padding: 12px 28px;
+            border-radius: 30px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 15px;
+            transition: all 0.3s;
+            color: #666;
+        }
+
+        .grupo-btn:hover {
+            border-color: #1a237e;
+            color: #1a237e;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(26, 35, 126, 0.1);
+        }
+
+        .grupo-btn.ativo {
+            background: #1a237e;
+            color: white;
+            border-color: #1a237e;
+            box-shadow: 0 4px 15px rgba(26, 35, 126, 0.3);
+        }
+
+        /* SUBGRUPOS */
+        .subgrupos-container {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+            padding: 10px 0;
+            border-bottom: 2px solid #e8eaf6;
+        }
+
+        .subgrupo-btn {
+            padding: 8px 20px;
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            background: #f8f9fa;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+            color: #555;
+        }
+
+        .subgrupo-btn:hover {
+            border-color: #1a237e;
+            color: #1a237e;
+            background: #e8eaf6;
+        }
+
+        .subgrupo-btn.ativo {
+            background: #1a237e;
+            color: white;
+            border-color: #1a237e;
+        }
+
+        /* PRODUTOS */
+        .produtos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+            margin-top: 10px;
+        }
+
+        .produto-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .produto-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            border-color: #1a237e;
+        }
+
+        .produto-card img {
+            width: 140px;
+            height: 140px;
+            object-fit: contain;
+            margin-bottom: 10px;
+        }
+
+        .produto-card h3 {
+            color: #002B49;
+            font-size: 16px;
+            margin-bottom: 3px;
+        }
+
+        .produto-card .subgrupo-nome {
+            color: #888;
+            font-size: 13px;
+        }
+
+        .produto-card .variacoes-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            margin-top: 12px;
+        }
+
+        .btn-variacao {
+            background: #1a237e;
+            color: white;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-variacao:hover {
+            background: #0d1555;
+            transform: scale(1.05);
+        }
+
+        .loading-spinner {
+            text-align: center;
+            padding: 60px;
+            color: #888;
+        }
+
+        .loading-spinner .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #1a237e;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px;
+            color: #888;
+            grid-column: 1 / -1;
+        }
+
+        .empty-state .icone {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+
+        .loading-overlay {
+            text-align: center;
+            padding: 40px;
+            grid-column: 1 / -1;
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 0; }
+            .header-top { flex-direction: column; align-items: stretch; }
+            .produtos-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+            .grupo-btn { padding: 8px 16px; font-size: 13px; }
+            .subgrupo-btn { padding: 6px 14px; font-size: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header-top">
+            <h1>🎣 <span id="titulo-categoria">Produtos</span></h1>
+            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                <span id="info-carrinho" class="info-carrinho">
+                    🛒 <span id="carrinho-count">0</span> itens
+                </span>
+                <a href="pecas.html" class="btn-carrinho" id="btn-ir-carrinho" style="display:none;">
+                    🛒 Ver Carrinho
+                    <span class="badge-carrinho" id="carrinho-badge">0</span>
+                </a>
+                <a href="/" class="btn-voltar">← Início</a>
+            </div>
+        </div>
+
+        <!-- GRUPOS (ex: Molinetes, Carretilhas, etc) -->
+        <div class="grupos-container" id="grupos-container">
+            <button class="grupo-btn ativo" data-grupo="" onclick="selecionarGrupo('')">📦 Todos</button>
+        </div>
+
+        <!-- SUBGRUPOS (ex: Molinete 1000, Molinete 2000, etc) -->
+        <div class="subgrupos-container" id="subgrupos-container"></div>
+
+        <!-- PRODUTOS -->
+        <div class="produtos-grid" id="produtos-container">
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+                <p>Carregando produtos...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let grupos = [];
+        let subgrupos = [];
+        let produtos = [];
+        let grupoSelecionado = '';
+        let subgrupoSelecionado = '';
+
+        // ============================================
+        // FUNÇÃO PARA ATUALIZAR BADGE DO CARRINHO
+        // ============================================
+        function atualizarBadgeCarrinho() {
+            try {
+                const saved = sessionStorage.getItem('carrinho_pecas');
+                let total = 0;
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    if (Array.isArray(parsed)) {
+                        total = parsed.reduce((sum, i) => sum + (i.qtd || 0), 0);
+                    }
+                }
+                
+                const badge = document.getElementById('carrinho-badge');
+                const count = document.getElementById('carrinho-count');
+                const btnCarrinho = document.getElementById('btn-ir-carrinho');
+                const infoCarrinho = document.getElementById('info-carrinho');
+                
+                if (total > 0) {
+                    badge.textContent = total;
+                    count.textContent = total;
+                    btnCarrinho.style.display = 'inline-flex';
+                    infoCarrinho.style.display = 'inline';
+                } else {
+                    btnCarrinho.style.display = 'none';
+                    infoCarrinho.style.display = 'none';
+                }
+            } catch (e) {}
+        }
+
+        // ============================================
+        // CARREGAR DADOS
+        // ============================================
+        async function carregarDados() {
+            try {
+                // 1. Carrega grupos
+                const resGrupos = await fetch('/api/grupos');
+                const dataGrupos = await resGrupos.json();
+                if (dataGrupos.success) {
+                    grupos = dataGrupos.grupos || [];
+                    renderizarGrupos();
+                }
+
+                // 2. Carrega subgrupos
+                const resSubgrupos = await fetch('/api/subgrupos');
+                const dataSubgrupos = await resSubgrupos.json();
+                if (dataSubgrupos.success) {
+                    subgrupos = dataSubgrupos.subgrupos || [];
+                }
+
+                // 3. Carrega produtos
+                const resProdutos = await fetch('/api/produtos');
+                const dataProdutos = await resProdutos.json();
+                if (dataProdutos.success) {
+                    produtos = dataProdutos.produtos || [];
+                }
+
+                // 4. Renderiza tudo
+                renderizarSubgrupos();
+                renderizarProdutos();
+
+            } catch (error) {
+                console.error('❌ Erro ao carregar dados:', error);
+                document.getElementById('produtos-container').innerHTML = `
+                    <div class="empty-state">
+                        <div class="icone">❌</div>
+                        <p>Erro ao carregar produtos. Tente novamente.</p>
+                        <button onclick="carregarDados()" style="margin-top:15px; padding:10px 30px; background:#1a237e; color:white; border:none; border-radius:8px; cursor:pointer;">🔄 Tentar novamente</button>
+                    </div>
+                `;
+            }
+        }
+
+        // ============================================
+        // RENDERIZAR GRUPOS
+        // ============================================
+        function renderizarGrupos() {
+            const container = document.getElementById('grupos-container');
+            let html = `<button class="grupo-btn ativo" data-grupo="" onclick="selecionarGrupo('')">📦 Todos</button>`;
+            
+            grupos.forEach(g => {
+                html += `
+                    <button class="grupo-btn" data-grupo="${g.id}" onclick="selecionarGrupo('${g.id}')">
+                        ${g.icone_url ? `<img src="${g.icone_url}" style="width:20px;height:20px;vertical-align:middle;margin-right:5px;">` : ''}
+                        ${g.nome}
+                    </button>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        // ============================================
+        // RENDERIZAR SUBGRUPOS
+        // ============================================
+        function renderizarSubgrupos() {
+            const container = document.getElementById('subgrupos-container');
+            
+            let subgruposFiltrados = subgrupos;
+            if (grupoSelecionado) {
+                subgruposFiltrados = subgrupos.filter(s => s.grupo_id == grupoSelecionado);
+            }
+
+            if (subgruposFiltrados.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+
+            let html = `<button class="subgrupo-btn ativo" data-subgrupo="" onclick="selecionarSubgrupo('')">📋 Todos</button>`;
+            
+            subgruposFiltrados.forEach(s => {
+                html += `
+                    <button class="subgrupo-btn" data-subgrupo="${s.id}" onclick="selecionarSubgrupo('${s.id}')">
+                        ${s.nome}
+                    </button>
+                `;
+            });
+            
+            container.innerHTML = html;
+            container.style.display = 'flex';
+        }
+
+        // ============================================
+        // RENDERIZAR PRODUTOS
+        // ============================================
+        function renderizarProdutos() {
+            const container = document.getElementById('produtos-container');
+            
+            let produtosFiltrados = produtos;
+            
+            // Filtra por grupo
+            if (grupoSelecionado) {
+                const subgruposDoGrupo = subgrupos.filter(s => s.grupo_id == grupoSelecionado).map(s => s.id);
+                produtosFiltrados = produtosFiltrados.filter(p => subgruposDoGrupo.includes(p.subgrupo_id));
+            }
+            
+            // Filtra por subgrupo
+            if (subgrupoSelecionado) {
+                produtosFiltrados = produtosFiltrados.filter(p => p.subgrupo_id == subgrupoSelecionado);
+            }
+
+            if (produtosFiltrados.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icone">📭</div>
+                        <p>Nenhum produto encontrado.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = '';
+            
+            produtosFiltrados.forEach(produto => {
+                const card = document.createElement('div');
+                card.className = 'produto-card';
+                
+                const temVariacoes = produto.variacoes && produto.variacoes.length > 0;
+                const subgrupo = subgrupos.find(s => s.id == produto.subgrupo_id);
+                const nomeSubgrupo = subgrupo ? subgrupo.nome : '';
+                
+                // Monta a URL base do manual
+                const manualUrl = produto.manual_url || `/pecas.html?manual=${encodeURIComponent(produto.nome)}`;
+                
+                let variacoesHtml = '';
+                if (temVariacoes) {
+                    variacoesHtml = `
+                        <div class="variacoes-container">
+                            ${produto.variacoes.map(v => {
+                                const variacao = v.variacao || v;
+                                const url = manualUrl.includes('?') 
+                                    ? `${manualUrl}&variacao=${encodeURIComponent(variacao)}`
+                                    : `${manualUrl}?variacao=${encodeURIComponent(variacao)}`;
+                                return `<button class="btn-variacao" onclick="event.stopPropagation(); window.location.href='${url}'">${variacao}</button>`;
+                            }).join('')}
+                        </div>
+                    `;
+                }
+                
+                card.innerHTML = `
+                    <img src="${produto.icone_url || 'https://via.placeholder.com/140'}" alt="${produto.nome}" 
+                         onerror="this.src='https://via.placeholder.com/140'">
+                    <h3>${produto.nome}</h3>
+                    <p class="subgrupo-nome">${nomeSubgrupo}${temVariacoes ? ' 🔁' : ''}</p>
+                    ${variacoesHtml}
+                `;
+                
+                // Se não tem variações, clicar vai direto
+                if (!temVariacoes) {
+                    card.onclick = () => {
+                        window.location.href = manualUrl;
+                    };
+                }
+                
+                container.appendChild(card);
+            });
+        }
+
+        // ============================================
+        // SELEÇÃO DE GRUPO
+        // ============================================
+        function selecionarGrupo(grupoId) {
+            grupoSelecionado = grupoId;
+            subgrupoSelecionado = '';
+            
+            // Atualiza tabs de grupo
+            document.querySelectorAll('.grupo-btn').forEach(btn => {
+                btn.classList.toggle('ativo', btn.dataset.grupo == grupoId);
+            });
+            
+            // Atualiza subgrupos
+            renderizarSubgrupos();
+            
+            // Atualiza produtos
+            renderizarProdutos();
+        }
+
+        // ============================================
+        // SELEÇÃO DE SUBGRUPO
+        // ============================================
+        function selecionarSubgrupo(subgrupoId) {
+            subgrupoSelecionado = subgrupoId;
+            
+            // Atualiza tabs de subgrupo
+            document.querySelectorAll('.subgrupo-btn').forEach(btn => {
+                btn.classList.toggle('ativo', btn.dataset.subgrupo == subgrupoId);
+            });
+            
+            // Atualiza produtos
+            renderizarProdutos();
+        }
+
+        // ============================================
+        // INICIALIZAÇÃO
+        // ============================================
+        document.addEventListener('DOMContentLoaded', () => {
+            atualizarBadgeCarrinho();
+            
+            document.addEventListener('visibilitychange', () => {
+                if (!document.hidden) {
+                    atualizarBadgeCarrinho();
+                }
+            });
+            
+            window.addEventListener('pageshow', () => {
+                atualizarBadgeCarrinho();
+            });
+            
+            carregarDados();
+        });
+    </script>
+</body>
+</html>

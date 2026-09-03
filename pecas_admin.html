@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin · Manuais & Hotspots</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #eef2f7;
+            color: #2d3436;
+            padding: 10px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* HEADER */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 12px;
+            padding: 10px 20px;
+            background: #ffffff;
+            border-radius: 10px;
+            border: 1px solid #dce1e8;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header h1 {
+            color: #2d3436;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .header h1 span {
+            color: #e94560;
+        }
+
+        .header .info {
+            color: #636e72;
+            font-size: 12px;
+        }
+
+        .btn-voltar {
+            background: #dfe6e9;
+            color: #2d3436;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: 0.2s;
+            text-decoration: none;
+        }
+
+        .btn-voltar:hover {
+            background: #b2bec3;
+        }
+
+        /* CONFIG GLOBAL */
+        .config-global {
+            background: #ffffff;
+            border: 2px solid #dce1e8;
+            border-radius: 10px;
+            padding: 10px 16px;
+            margin-bottom: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+        }
+
+        .config-global .grupo {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .config-global label {
+            font-size: 11px;
+            color: #636e72;
+            font-weight: 600;
+        }
+
+        .config-global input[type="number"],
+        .config-global select {
+            padding: 3px 6px;
+            border: 1px solid #dce1e8;
+            border-radius: 5px;
+            font-size: 11px;
+            background: #f8f9fa;
+            width: 50px;
+        }
+
+        .config-global input[type="color"] {
+            width: 28px;
+            height: 28px;
+            padding: 2px;
+            border: 1px solid #dce1e8;
+            border-radius: 5px;
+            cursor: pointer;
+            background: #f8f9fa;
+        }
+
+        .btn-salvar-config {
+            background: #00b894;
+            color: white;
+            border: none;
+            padding: 4px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+        .btn-salvar-config:hover {
+            background: #00a381;
+        }
+
+        /* LISTA DE MANUAIS */
+        .grid-manuais {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            padding: 15px;
+            background: #ffffff;
+            border: 1px solid #dce1e8;
+            border-radius: 10px;
+        }
+
+        .btn-manual {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            min-height: 90px;
+        }
+
+        .btn-manual:hover {
+            border-color: #e94560;
+            background: #fef0f2;
+        }
+
+        .btn-manual.ativo {
+            border-color: #e94560;
+            background: #fef0f2;
+            box-shadow: 0 0 0 3px rgba(233, 69, 96, 0.2);
+        }
+
+        .btn-manual .nome {
+            font-weight: bold;
+            font-size: 12px;
+            color: #2d3436;
+            word-break: break-word;
+        }
+
+        .btn-manual .info {
+            font-size: 10px;
+            color: #636e72;
+            margin-top: 5px;
+        }
+
+        /* EDITOR */
+        .editor-container {
+            display: none;
+            margin-top: 15px;
+            background: #ffffff;
+            border: 1px solid #dce1e8;
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .editor-container.ativo {
+            display: block;
+        }
+
+        /* LAYOUT: Imagem à esquerda, Peças à direita */
+        .editor-layout {
+            display: flex;
+            gap: 10px;
+            min-height: 70vh;
+        }
+
+        /* Área da imagem (80%) */
+        .editor-imagem-area {
+            flex: 1;
+            position: relative;
+        }
+
+        /* Quadro de peças (20%) */
+        .lista-pecas-wrapper {
+            width: 20%;
+            background: #ffffff;
+            border: 1px solid #dce1e8;
+            border-radius: 10px;
+            max-height: 70vh;
+            overflow-y: auto;
+            padding: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .lista-pecas-wrapper.oculto {
+            display: none;
+        }
+
+        .lista-pecas-wrapper h3 {
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        /* DIAGRAMA */
+        .diagrama-wrapper {
+            position: relative;
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+            min-height: 60vh;
+        }
+
+        .zoom-container {
+            position: relative;
+            width: 100%;
+            overflow: auto;
+            max-height: 65vh;
+        }
+
+        .imagem-wrapper {
+            position: relative;
+            width: 100%;
+            display: block;
+            transform-origin: top left;
+            transition: transform 0.25s ease;
+        }
+
+        .imagem-wrapper img {
+            width: 100%;
+            height: auto;
+            display: block;
+            pointer-events: none;
+        }
+
+        .imagem-wrapper.zoom-150 { transform: scale(1.5); }
+        .imagem-wrapper.zoom-200 { transform: scale(2); }
+
+        .zoom-controls {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            display: flex;
+            gap: 4px;
+            z-index: 30;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 4px 8px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+            border: 1px solid #dce1e8;
+            align-items: center;
+        }
+
+        .zoom-controls button {
+            background: #ffffff;
+            border: 1px solid #dce1e8;
+            border-radius: 5px;
+            padding: 3px 10px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 700;
+            color: #2d3436;
+            transition: 0.2s;
+        }
+
+        .zoom-controls button:hover {
+            background: #e94560;
+            color: white;
+            border-color: #e94560;
+        }
+
+        /* PINOS */
+        .pin-editor {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: grab;
+            transform: translate(-50%, -50%);
+            transition: all 0.2s;
+            user-select: none;
+            z-index: 10;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            line-height: 1;
+            font-weight: 700;
+            border: 2px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            min-width: 26px;
+            min-height: 26px;
+            font-size: 11px;
+        }
+
+        .pin-editor:hover {
+            transform: translate(-50%, -50%) scale(1.15);
+            z-index: 20;
+        }
+
+        .pin-editor.dragging {
+            cursor: grabbing;
+            z-index: 100;
+            transform: translate(-50%, -50%) scale(1.2);
+        }
+
+        .pin-editor .tooltip {
+            display: none;
+            position: absolute;
+            bottom: calc(100% + 6px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 200;
+        }
+
+        .pin-editor:hover .tooltip {
+            display: block;
+        }
+
+        .pin-editor .badge-status {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            border: 2px solid white;
+            font-size: 7px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pin-editor .badge-status.confirmado {
+            background: #00b894;
+            color: white;
+        }
+
+        .pin-editor .badge-status.nao-confirmado {
+            background: #fdcb6e;
+            color: #2d3436;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .pin-estilo-1 {
+            background: var(--pin-cor, #e94560) !important;
+            border-radius: 50% !important;
+            border: 2px solid rgba(255, 255, 255, 0.9) !important;
+            color: var(--pin-fonte-cor, white) !important;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+            box-shadow: 0 2px 12px rgba(233, 69, 96, 0.4) !important;
+            padding: 2px 5px !important;
+        }
+
+        .pin-estilo-2 {
+            background: var(--pin-cor, #0984e3) !important;
+            border-radius: 4px !important;
+            border: 2px solid #dfe6e9 !important;
+            color: var(--pin-fonte-cor, white) !important;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+            box-shadow: 0 2px 12px rgba(9, 132, 227, 0.4) !important;
+            padding: 2px 5px !important;
+        }
+
+        .pin-estilo-3 {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            color: var(--pin-fonte-cor, #2d3436) !important;
+            text-shadow: -1px -1px 0 #ffffff, 1px -1px 0 #ffffff, -1px 1px 0 #ffffff, 1px 1px 0 #ffffff, 0 0 8px rgba(255, 255, 255, 0.8) !important;
+            padding: 0 2px !important;
+        }
+
+        .pin-estilo-4 {
+            background: transparent !important;
+            border: 2px solid rgba(255, 255, 255, 0.9) !important;
+            border-radius: 4px !important;
+            box-shadow: 0 0 12px rgba(255, 255, 255, 0.5) !important;
+            color: var(--pin-fonte-cor, #2d3436) !important;
+            padding: 1px 5px !important;
+        }
+
+        .pin-estilo-5 {
+            background: rgba(255, 255, 255, 0.6) !important;
+            backdrop-filter: blur(2px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.8) !important;
+            border-radius: 4px !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+            color: var(--pin-fonte-cor, #2d3436) !important;
+            padding: 1px 5px !important;
+        }
+
+        .pin-estilo-6 {
+            background: var(--pin-cor, #e94560) !important;
+            border-radius: 4px !important;
+            border: none !important;
+            box-shadow: 0 2px 8px rgba(233, 69, 96, 0.3) !important;
+            color: var(--pin-fonte-cor, white) !important;
+            padding: 1px 5px !important;
+            display: inline-block !important;
+            width: auto !important;
+            height: auto !important;
+            line-height: 1.2 !important;
+        }
+
+        .pin-estilo-7 {
+            background: #ffffff !important;
+            border: 2px solid var(--pin-cor, #2d3436) !important;
+            border-radius: 4px !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+            color: var(--pin-cor, #2d3436) !important;
+            padding: 0px 4px !important;
+            display: inline-block !important;
+            width: auto !important;
+            height: auto !important;
+            line-height: 1.2 !important;
+        }
+
+        .pin-estilo-8 {
+            background: transparent !important;
+            border: 2px dashed rgba(44, 62, 80, 0.6) !important;
+            border-radius: 50% !important;
+            box-shadow: none !important;
+            color: var(--pin-fonte-cor, #2d3436) !important;
+            padding: 1px 5px !important;
+        }
+
+        .pin-editor.destacado {
+            animation: highlightPulse 0.8s ease-in-out 3 !important;
+            z-index: 50 !important;
+            transform: translate(-50%, -50%) scale(1.4) !important;
+            box-shadow: 0 0 30px rgba(233, 69, 96, 0.9), 0 0 60px rgba(233, 69, 96, 0.4) !important;
+            border-color: #ffffff !important;
+        }
+
+        @keyframes highlightPulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1.4); opacity: 1; }
+            50% { transform: translate(-50%, -50%) scale(1.7); opacity: 0.8; }
+        }
+
+        /* ITENS DA LISTA */
+        .item-peca {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 3px 6px;
+            background: #f8f9fa;
+            border: 2px solid #dce1e8;
+            border-radius: 5px;
+            margin-bottom: 2px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .item-peca:hover {
+            border-color: #e94560;
+        }
+
+        .item-peca.com-hotspot {
+            border-color: #00b894;
+        }
+        .item-peca.sem-hotspot {
+            border-color: #fdcb6e;
+        }
+
+        .item-peca .numero {
+            font-weight: bold;
+            color: #e94560;
+            min-width: 28px;
+            font-size: 11px;
+        }
+
+        .item-peca .nome {
+            flex: 1;
+            font-size: 10px;
+            color: #2d3436;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .item-peca .status {
+            font-size: 8px;
+            padding: 1px 5px;
+            border-radius: 8px;
+            flex-shrink: 0;
+        }
+        .item-peca .status.ok {
+            background: #d4edda;
+            color: #155724;
+        }
+        .item-peca .status.pendente {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        /* BOTÕES */
+        .btn-adicionar-hotspot {
+            background: #e94560;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            margin-top: 10px;
+            transition: 0.2s;
+        }
+
+        .btn-adicionar-hotspot:hover {
+            background: #c62828;
+        }
+
+        .btn-salvar {
+            background: #00b894;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 15px;
+            width: 100%;
+            transition: 0.2s;
+        }
+
+        .btn-salvar:hover {
+            background: #00a381;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 184, 148, 0.4);
+        }
+
+        .status-msg {
+            margin-top: 10px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #636e72;
+        }
+        .loading .spinner {
+            border: 4px solid #dce1e8;
+            border-top: 4px solid #e94560;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* BOTÃO OCULTAR LISTA */
+        .btn-ocultar-lista {
+            background: #0984e3;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            transition: 0.2s;
+        }
+
+        .btn-ocultar-lista:hover {
+            background: #0652DD;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <div>
+                <h1>📂 <span>Admin</span> · Manuais & Hotspots</h1>
+                <span class="info">Gerencie os manuais e hotspots do Supabase</span>
+            </div>
+            <button class="btn-voltar" onclick="window.location.href='/'">← Início</button>
+        </div>
+
+        <!-- CONFIGURAÇÕES -->
+        <div class="config-global" id="config-global">
+            <div class="grupo">
+                <label>Tamanho:</label>
+                <input type="number" id="config-tamanho-fonte" value="12" min="6" max="30" onchange="aplicarConfiguracoes()">
+                <label style="margin-left:4px;">px</label>
+            </div>
+            <div class="grupo">
+                <label>Cor:</label>
+                <input type="color" id="config-cor-pin" value="#e94560" onchange="aplicarConfiguracoes()">
+            </div>
+            <div class="grupo">
+                <label>Cor Fonte:</label>
+                <input type="color" id="config-cor-fonte" value="#ffffff" onchange="aplicarConfiguracoes()">
+            </div>
+            <div class="grupo">
+                <label>Estilo:</label>
+                <select id="config-estilo" onchange="aplicarConfiguracoes()">
+                    <option value="1">🔴 Círculo</option>
+                    <option value="2">🔵 Quadrado</option>
+                    <option value="3">⬜ Sem Fundo</option>
+                    <option value="4">⬜ Borda</option>
+                    <option value="5">🌫️ Transparente</option>
+                    <option value="6">📝 Fundo Ajustado</option>
+                    <option value="7">📦 Ajustado c/ borda</option>
+                    <option value="8">┈ Pontilhado</option>
+                </select>
+            </div>
+            <div class="grupo">
+                <button class="btn-salvar-config" onclick="salvarConfiguracoes()">💾 Salvar</button>
+                <span class="status-salvo" id="status-salvo" style="font-size:11px; color:#00b894; display:none;">✅ Salvo!</span>
+            </div>
+        </div>
+
+        <!-- LISTA DE MANUAIS -->
+        <div class="grid-manuais" id="grid-manuais">
+            <div style="grid-column: 1/-1; text-align:center; color:#888; padding:20px;">
+                <div class="spinner" style="margin:0 auto 10px; width:30px; height:30px; border-width:3px;"></div>
+                Carregando manuais...
+            </div>
+        </div>
+
+        <!-- EDITOR -->
+        <div class="editor-container" id="editor-container">
+            <h2 id="titulo-manual" style="margin-bottom: 15px; color: #2d3436;">📄 Manual</h2>
+
+            <div class="editor-layout">
+                <!-- ÁREA DA IMAGEM (80%) -->
+                <div class="editor-imagem-area">
+                    <div class="diagrama-wrapper" id="diagrama-wrapper">
+                        <div class="loading" id="loading">
+                            <div class="spinner"></div>
+                            <p>Carregando imagem...</p>
+                        </div>
+                        <div class="zoom-container" id="zoom-container">
+                            <div class="imagem-wrapper" id="imagem-wrapper">
+                                <img id="img-esquema" src="" alt="Esquema" style="display: none;">
+                            </div>
+                        </div>
+                        <div class="zoom-controls">
+                            <button onclick="zoomOut()">−</button>
+                            <span class="zoom-level" id="zoom-level">100%</span>
+                            <button onclick="zoomIn()">+</button>
+                            <button onclick="zoomReset()" style="font-size:11px;">⟲</button>
+                            <button class="btn-olho ativo" id="btn-olho" onclick="toggleOlho()" title="Mostrar/Esconder Hotspots">👁️</button>
+                        </div>
+                    </div>
+                    <button class="btn-adicionar-hotspot" onclick="adicionarHotspotManual()">➕ Adicionar Hotspot</button>
+                    <button class="btn-salvar" onclick="salvarHotspots()">💾 SALVAR HOTSPOTS</button>
+                    <div class="status-msg" id="status-msg"></div>
+                </div>
+
+                <!-- QUADRO DE PEÇAS (20%) -->
+                <div class="lista-pecas-wrapper" id="lista-pecas">
+                    <button class="btn-ocultar-lista" onclick="ocultarLista()">⬅ Ocultar</button>
+                    <h3>📋 Peças do Manual</h3>
+                    <div id="lista-itens">
+                        <div style="text-align:center; color:#888; padding:15px;">Carregando peças...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let manualAtual = null;
+        let hotspots = [];
+        let pecas = [];
+        let zoomLevel = 1;
+        let olhoAberto = true;
+
+        const CONFIG_KEY = 'admin_hotspot_config';
+
+        let config = {
+            tamanhoFonte: 12,
+            corPin: '#e94560',
+            corFonte: '#ffffff',
+            estilo: '1'
+        };
+
+        const ESTILOS = {
+            '1': { nome: 'Círculo', class: 'pin-estilo-1' },
+            '2': { nome: 'Quadrado', class: 'pin-estilo-2' },
+            '3': { nome: 'Sem Fundo', class: 'pin-estilo-3' },
+            '4': { nome: 'Borda', class: 'pin-estilo-4' },
+            '5': { nome: 'Transparente', class: 'pin-estilo-5' },
+            '6': { nome: 'Fundo Ajustado', class: 'pin-estilo-6' },
+            '7': { nome: 'Ajustado c/ Borda', class: 'pin-estilo-7' },
+            '8': { nome: 'Pontilhado', class: 'pin-estilo-8' }
+        };
+
+        // ============================================
+        // CONFIGURAÇÕES
+        // ============================================
+        async function carregarConfiguracoes() {
+            try {
+                const res = await fetch('/api/config-estilos');
+                const data = await res.json();
+                if (data.success && data.config) {
+                    config = {
+                        tamanhoFonte: data.config.tamanho_fonte,
+                        corPin: data.config.cor_pin,
+                        corFonte: data.config.cor_fonte,
+                        estilo: String(data.config.estilo)
+                    };
+                }
+            } catch (e) {}
+            document.getElementById('config-tamanho-fonte').value = config.tamanhoFonte;
+            document.getElementById('config-cor-pin').value = config.corPin;
+            document.getElementById('config-cor-fonte').value = config.corFonte;
+            document.getElementById('config-estilo').value = config.estilo;
+        }
+
+        async function salvarConfiguracoes() {
+            config.tamanhoFonte = parseInt(document.getElementById('config-tamanho-fonte').value) || 12;
+            config.corPin = document.getElementById('config-cor-pin').value;
+            config.corFonte = document.getElementById('config-cor-fonte').value;
+            config.estilo = document.getElementById('config-estilo').value;
+            try {
+                await fetch('/api/config-estilos', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        tamanho_fonte: config.tamanhoFonte,
+                        cor_pin: config.corPin,
+                        cor_fonte: config.corFonte,
+                        estilo: parseInt(config.estilo)
+                    })
+                });
+                const status = document.getElementById('status-salvo');
+                status.style.display = 'block';
+                setTimeout(() => status.style.display = 'none', 2000);
+                aplicarConfiguracoes();
+            } catch (e) {}
+        }
+
+        function aplicarConfiguracoes() {
+            const tamanho = parseInt(document.getElementById('config-tamanho-fonte').value) || 12;
+            const cor = document.getElementById('config-cor-pin').value;
+            const corFonte = document.getElementById('config-cor-fonte').value;
+            const estilo = document.getElementById('config-estilo').value;
+            const estiloClass = ESTILOS[estilo] ? ESTILOS[estilo].class : 'pin-estilo-1';
+
+            document.querySelectorAll('.pin-editor').forEach(pin => {
+                pin.classList.remove('pin-estilo-1', 'pin-estilo-2', 'pin-estilo-3',
+                    'pin-estilo-4', 'pin-estilo-5', 'pin-estilo-6',
+                    'pin-estilo-7', 'pin-estilo-8');
+                pin.classList.add(estiloClass);
+                pin.style.setProperty('--pin-cor', cor);
+                pin.style.setProperty('--pin-fonte-cor', corFonte);
+                pin.style.fontSize = tamanho + 'px';
+
+                if (['3', '4', '8'].includes(estilo)) {
+                    pin.style.padding = '0 2px';
+                } else if (['6', '7'].includes(estilo)) {
+                    pin.style.padding = '1px 4px';
+                } else {
+                    pin.style.padding = '2px 5px';
+                }
+
+                if (['1', '2'].includes(estilo)) {
+                    const size = Math.max(tamanho + 8, 22);
+                    pin.style.minWidth = size + 'px';
+                    pin.style.minHeight = size + 'px';
+                } else {
+                    pin.style.minWidth = 'auto';
+                    pin.style.minHeight = 'auto';
+                }
+
+                const badge = pin.querySelector('.badge-status');
+                if (['3', '4', '5', '6', '7', '8'].includes(estilo)) {
+                    if (badge) badge.style.display = 'none';
+                } else {
+                    if (badge) badge.style.display = 'flex';
+                }
+            });
+        }
+
+        // ============================================
+        // CARREGAR MANUAIS
+        // ============================================
+        async function carregarManuais() {
+            const grid = document.getElementById('grid-manuais');
+            try {
+                const res = await fetch('/api/manuais');
+                const data = await res.json();
+
+                if (!data.success) {
+                    grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; color:#e94560; padding:20px;">❌ ${data.error}</div>`;
+                    return;
+                }
+
+                if (data.manuais.length === 0) {
+                    grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; color:#888; padding:20px;">📭 Nenhum manual encontrado</div>`;
+                    return;
+                }
+
+                grid.innerHTML = '';
+                data.manuais.forEach(manual => {
+                    const btn = document.createElement('div');
+                    btn.className = 'btn-manual';
+                    btn.dataset.nome = manual.nome_base;
+                    btn.innerHTML = `
+                        <div class="nome">${manual.nome_base}</div>
+                        <div class="info">${manual.total_pecas || 0} peças</div>
+                    `;
+                    btn.onclick = () => abrirManual(manual.nome_base);
+                    grid.appendChild(btn);
+                });
+            } catch (error) {
+                grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; color:#e94560; padding:20px;">❌ ${error.message}</div>`;
+            }
+        }
+
+        // ============================================
+        // ABRIR MANUAL
+        // ============================================
+        async function abrirManual(nome) {
+            const img = document.getElementById('img-esquema');
+            const loading = document.getElementById('loading');
+            const editor = document.getElementById('editor-container');
+            const listaItens = document.getElementById('lista-itens');
+            const titulo = document.getElementById('titulo-manual');
+            const wrapper = document.getElementById('imagem-wrapper');
+
+            document.querySelectorAll('.btn-manual').forEach(b => b.classList.remove('ativo'));
+            document.querySelectorAll('.btn-manual').forEach(b => {
+                if (b.dataset.nome === nome) b.classList.add('ativo');
+            });
+
+            document.querySelectorAll('.pin-editor').forEach(p => p.remove());
+
+            editor.classList.add('ativo');
+            loading.style.display = 'block';
+            img.style.display = 'none';
+            titulo.textContent = `📄 ${nome}`;
+            listaItens.innerHTML = '<div style="text-align:center; color:#888; padding:15px;">Carregando peças...</div>';
+
+            try {
+                const res = await fetch(`/api/esquemas/${encodeURIComponent(nome)}`);
+                const data = await res.json();
+
+                if (!data.success) {
+                    alert('❌ ' + data.error);
+                    return;
+                }
+
+                manualAtual = data;
+                hotspots = data.hotspots || [];
+                pecas = data.pecas || [];
+
+                img.src = data.imagemUrl;
+                img.style.display = 'block';
+                loading.style.display = 'none';
+
+                await new Promise((resolve) => {
+                    if (img.complete) resolve();
+                    else img.onload = resolve;
+                });
+
+                renderizarPinos();
+                renderizarLista();
+                aplicarConfiguracoes();
+
+            } catch (error) {
+                alert('❌ ' + error.message);
+            }
+        }
+
+        // ============================================
+        // ADICIONAR HOTSPOT (NA LATERAL ESQUERDA)
+        // ============================================
+        function adicionarHotspotManual() {
+            if (!manualAtual) {
+                alert('⚠️ Selecione um manual primeiro!');
+                return;
+            }
+
+            const numero = prompt('Digite o número da peça (ex: 99):');
+            if (!numero) return;
+
+            if (hotspots.some(h => h.numero === numero)) {
+                alert('⚠️ Já existe um hotspot com esse número!');
+                return;
+            }
+
+            const peca = pecas.find(p => p.numero === numero);
+            const nome = peca ? peca.nome : 'Peça';
+
+            // Coloca na lateral esquerda (15%, 50%)
+            const novoHotspot = {
+                numero: numero,
+                nome: nome,
+                x_percent: 15,
+                y_percent: 50            };
+
+            hotspots.push(novoHotspot);
+            renderizarPinos();
+            renderizarLista();
+
+            const pin = document.querySelector(`.pin-editor[data-numero="${numero}"]`);
+            if (pin) {
+                pin.classList.add('destacado');
+                setTimeout(() => pin.classList.remove('destacado'), 2000);
+            }
+        }
+
+        // ============================================
+        // RENDERIZAR PINOS
+        // ============================================
+        function renderizarPinos() {
+            document.querySelectorAll('.pin-editor').forEach(p => p.remove());
+            const wrapper = document.getElementById('imagem-wrapper');
+
+            hotspots.forEach(hotspot => {
+                const pin = document.createElement('div');
+                pin.className = 'pin-editor';
+                pin.dataset.numero = hotspot.numero;
+                pin.dataset.x = hotspot.x_percent;
+                pin.dataset.y = hotspot.y_percent;
+                pin.style.left = `${hotspot.x_percent}%`;
+                pin.style.top = `${hotspot.y_percent}%`;
+                pin.innerText = hotspot.numero;
+
+                const peca = pecas.find(p => p.numero === hotspot.numero);
+                const nomePeca = peca ? peca.nome : 'Peça';
+
+                const tooltip = document.createElement('span');
+                tooltip.className = 'tooltip';
+                tooltip.textContent = `#${hotspot.numero} - ${nomePeca}`;
+                pin.appendChild(tooltip);
+
+                const badge = document.createElement('span');
+                badge.className = 'badge-status confirmado';
+                badge.textContent = '✓';
+                pin.appendChild(badge);
+
+                pin.addEventListener('mousedown', (e) => iniciarDrag(e, pin));
+                pin.addEventListener('touchstart', (e) => iniciarDragTouch(e, pin), { passive: true });
+
+                wrapper.appendChild(pin);
+            });
+        }
+
+        // ============================================
+        // DRAG & DROP PINOS
+        // ============================================
+        let dragging = false;
+        let currentPin = null;
+        let dragData = null;
+
+        function iniciarDrag(e, pin) {
+            e.preventDefault();
+            dragging = true;
+            currentPin = pin;
+            pin.classList.add('dragging');
+            dragData = {
+                pin: pin,
+                startX: e.clientX,
+                startY: e.clientY,
+                left: parseFloat(pin.style.left),
+                top: parseFloat(pin.style.top)
+            };
+        }
+
+        function iniciarDragTouch(e, pin) {
+            const touch = e.touches[0];
+            if (!touch) return;
+            dragging = true;
+            currentPin = pin;
+            pin.classList.add('dragging');
+            dragData = {
+                pin: pin,
+                startX: touch.clientX,
+                startY: touch.clientY,
+                left: parseFloat(pin.style.left),
+                top: parseFloat(pin.style.top)
+            };
+        }
+
+        document.addEventListener('mousemove', (e) => {
+            if (!dragging || !dragData) return;
+            const wrapper = document.getElementById('imagem-wrapper');
+            const rect = wrapper.getBoundingClientRect();
+            let xPercent = ((e.clientX - rect.left) / rect.width) * 100;
+            let yPercent = ((e.clientY - rect.top) / rect.height) * 100;
+            xPercent = Math.max(0, Math.min(100, xPercent));
+            yPercent = Math.max(0, Math.min(100, yPercent));
+            dragData.pin.style.left = `${xPercent}%`;
+            dragData.pin.style.top = `${yPercent}%`;
+            dragData.pin.dataset.x = xPercent;
+            dragData.pin.dataset.y = yPercent;
+        });
+
+        document.addEventListener('touchmove', (e) => {
+            if (!dragging || !dragData) return;
+            const touch = e.touches[0];
+            if (!touch) return;
+            const wrapper = document.getElementById('imagem-wrapper');
+            const rect = wrapper.getBoundingClientRect();
+            let xPercent = ((touch.clientX - rect.left) / rect.width) * 100;
+            let yPercent = ((touch.clientY - rect.top) / rect.height) * 100;
+            xPercent = Math.max(0, Math.min(100, xPercent));
+            yPercent = Math.max(0, Math.min(100, yPercent));
+            dragData.pin.style.left = `${xPercent}%`;
+            dragData.pin.style.top = `${yPercent}%`;
+            dragData.pin.dataset.x = xPercent;
+            dragData.pin.dataset.y = yPercent;
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (dragging && currentPin) {
+                currentPin.classList.remove('dragging');
+                const numero = currentPin.dataset.numero;
+                const x = parseFloat(currentPin.dataset.x);
+                const y = parseFloat(currentPin.dataset.y);
+                const hotspot = hotspots.find(h => h.numero === numero);
+                if (hotspot) {
+                    hotspot.x_percent = x;
+                    hotspot.y_percent = y;
+                }
+            }
+            dragging = false;
+            dragData = null;
+            currentPin = null;
+        });
+
+        document.addEventListener('touchend', () => {
+            if (dragging && currentPin) {
+                currentPin.classList.remove('dragging');
+                const numero = currentPin.dataset.numero;
+                const x = parseFloat(currentPin.dataset.x);
+                const y = parseFloat(currentPin.dataset.y);
+                const hotspot = hotspots.find(h => h.numero === numero);
+                if (hotspot) {
+                    hotspot.x_percent = x;
+                    hotspot.y_percent = y;
+                }
+            }
+            dragging = false;
+            dragData = null;
+            currentPin = null;
+        });
+
+        // ============================================
+        // RENDERIZAR LISTA (ORDENADA POR NÚMERO)
+        // ============================================
+        function renderizarLista() {
+            const listaItens = document.getElementById('lista-itens');
+            if (!pecas || pecas.length === 0) {
+                listaItens.innerHTML = '<div style="text-align:center; color:#888; padding:15px;">📭 Nenhuma peça</div>';
+                return;
+            }
+
+            const pecasOrdenadas = [...pecas].sort((a, b) => parseInt(a.numero) - parseInt(b.numero));
+
+            let html = '';
+            pecasOrdenadas.forEach(peca => {
+                const temHotspot = hotspots.some(h => h.numero === peca.numero);
+                html += `
+                    <div class="item-peca ${temHotspot ? 'com-hotspot' : 'sem-hotspot'}" 
+                         data-numero="${peca.numero}" onclick="inserirPecaNoCentro('${peca.numero}')">
+                        <span class="numero">#${peca.numero}</span>
+                        <span class="nome">${peca.nome || 'Peça'}</span>
+                        <span class="status ${temHotspot ? 'ok' : 'pendente'}">${temHotspot ? '✅ OK' : '⚠️ Pendente'}</span>
+                    </div>
+                `;
+            });
+            listaItens.innerHTML = html;
+        }
+
+        // ============================================
+        // INSERIR PEÇA NO CENTRO
+        // ============================================
+        function inserirPecaNoCentro(numero) {
+            if (hotspots.some(h => h.numero === numero)) {
+                localizarPeca(numero);
+                return;
+            }
+
+            const peca = pecas.find(p => p.numero === numero);
+            const nome = peca ? peca.nome : 'Peça';
+
+            const novoHotspot = {
+                numero: numero,
+                nome: nome,
+                x_percent: 50,
+                y_percent: 50
+            };
+
+            hotspots.push(novoHotspot);
+            renderizarPinos();
+            renderizarLista();
+
+            const pin = document.querySelector(`.pin-editor[data-numero="${numero}"]`);
+            if (pin) {
+                pin.classList.add('destacado');
+                setTimeout(() => pin.classList.remove('destacado'), 2000);
+            }
+        }
+
+        // ============================================
+        // LOCALIZAR PEÇA NA IMAGEM
+        // ============================================
+        function localizarPeca(numero) {
+            document.querySelectorAll('.pin-editor').forEach(p => p.classList.remove('destacado'));
+            document.querySelectorAll('.item-peca').forEach(item => item.classList.remove('destacado'));
+
+            const pin = document.querySelector(`.pin-editor[data-numero="${numero}"]`);
+            if (pin) {
+                pin.classList.add('destacado');
+                const container = document.getElementById('zoom-container');
+                const rect = pin.getBoundingClientRect();
+                const containerRect = container.getBoundingClientRect();
+                const isVisible = (rect.left >= containerRect.left && rect.right <= containerRect.right &&
+                    rect.top >= containerRect.top && rect.bottom <= containerRect.bottom);
+                if (!isVisible) {
+                    container.scrollBy(rect.left - containerRect.left - containerRect.width / 2,
+                        rect.top - containerRect.top - containerRect.height / 2);
+                }
+                document.querySelectorAll('.item-peca').forEach(item => {
+                    if (item.dataset.numero === numero) {
+                        item.classList.add('destacado');
+                        item.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                    }
+                });
+                setTimeout(() => {
+                    pin.classList.remove('destacado');
+                    document.querySelectorAll('.item-peca.destacado').forEach(item => item.classList.remove('destacado'));
+                }, 3000);
+            } else {
+                inserirPecaNoCentro(numero);
+            }
+        }
+
+        // ============================================
+        // OCULTAR LISTA
+        // ============================================
+        function ocultarLista() {
+            const lista = document.getElementById('lista-pecas');
+            const btn = document.querySelector('.btn-ocultar-lista');
+            if (lista.classList.contains('oculto')) {
+                lista.classList.remove('oculto');
+                btn.textContent = '⬅ Ocultar';
+            } else {
+                lista.classList.add('oculto');
+                btn.textContent = '⬅ Mostrar';
+            }
+        }
+
+        // ============================================
+        // ZOOM
+        // ============================================
+        function zoomIn() {
+            if (zoomLevel < 2) {
+                zoomLevel = zoomLevel === 1 ? 1.5 : 2;
+                aplicarZoom();
+            }
+        }
+
+        function zoomOut() {
+            if (zoomLevel > 0.5) {
+                zoomLevel = zoomLevel === 2 ? 1.5 : 1;
+                aplicarZoom();
+            }
+        }
+
+        function zoomReset() {
+            zoomLevel = 1;
+            aplicarZoom();
+        }
+
+        function aplicarZoom() {
+            const wrapper = document.getElementById('imagem-wrapper');
+            wrapper.classList.remove('zoom-150', 'zoom-200');
+            if (zoomLevel === 1.5) wrapper.classList.add('zoom-150');
+            else if (zoomLevel === 2) wrapper.classList.add('zoom-200');
+            document.getElementById('zoom-level').textContent = Math.round(zoomLevel * 100) + '%';
+        }
+
+        function toggleOlho() {
+            olhoAberto = !olhoAberto;
+            const btn = document.getElementById('btn-olho');
+            if (olhoAberto) {
+                btn.textContent = '👁️';
+                btn.classList.add('ativo');
+                document.querySelectorAll('.pin-editor').forEach(pin => {
+                    pin.classList.remove('oculto');
+                    pin.classList.add('visivel');
+                });
+            } else {
+                btn.textContent = '👁️‍🗨️';
+                btn.classList.remove('ativo');
+                document.querySelectorAll('.pin-editor').forEach(pin => {
+                    pin.classList.add('oculto');
+                    pin.classList.remove('visivel');
+                });
+            }
+        }
+
+        // ============================================
+        // SALVAR HOTSPOTS
+        // ============================================
+        async function salvarHotspots() {
+            if (!manualAtual) return;
+
+            const statusMsg = document.getElementById('status-msg');
+            statusMsg.textContent = '⏳ Salvando...';
+
+            const hotspotsParaSalvar = hotspots.map(h => ({
+                numero: h.numero,
+                x_percent: Math.round(parseFloat(h.x_percent) * 100) / 100,
+                y_percent: Math.round(parseFloat(h.y_percent) * 100) / 100
+            }));
+
+            try {
+                const res = await fetch(`/api/manuais/${encodeURIComponent(manualAtual.nome)}/hotspots`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ hotspots: hotspotsParaSalvar })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    statusMsg.textContent = '✅ Hotspots salvos!';
+                    statusMsg.style.color = '#00b894';
+                } else {
+                    statusMsg.textContent = '❌ ' + data.error;
+                    statusMsg.style.color = '#e94560';
+                }
+            } catch (error) {
+                statusMsg.textContent = '❌ ' + error.message;
+                statusMsg.style.color = '#e94560';
+            }
+        }
+        
+
+        // ============================================
+        // INICIALIZAÇÃO
+        // ============================================
+        document.addEventListener('DOMContentLoaded', async () => {
+            await carregarConfiguracoes();
+            carregarManuais();
+        });
+    </script>
+</body>
+</html>

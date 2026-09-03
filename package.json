@@ -1,0 +1,30 @@
+{
+  "name": "marine-pecas",
+  "version": "1.0.0",
+  "description": "Sistema de Peças Marine Fishing",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "type": "module",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.112.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "multer": "^2.2.0",
+    "resend": "^3.2.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  },
+  "keywords": [
+    "marine",
+    "fishing",
+    "pecas",
+    "assistencia"
+  ],
+  "author": "Marine Fishing",
+  "license": "ISC"
+}

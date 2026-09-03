@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Vendedor</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f0f2f5;
+            color: #333;
+            padding: 20px;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .header-top h1 { color: #1a237e; font-size: 24px; }
+        .btn-voltar {
+            background: #e0e0e0;
+            padding: 8px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #1a1a2e;
+            font-weight: 600;
+        }
+        .btn-voltar:hover { background: #ccc; }
+        .filtros {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .filtros select, .filtros input {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .filtros button {
+            padding: 10px 20px;
+            background: #1a237e;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .filtros button:hover { background: #0d1555; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 14px;
+        }
+        th {
+            background: #f5f5f5;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+        .status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        .status-aguardando { background: #fff3cd; color: #856404; }
+        .status-analise { background: #cce5ff; color: #004085; }
+        .status-orcamento { background: #d4edda; color: #155724; }
+        .status-enviado { background: #d1ecf1; color: #0c5460; }
+        .status-finalizado { background: #d4edda; color: #155724; }
+        .status-cancelado { background: #f8d7da; color: #721c24; }
+        .btn-acao {
+            padding: 5px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+        .btn-analise { background: #0984e3; color: white; }
+        .btn-analise:hover { background: #0652DD; }
+        .btn-cliente { background: #00b894; color: white; }
+        .btn-cliente:hover { background: #00a381; }
+        .btn-detalhes { background: #6c5ce7; color: white; }
+        .btn-detalhes:hover { background: #5a4bd1; }
+        .badge {
+            background: #d32f2f;
+            color: white;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 900px;
+            width: 95%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalIn 0.3s ease;
+        }
+        @keyframes modalIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .modal h2 { color: #1a237e; margin-bottom: 20px; }
+        .modal .info-cliente {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        .modal .info-cliente p { margin: 5px 0; font-size: 14px; }
+        .modal .info-cliente strong { color: #1a237e; }
+        .modal table { font-size: 13px; }
+        .modal table th { background: #e8eaf6; }
+        .modal .btn-fechar {
+            background: #e0e0e0;
+            color: #333;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+        .modal .btn-fechar:hover { background: #bdbdbd; }
+        .modal .btn-enviar {
+            background: #1a237e;
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 15px;
+            margin-left: 10px;
+        }
+        .modal .btn-enviar:hover { background: #0d1555; }
+        .empty {
+            text-align: center;
+            color: #888;
+            padding: 40px;
+        }
+        .scroll-table {
+            overflow-x: auto;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        .variacao-tag {
+            background: #e8eaf6;
+            color: #1a237e;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        .produto-tag {
+            background: #1a237e;
+            color: white;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+            margin-right: 3px;
+        }
+        .produto-lista {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+        .grupo-produto-modal {
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+        .grupo-produto-modal .grupo-header {
+            background: #e8eaf6;
+            padding: 8px 15px;
+            font-weight: 600;
+            color: #1a237e;
+        }
+        .grupo-produto-modal .grupo-itens {
+            padding: 5px 15px;
+        }
+        @media (max-width: 768px) {
+            .container { padding: 0; }
+            .card { padding: 15px; }
+            .filtros { flex-direction: column; }
+            table { font-size: 12px; }
+            th, td { padding: 8px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-top">
+            <h1>📋 Painel do Vendedor</h1>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <span id="total-pedidos" style="font-size: 14px; color: #666;">Carregando...</span>
+                <a href="/admin" class="btn-voltar">← Voltar</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="filtros">
+                <select id="filtro-status" onchange="carregarPedidos()">
+                    <option value="">Todos os Status</option>
+                    <option value="AGUARDANDO">⏳ Aguardando</option>
+                    <option value="EM_ANALISE_TECNICA">🔧 Em Análise Técnica</option>
+                    <option value="ORCAMENTO_FINALIZADO">📊 Orçamento Finalizado</option>
+                    <option value="ENVIADO_CLIENTE">📨 Enviado ao Cliente</option>
+                    <option value="FINALIZADO">✅ Finalizado</option>
+                    <option value="CANCELADO">❌ Cancelado</option>
+                </select>
+                <input type="text" id="filtro-busca" placeholder="🔍 Buscar por cliente ou chamado..." oninput="carregarPedidos()">
+                <button onclick="carregarPedidos()">🔄 Atualizar</button>
+            </div>
+
+            <div class="scroll-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Chamado</th>
+                            <th>Cliente</th>
+                            <th>CNPJ</th>
+                            <th>Produtos</th>
+                            <th>Variações</th>
+                            <th>Status</th>
+                            <th>Data</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela-pedidos">
+                        <tr><td colspan="8" class="empty">Carregando pedidos...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-detalhes">
+        <div class="modal" id="modal-content">
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <script>
+        let pedidos = [];
+
+        async function carregarPedidos() {
+            const status = document.getElementById('filtro-status').value;
+            const busca = document.getElementById('filtro-busca').value.trim();
+            const tbody = document.getElementById('tabela-pedidos');
+            const totalSpan = document.getElementById('total-pedidos');
+
+            tbody.innerHTML = '<tr><td colspan="8" class="empty">⏳ Carregando...</td></tr>';
+
+            try {
+                let url = '/api/pedidos';
+                const params = new URLSearchParams();
+                if (status) params.append('status', status);
+                if (busca) params.append('busca', busca);
+                if (params.toString()) url += '?' + params.toString();
+
+                const res = await fetch(url);
+                const data = await res.json();
+
+                if (!data.success) {
+                    tbody.innerHTML = `<tr><td colspan="8" class="empty">❌ ${data.error}</td></tr>`;
+                    return;
+                }
+
+                pedidos = data.pedidos;
+                totalSpan.textContent = `${pedidos.length} pedido(s)`;
+
+                if (pedidos.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8" class="empty">📭 Nenhum pedido encontrado</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = '';
+                pedidos.forEach(p => {
+                    const tr = document.createElement('tr');
+                    const statusClass = getStatusClass(p.status);
+                    const statusLabel = getStatusLabel(p.status);
+
+                    // Pega produtos únicos
+                    const produtos = p.itens ? [...new Set(p.itens.map(item => item.manual_nome || 'Produto'))] : ['-'];
+                    
+                    // Pega as variações únicas
+                    const variacoes = p.itens ? [...new Set(p.itens.map(item => item.variacao || 'N/A'))] : ['N/A'];
+                    const variacaoDisplay = variacoes.join(', ');
+
+                    // Monta a lista de produtos com tags
+                    let produtosHtml = produtos.map(prod => 
+                        `<span class="produto-tag">${prod}</span>`
+                    ).join(' ');
+
+                    tr.innerHTML = `
+                        <td><strong>${p.numero_chamado}</strong></td>
+                        <td>${p.cliente_nome}</td>
+                        <td>${p.cliente_cnpj}</td>
+                        <td><div class="produto-lista">${produtosHtml}</div></td>
+                        <td><span class="variacao-tag">${variacaoDisplay}</span></td>
+                        <td><span class="status ${statusClass}">${statusLabel}</span></td>
+                        <td>${formatarData(p.data_pedido)}</td>
+                        <td>
+                            <button class="btn-acao btn-detalhes" onclick="verDetalhes(${p.id})">📄 Detalhes</button>
+                            ${p.status === 'AGUARDANDO' ? `<button class="btn-acao btn-analise" onclick="enviarParaTecnico(${p.id})">🔧 Enviar Técnico</button>` : ''}
+                            ${p.status === 'ORCAMENTO_FINALIZADO' ? `<button class="btn-acao btn-cliente" onclick="enviarParaCliente(${p.id})">📨 Enviar Cliente</button>` : ''}
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+            } catch (error) {
+                tbody.innerHTML = `<tr><td colspan="8" class="empty">❌ Erro: ${error.message}</td></tr>`;
+            }
+        }
+
+        function getStatusClass(status) {
+            const map = {
+                'AGUARDANDO': 'status-aguardando',
+                'EM_ANALISE_TECNICA': 'status-analise',
+                'ORCAMENTO_FINALIZADO': 'status-orcamento',
+                'ENVIADO_CLIENTE': 'status-enviado',
+                'FINALIZADO': 'status-finalizado',
+                'CANCELADO': 'status-cancelado'
+            };
+            return map[status] || 'status-aguardando';
+        }
+
+        function getStatusLabel(status) {
+            const map = {
+                'AGUARDANDO': '⏳ Aguardando',
+                'EM_ANALISE_TECNICA': '🔧 Em Análise',
+                'ORCAMENTO_FINALIZADO': '📊 Orçamento Pronto',
+                'ENVIADO_CLIENTE': '📨 Enviado ao Cliente',
+                'FINALIZADO': '✅ Finalizado',
+                'CANCELADO': '❌ Cancelado'
+            };
+            return map[status] || status;
+        }
+
+        function formatarData(data) {
+            if (!data) return '-';
+            const d = new Date(data);
+            return d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        async function verDetalhes(id) {
+            const modal = document.getElementById('modal-detalhes');
+            const body = document.getElementById('modal-body');
+
+            try {
+                const res = await fetch(`/api/pedidos/${id}`);
+                const data = await res.json();
+
+                if (!data.success) {
+                    body.innerHTML = `<p class="empty">❌ ${data.error}</p>`;
+                    modal.classList.add('active');
+                    return;
+                }
+
+                const p = data.pedido;
+                const itens = p.itens || [];
+                const statusLabel = getStatusLabel(p.status);
+
+                // Agrupa itens por produto
+                const grupos = {};
+                itens.forEach(item => {
+                    const chave = `${item.manual_nome || 'Produto'}|${item.variacao || 'N/A'}`;
+                    if (!grupos[chave]) {
+                        grupos[chave] = {
+                            manual_nome: item.manual_nome || 'Produto',
+                            variacao: item.variacao || 'N/A',
+                            itens: []
+                        };
+                    }
+                    grupos[chave].itens.push(item);
+                });
+
+                let html = `
+                    <h2>📄 Pedido #${p.numero_chamado}</h2>
+                    
+                    <div class="info-cliente">
+                        <p><strong>Status:</strong> <span class="status ${getStatusClass(p.status)}">${statusLabel}</span></p>
+                        <p><strong>Cliente:</strong> ${p.cliente_nome}</p>
+                        <p><strong>CNPJ:</strong> ${p.cliente_cnpj}</p>
+                        ${p.cliente_telefone ? `<p><strong>Telefone:</strong> ${p.cliente_telefone}</p>` : ''}
+                        ${p.cliente_email ? `<p><strong>E-mail:</strong> ${p.cliente_email}</p>` : ''}
+                        ${p.cliente_endereco ? `<p><strong>Endereço:</strong> ${p.cliente_endereco}</p>` : ''}
+                        <p><strong>Vendedor:</strong> ${p.vendedor_nome || '-'}</p>
+                        <p><strong>Data:</strong> ${formatarData(p.data_pedido)}</p>
+                    </div>
+
+                    <h3>📋 Peças Solicitadas</h3>
+                `;
+
+                // Mostra os grupos de produtos
+                Object.keys(grupos).forEach(chave => {
+                    const grupo = grupos[chave];
+                    html += `
+                        <div class="grupo-produto-modal">
+                            <div class="grupo-header">
+                                📦 ${grupo.manual_nome} ${grupo.variacao ? `(📏 ${grupo.variacao})` : ''}
+                            </div>
+                            <div class="grupo-itens">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Posição</th>
+                                            <th>Descrição</th>
+                                            <th style="text-align:center;">Qtd</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                    `;
+
+                    grupo.itens.forEach(item => {
+                        html += `
+                            <tr>
+                                <td><strong>#${item.numero}</strong></td>
+                                <td>${item.nome}</td>
+                                <td style="text-align:center;">${item.qtd}</td>
+                            </tr>
+                        `;
+                    });
+
+                    html += `
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                // Mostra o orçamento se existir
+                if (p.orcamento && p.orcamento.length > 0) {
+                    html += `
+                        <h3 style="margin-top:20px;">📊 Orçamento Técnico</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Descrição</th>
+                                    <th style="text-align:center;">Qtd</th>
+                                    <th style="text-align:right;">Preço Unit.</th>
+                                    <th style="text-align:right;">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                    `;
+
+                    let totalGeral = 0;
+                    p.orcamento.forEach(item => {
+                        const total = (item.preco_unitario || 0) * (item.qtd || 0);
+                        totalGeral += total;
+                        html += `
+                            <tr>
+                                <td>${item.codigo || '-'}</td>
+                                <td>${item.descricao || '-'}</td>
+                                <td style="text-align:center;">${item.qtd || 0}</td>
+                                <td style="text-align:right;">R$ ${(item.preco_unitario || 0).toFixed(2)}</td>
+                                <td style="text-align:right;">R$ ${total.toFixed(2)}</td>
+                            </tr>
+                        `;
+                    });
+
+                    html += `
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="4" style="text-align:right; font-weight:bold; font-size:16px;">TOTAL:</td>
+                                    <td style="text-align:right; font-weight:bold; font-size:16px; color:#1a237e;">R$ ${totalGeral.toFixed(2)}</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    `;
+                }
+
+                html += `
+                    <div style="margin-top:20px; display:flex; gap:10px; justify-content:flex-end;">
+                        <button class="btn-fechar" onclick="fecharModal()">🔙 Fechar</button>
+                        ${p.status === 'AGUARDANDO' ? `<button class="btn-enviar" onclick="enviarParaTecnico(${p.id})">🔧 Enviar para Técnico</button>` : ''}
+                        ${p.status === 'ORCAMENTO_FINALIZADO' ? `<button class="btn-enviar" onclick="enviarParaCliente(${p.id})">📨 Enviar para Cliente</button>` : ''}
+                    </div>
+                `;
+
+                body.innerHTML = html;
+                modal.classList.add('active');
+
+            } catch (error) {
+                body.innerHTML = `<p class="empty">❌ Erro: ${error.message}</p>`;
+                modal.classList.add('active');
+            }
+        }
+
+        function fecharModal() {
+            document.getElementById('modal-detalhes').classList.remove('active');
+        }
+
+        async function enviarParaTecnico(id) {
+            if (!confirm('Enviar este pedido para análise técnica?')) return;
+
+            try {
+                const res = await fetch(`/api/pedidos/${id}/status`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'EM_ANALISE_TECNICA' })
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    alert('✅ Pedido enviado para análise técnica!');
+                    fecharModal();
+                    carregarPedidos();
+                } else {
+                    alert('❌ ' + data.error);
+                }
+            } catch (error) {
+                alert('❌ Erro: ' + error.message);
+            }
+        }
+
+        async function enviarParaCliente(id) {
+            if (!confirm('Enviar este orçamento para o cliente?')) return;
+
+            try {
+                const res = await fetch(`/api/pedidos/${id}/status`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'ENVIADO_CLIENTE' })
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    alert('✅ Orçamento enviado para o cliente!');
+                    fecharModal();
+                    carregarPedidos();
+                } else {
+                    alert('❌ ' + data.error);
+                }
+            } catch (error) {
+                alert('❌ Erro: ' + error.message);
+            }
+        }
+
+        document.getElementById('modal-detalhes').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) fecharModal();
+        });
+
+        document.addEventListener('DOMContentLoaded', carregarPedidos);
+    </script>
+</body>
+</html>

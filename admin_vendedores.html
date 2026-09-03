@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Vendedores</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f0f4f8;
+            color: #2d3436;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: #002B49;
+            margin-bottom: 20px;
+        }
+
+        .form-section {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            background: #00b894;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #00a381;
+        }
+
+        .list-item {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .list-item button {
+            background: #e94560;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            width: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>⚙️ Admin Vendedores</h1>
+
+        <!-- CADASTRAR VENDEDOR -->
+        <div class="form-section">
+            <h3>➕ Cadastrar Vendedor</h3>
+            <input type="text" id="input-nome" placeholder="Nome do Vendedor">
+            <input type="text" id="input-codigo" placeholder="Código (ex: 001)">
+            <input type="text" id="input-email" placeholder="Email">
+            <input type="text" id="input-telefone" placeholder="Telefone">
+            <button onclick="criarVendedor()">➕ Cadastrar</button>
+        </div>
+
+        <!-- LISTA DE VENDEDORES -->
+        <div class="form-section">
+            <h3>📋 Vendedores Existentes</h3>
+            <div id="lista-vendedores"></div>
+        </div>
+    </div>
+
+    <script>
+        async function carregarVendedores() {
+            const res = await fetch('/api/vendedores');
+            const data = await res.json();
+            
+            const lista = document.getElementById('lista-vendedores');
+            lista.innerHTML = '';
+            data.vendedores.forEach(vendedor => {
+                const item = document.createElement('div');
+                item.className = 'list-item';
+                item.innerHTML = `📋 ${vendedor.nome} <button onclick="deletarVendedor(${vendedor.id})">🗑️ Deletar</button>`;
+                lista.appendChild(item);
+            });
+        }
+
+        async function criarVendedor() {
+    const nome = document.getElementById('input-nome').value;
+    const codigo = document.getElementById('input-codigo').value;
+    const email = document.getElementById('input-email').value;
+    const telefone = document.getElementById('input-telefone').value;
+
+    if (!nome) return alert('⚠️ Digite o nome do vendedor!');
+
+    const res = await fetch('/api/vendedores', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nome, codigo, email, telefone })
+    });
+
+    const data = await res.json();
+    if (data.success) {
+        alert('✅ Vendedor cadastrado!');
+        document.getElementById('input-nome').value = '';
+        document.getElementById('input-codigo').value = '';
+        document.getElementById('input-email').value = '';
+        document.getElementById('input-telefone').value = '';
+        carregarVendedores();
+    } else {
+        alert('❌ ' + data.error);
+    }
+}
+
+        async function deletarVendedor(id) {
+            if (!confirm('Deletar este vendedor?')) return;
+            
+            const res = await fetch(`/api/vendedores/${id}`, {
+                method: 'DELETE'
+            });
+            const data = await res.json();
+            
+            if (data.success) {
+                alert('✅ Vendedor deletado!');
+                carregarVendedores();
+            } else {
+                alert('❌ ' + data.error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', carregarVendedores);
+    </script>
+</body>
+</html>

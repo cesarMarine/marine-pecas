@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marine Fishing - Manuais</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f0f2f5;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #002B49, #005792);
+            color: white;
+            text-align: center;
+            padding: 60px 20px;
+            margin-bottom: 30px;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .hero p {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        .categorias {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            padding: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .card-categoria {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            text-align: center;
+            width: 300px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .card-categoria:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-categoria img {
+            width: 150px;
+            height: 150px;
+            object-fit: contain;
+            margin-bottom: 20px;
+        }
+
+        .card-categoria h2 {
+            color: #002B49;
+            margin-bottom: 10px;
+        }
+
+        .card-categoria p {
+            color: #666;
+        }
+
+        .admin-link {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #e94560;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+
+    <a href="/admin_catalogo.html" class="admin-link">⚙️ Admin</a>
+
+    <div class="hero">
+        <h1>🎣 MARINE FISHING</h1>
+        <p>Manuais técnicos e catálogo de peças</p>
+    </div>
+
+    <div class="categorias" id="categorias-container">
+        <!-- As categorias serão carregadas via API -->
+    </div>
+
+    <script>
+        async function carregarCategorias() {
+            const container = document.getElementById('categorias-container');
+            
+            try {
+                const res = await fetch('/api/grupos');
+                const data = await res.json();
+                
+                if (!data.success || data.grupos.length === 0) {
+                    container.innerHTML = '<p style="text-align:center; color:#888;">Nenhuma categoria cadastrada ainda.</p>';
+                    return;
+                }
+                
+                container.innerHTML = '';
+                data.grupos.forEach(grupo => {
+                    const card = document.createElement('div');
+                    card.className = 'card-categoria';
+                    card.onclick = () => window.location.href = `/categoria.html?grupo=${grupo.id}&nome=${encodeURIComponent(grupo.nome)}`;
+                    
+                    card.innerHTML = `
+                        <img src="${grupo.icone_url || 'https://via.placeholder.com/150'}" alt="${grupo.nome}">
+                        <h2>${grupo.nome}</h2>
+                        <p>Clique para ver os modelos</p>
+                    `;
+                    
+                    container.appendChild(card);
+                });
+                
+            } catch (error) {
+                container.innerHTML = `<p style="text-align:center; color:#e94560;">Erro: ${error.message}</p>`;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', carregarCategorias);
+    </script>
+</body>
+</html>

@@ -1,0 +1,1751 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Peças - Sistema</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f0f2f5;
+            color: #333;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .header-top h1 {
+            color: #1a237e;
+            font-size: 24px;
+        }
+
+        .btn-voltar {
+            background: #e0e0e0;
+            padding: 8px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #1a1a2e;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .btn-voltar:hover {
+            background: #ccc;
+        }
+
+        .btn-produtos {
+            background: #0984e3;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-produtos:hover {
+            background: #0652DD;
+        }
+
+        .variacao-badge {
+            background: #e8eaf6;
+            color: #1a237e;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        /* DIAGRAMA */
+        .diagrama-wrapper {
+            position: relative;
+            width: 100%;
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+            min-height: 400px;
+        }
+
+        .zoom-container {
+            position: relative;
+            width: 100%;
+            overflow: auto;
+            max-height: 70vh;
+        }
+
+        .imagem-wrapper {
+            position: relative;
+            width: 100%;
+            display: block;
+            transform-origin: top left;
+            transition: transform 0.25s ease;
+        }
+
+        .imagem-wrapper img {
+            width: 100%;
+            height: auto;
+            display: block;
+            pointer-events: none;
+        }
+
+        .imagem-wrapper.zoom-150 { transform: scale(1.5); }
+        .imagem-wrapper.zoom-200 { transform: scale(2); }
+
+        .zoom-controls {
+            position: absolute;
+            bottom: 16px;
+            right: 16px;
+            display: flex;
+            gap: 6px;
+            z-index: 30;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 6px 10px;
+            border-radius: 10px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+            border: 1px solid #dce1e8;
+            align-items: center;
+        }
+
+        .zoom-controls button {
+            background: #ffffff;
+            border: 1px solid #dce1e8;
+            border-radius: 6px;
+            padding: 4px 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 700;
+            color: #2d3436;
+            transition: 0.2s;
+        }
+
+        .zoom-controls button:hover {
+            background: #1a237e;
+            color: white;
+            border-color: #1a237e;
+        }
+
+        /* HOTSPOTS */
+        .pin-peca {
+            position: absolute;
+            padding: 4px 8px;
+            font-weight: bold;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 2px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            user-select: none;
+            z-index: 10;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            line-height: 1;
+            animation: pinAppear 0.3s ease-out;
+            min-width: 28px;
+            min-height: 28px;
+            font-size: 12px;
+            pointer-events: auto;
+            transform: translate(-50%, -50%);
+        }
+
+        .pin-peca.oculto {
+            opacity: 0 !important;
+            pointer-events: none !important;
+            transition: opacity 0.3s ease;
+        }
+
+        .pin-peca.visivel {
+            opacity: 1 !important;
+            pointer-events: auto !important;
+            transition: opacity 0.3s ease;
+        }
+
+        .pin-peca.estilo-1 {
+            background: linear-gradient(135deg, #e94560, #c62828) !important;
+            border-radius: 50% !important;
+            color: white !important;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+        }
+
+        .pin-peca.estilo-2 {
+            background: linear-gradient(135deg, #0984e3, #0652DD) !important;
+            border-radius: 4px !important;
+            color: white !important;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+        }
+
+        .pin-peca.estilo-3 {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            color: #2d3436 !important;
+            text-shadow: -1px -1px 0 #ffffff, 1px -1px 0 #ffffff, -1px 1px 0 #ffffff, 1px 1px 0 #ffffff, 0 0 8px rgba(255, 255, 255, 0.8) !important;
+            padding: 0 2px !important;
+            min-width: auto !important;
+            min-height: auto !important;
+        }
+
+        .pin-peca.estilo-4 {
+            background: transparent !important;
+            border: 2px solid rgba(255, 255, 255, 0.9) !important;
+            border-radius: 4px !important;
+            box-shadow: 0 0 12px rgba(255, 255, 255, 0.5) !important;
+            color: #2d3436 !important;
+            padding: 0 6px !important;
+        }
+
+        .pin-peca.estilo-5 {
+            background: rgba(255, 255, 255, 0.6) !important;
+            backdrop-filter: blur(2px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.8) !important;
+            border-radius: 4px !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+            color: #2d3436 !important;
+            padding: 0 6px !important;
+        }
+
+        .pin-peca.estilo-6 {
+            background: #e94560 !important;
+            border-radius: 4px !important;
+            border: none !important;
+            box-shadow: 0 2px 8px rgba(233, 69, 96, 0.3) !important;
+            color: white !important;
+            padding: 1px 6px !important;
+            display: inline-block !important;
+            width: auto !important;
+            height: auto !important;
+            line-height: 1.2 !important;
+            min-width: auto !important;
+            min-height: auto !important;
+        }
+
+        .pin-peca.estilo-7 {
+            background: #ffffff !important;
+            border: 2px solid #2d3436 !important;
+            border-radius: 4px !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+            color: #2d3436 !important;
+            padding: 0px 5px !important;
+            display: inline-block !important;
+            width: auto !important;
+            height: auto !important;
+            line-height: 1.2 !important;
+            min-width: auto !important;
+            min-height: auto !important;
+        }
+
+        .pin-peca.estilo-8 {
+            background: transparent !important;
+            border: 2px dashed rgba(44, 62, 80, 0.6) !important;
+            border-radius: 50% !important;
+            box-shadow: none !important;
+            color: #2d3436 !important;
+            padding: 0 6px !important;
+        }
+
+        @keyframes pinAppear {
+            from { opacity: 0; transform: translate(-50%, -50%) scale(0); }
+            to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
+
+        .pin-peca:hover {
+            transform: translate(-50%, -50%) scale(1.5) !important;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .pin-peca .tooltip {
+            display: none;
+            position: absolute;
+            bottom: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            white-space: nowrap;
+            font-weight: normal;
+            text-shadow: none;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            pointer-events: none;
+            z-index: 200;
+        }
+
+        .pin-peca .tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: rgba(0, 0, 0, 0.9);
+        }
+
+        .pin-peca:hover .tooltip { display: block; }
+
+        .grid-pecas {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 8px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 4px;
+        }
+
+        .btn-peca {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 13px;
+        }
+
+        .btn-peca:hover {
+            border-color: #1a237e;
+            background: #e8eaf6;
+        }
+
+        .btn-peca .numero-peca {
+            font-weight: bold;
+            color: #1a237e;
+            min-width: 40px;
+        }
+
+        .btn-peca .nome-peca {
+            color: #555;
+            font-size: 12px;
+            flex: 1;
+            word-break: break-word;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        th {
+            background: #f5f5f5;
+            font-weight: 600;
+        }
+
+        input[type="number"] {
+            width: 60px;
+            padding: 6px;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .btn-remover {
+            background: #d32f2f;
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-remover:hover { background: #b71c1c; }
+
+        .badge {
+            background: #d32f2f;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        .info-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .manual-titulo {
+            color: #1a237e;
+            font-size: 20px;
+        }
+
+        .manual-titulo small {
+            color: #666;
+            font-size: 14px;
+            font-weight: normal;
+        }
+
+        .erro-msg {
+            color: #d32f2f;
+            font-weight: bold;
+            padding: 40px;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .aba-container {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 16px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .aba {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 8px 8px 0 0;
+            transition: all 0.2s;
+            font-weight: 500;
+            color: #666;
+        }
+
+        .aba:hover { background: #f5f5f5; }
+        .aba.ativo { background: #1a237e; color: white; }
+
+        .aba-conteudo { display: none; }
+        .aba-conteudo.ativo { display: block; }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #888;
+        }
+
+        .loading .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #1a237e;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .variacao-tag {
+            background: #e8eaf6;
+            color: #1a237e;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .carrinho-vazio {
+            text-align: center;
+            color: #888;
+            padding: 30px;
+        }
+
+        .grupo-produto {
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+
+        .grupo-produto .grupo-header {
+            background: #e8eaf6;
+            padding: 10px 15px;
+            font-weight: 600;
+            color: #1a237e;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .grupo-produto .grupo-itens {
+            padding: 5px 15px;
+        }
+
+        .barra-produto-atual {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 12px 20px;
+            background: #e8eaf6;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .barra-produto-atual .produto-info {
+            font-weight: 600;
+            color: #1a237e;
+        }
+
+        .barra-produto-atual .produto-info span {
+            font-weight: normal;
+            color: #333;
+        }
+
+        .acoes-produto {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-pequeno {
+            padding: 6px 15px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: 0.3s;
+        }
+
+        .btn-pequeno.azul { background: #0984e3; color: white; }
+        .btn-pequeno.azul:hover { background: #0652DD; }
+        .btn-pequeno.verde { background: #00b894; color: white; }
+        .btn-pequeno.verde:hover { background: #00a381; }
+        .btn-pequeno.vermelho { background: #e94560; color: white; }
+        .btn-pequeno.vermelho:hover { background: #c62828; }
+
+        .btn-enviar {
+            background: #1a237e;
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-enviar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(26, 35, 126, 0.4);
+        }
+
+        .btn-enviar:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-continuar {
+            background: #00b894;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 15px;
+            transition: 0.3s;
+        }
+
+        .btn-continuar:hover { background: #00a381; }
+
+        .btn-add-produto {
+            background: #0984e3;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 15px;
+            transition: 0.3s;
+        }
+
+        .btn-add-produto:hover { background: #0652DD; }
+
+        /* MODAL */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active { display: flex; }
+
+        .modal {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 95%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalIn 0.3s ease;
+        }
+
+        @keyframes modalIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal h2 { color: #1a237e; margin-bottom: 20px; }
+        .modal .numero-peca {
+            font-size: 32px;
+            font-weight: bold;
+            color: #d32f2f;
+            margin: 10px 0;
+        }
+
+        .modal input[type="number"] {
+            width: 80px;
+            padding: 10px;
+            font-size: 18px;
+            text-align: center;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            margin: 10px 0;
+        }
+
+        .modal .btn-modal {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 5px;
+            transition: 0.2s;
+        }
+
+        .modal .btn-adicionar { background: #2e7d32; color: white; }
+        .modal .btn-adicionar:hover { background: #1b5e20; }
+        .modal .btn-cancelar { background: #e0e0e0; color: #333; }
+        .modal .btn-cancelar:hover { background: #bdbdbd; }
+
+        /* CLIENTE FORM - só aparece no final */
+        #card-cliente {
+            display: none;
+            border: 2px solid #1a237e;
+        }
+
+        #card-cliente .cliente-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        #card-cliente .cliente-grid .full { grid-column: 1 / -1; }
+        #card-cliente .cliente-grid .double { grid-column: span 2; }
+
+        #card-cliente .cliente-grid label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: #333;
+        }
+
+        #card-cliente .cliente-grid input,
+        #card-cliente .cliente-grid select,
+        #card-cliente .cliente-grid textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        #card-cliente .cliente-grid input:focus,
+        #card-cliente .cliente-grid select:focus,
+        #card-cliente .cliente-grid textarea:focus {
+            border-color: #1a237e;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(26, 35, 126, 0.1);
+        }
+
+        #card-cliente .cliente-grid .cnpj-status {
+            font-size: 13px;
+            margin-top: 5px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            display: none;
+        }
+
+        #card-cliente .cliente-grid .cnpj-status.loading {
+            display: block;
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        #card-cliente .cliente-grid .cnpj-status.success {
+            display: block;
+            background: #d4edda;
+            color: #155724;
+        }
+
+        #card-cliente .cliente-grid .cnpj-status.error {
+            display: block;
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .input-group .input-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 18px;
+            color: #999;
+        }
+
+        .input-group .input-icon.loading {
+            animation: spin 1s linear infinite;
+        }
+
+        .msg-sucesso {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px 20px;
+            border-radius: 8px;
+            border: 1px solid #c3e6cb;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .msg-sucesso.show { display: block; }
+
+        @media (max-width: 768px) {
+            .container { padding: 0; }
+            .card { padding: 15px; }
+            .pin-peca { font-size: 10px; min-width: 22px; min-height: 22px; }
+            .header-top h1 { font-size: 20px; }
+            #card-cliente .cliente-grid { grid-template-columns: 1fr; }
+            #card-cliente .cliente-grid .double { grid-column: span 1; }
+            .barra-produto-atual { flex-direction: column; align-items: stretch; }
+            .acoes-produto { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <!-- HEADER -->
+        <div class="header-top">
+            <h1>🔧 <span id="titulo-manual">Sistema de Peças</span></h1>
+            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                <span id="info-manual" style="font-size: 14px; color: #666;">Carregando...</span>
+                <a href="javascript:history.back()" class="btn-voltar">← Voltar</a>
+                <button class="btn-produtos" onclick="window.location.href='categoria.html'">📦 Trocar Produto</button>
+            </div>
+        </div>
+
+        <!-- BARRA DO PRODUTO ATUAL -->
+        <div class="barra-produto-atual" id="barra-produto">
+            <div class="produto-info">
+                📦 <span id="produto-atual-display">Nenhum produto selecionado</span>
+            </div>
+            <div class="acoes-produto">
+                <button class="btn-pequeno azul" onclick="window.location.href='categoria.html'">➕ Adicionar outro produto</button>
+            </div>
+        </div>
+
+        <!-- MANUAL -->
+        <div class="card" id="card-manual" style="display: none;">
+            <div class="info-bar">
+                <h2 class="manual-titulo">🎣 <span id="nome-manual">Manual</span> <small id="info-manual2"></small></h2>
+                <span class="total" id="contador-hotspots">Carregando...</span>
+            </div>
+
+            <div class="aba-container">
+                <div class="aba ativo" data-aba="vista" onclick="trocarAba('vista')">📐 Vista Explodida</div>
+                <div class="aba" data-aba="lista" onclick="trocarAba('lista')">📋 Lista de Peças</div>
+            </div>
+
+            <div class="aba-conteudo ativo" id="aba-vista">
+                <p style="color: #666; margin-bottom: 15px; font-size: 14px;">
+                    💡 <strong>Clique nos números</strong> sobre a imagem para adicionar peças ao carrinho.
+                </p>
+                <div class="diagrama-wrapper" id="diagrama-wrapper">
+                    <div class="loading" id="loading">
+                        <div class="spinner"></div>
+                        <p>Carregando esquema...</p>
+                    </div>
+                    <div class="zoom-container" id="zoom-container">
+                        <div class="imagem-wrapper" id="imagem-wrapper">
+                            <img id="img-esquema" src="" alt="Esquema" style="display: none;">
+                        </div>
+                    </div>
+                    <div class="zoom-controls">
+                        <button onclick="zoomOut()">−</button>
+                        <span class="zoom-level" id="zoom-level">100%</span>
+                        <button onclick="zoomIn()">+</button>
+                        <button onclick="zoomReset()" style="font-size:12px;">⟲</button>
+                        <button class="btn-olho ativo" id="btn-olho" onclick="toggleOlho()" title="Mostrar/Esconder Hotspots">👁️</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="aba-conteudo" id="aba-lista">
+                <p style="color: #666; margin-bottom: 15px; font-size: 14px;">
+                    💡 <strong>Clique em uma peça</strong> para adicionar ao carrinho.
+                </p>
+                <div class="grid-pecas" id="grid-pecas">
+                    <div style="grid-column: 1/-1; text-align:center; color:#888; padding:20px;">
+                        Carregando peças...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CARRINHO - SEMPRE VISÍVEL -->
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                <h3>🛒 Peças Selecionadas</h3>
+                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                    <span class="badge" id="total-itens">0 itens</span>
+                    <button class="btn-pequeno vermelho" onclick="limparCarrinho()" style="display:none;" id="btn-limpar">🗑️ Limpar</button>
+                </div>
+            </div>
+            <div style="overflow-x: auto;">
+                <div id="carrinho-container">
+                    <div class="carrinho-vazio" id="carrinho-vazio">
+                        🛒 Nenhum item selecionado.
+                        <br><br>
+                        <button class="btn-continuar" onclick="window.location.href='categoria.html'">📦 Escolher um produto</button>
+                    </div>
+                    <div id="carrinho-grupos" style="display: none;"></div>
+                </div>
+            </div>
+
+            <!-- BOTÃO FINALIZAR - abre o formulário do cliente -->
+            <button class="btn-enviar" id="btn-finalizar" disabled onclick="abrirFormularioCliente()">
+                📤 Finalizar Pedido
+            </button>
+        </div>
+
+        <!-- FORMULÁRIO DO CLIENTE - SÓ APARECE QUANDO CLICA EM FINALIZAR -->
+        <div class="card" id="card-cliente">
+            <h3>👤 Identificação do Cliente</h3>
+            <p style="color: #666; font-size: 14px; margin-top: 5px;">
+                Preencha os dados para finalizar o pedido.
+            </p>
+
+            <div class="cliente-grid">
+                <div class="double">
+                    <label for="cliente-cnpj">CNPJ *</label>
+                    <div class="input-group">
+                        <input type="text" id="cliente-cnpj" placeholder="00.000.000/0000-00"
+                               oninput="buscarCNPJAutomatico(this)" autocomplete="off">
+                        <span class="input-icon" id="cnpj-icon">🔍</span>
+                    </div>
+                    <div id="cnpj-status" class="cnpj-status"></div>
+                </div>
+                <div>
+                    <label for="cliente-telefone">Telefone</label>
+                    <input type="text" id="cliente-telefone" placeholder="(00) 00000-0000" readonly>
+                </div>
+                <div class="full">
+                    <label for="cliente-nome">Nome / Razão Social *</label>
+                    <input type="text" id="cliente-nome" placeholder="Digite o nome do cliente" readonly>
+                </div>
+                <div class="full">
+                    <label for="cliente-endereco">Endereço</label>
+                    <input type="text" id="cliente-endereco" placeholder="Endereço completo" readonly>
+                </div>
+                <div>
+                    <label for="cliente-vendedor">Selecione o Vendedor *</label>
+                    <select id="cliente-vendedor">
+                        <option value="">-- Selecione --</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="cliente-email">E-mail</label>
+                    <input type="email" id="cliente-email" placeholder="email@empresa.com" readonly>
+                </div>
+                <div class="full">
+                    <label for="cliente-obs">Observações</label>
+                    <textarea id="cliente-obs" rows="2" placeholder="Observações sobre o pedido..."></textarea>
+                </div>
+            </div>
+
+            <div id="msg-sucesso" class="msg-sucesso">
+                <strong>✅ Pedido enviado com sucesso!</strong><br>
+                Seu número de chamado é: <strong id="numero-chamado-gerado"></strong><br>
+                <small style="color: #666;">Um e-mail será enviado com os detalhes do pedido.</small>
+            </div>
+
+            <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 20px;">
+                <button class="btn-pequeno vermelho" onclick="fecharFormularioCliente()" style="padding:10px 25px; font-size:14px;">✕ Fechar</button>
+                <button class="btn-enviar" onclick="enviarPedido()" style="flex:1; min-width:150px; margin-top:0;">
+                    📤 Enviar Pedido
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL ADICIONAR PEÇA -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal">
+            <h3>Adicionar ao Carrinho</h3>
+            <div class="numero-peca" id="modal-numero">#000</div>
+            <div style="color: #666; margin-bottom: 20px; font-size: 14px;" id="modal-descricao">Carregando...</div>
+            <div style="color: #1a237e; font-weight: 600; font-size: 13px; margin-bottom: 10px;" id="modal-produto">Produto: ...</div>
+            <label style="display: block; font-weight: 600; margin-top: 10px;">Quantidade:</label>
+            <input type="number" id="modal-qtd" value="1" min="1" max="99">
+            <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
+                <button class="btn-modal btn-cancelar" onclick="fecharModal()">Cancelar</button>
+                <button class="btn-modal btn-adicionar" onclick="confirmarAdicao()">✅ Adicionar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // CARRINHO GLOBAL
+        // ============================================
+        let carrinho = [];
+        let hotspotAtual = null;
+        let manualAtual = null;
+        let zoomLevel = 1;
+        let olhoAberto = true;
+        let configAtual = {
+            tamanhoFonte: 12,
+            corPin: '#e94560',
+            corFonte: '#ffffff',
+            estilo: '1'
+        };
+        let timeoutCNPJ = null;
+
+        // ============================================
+        // PEGAR PARÂMETROS DA URL
+        // ============================================
+        function getParamsFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                manual: params.get('manual'),
+                variacao: params.get('variacao'),
+                id: params.get('id')
+            };
+        }
+
+        function getManualFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('manual');
+        }
+
+        function getVariacaoFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('variacao');
+        }
+
+        function getProdutoNome() {
+            const manual = getManualFromURL();
+            return manual ? decodeURIComponent(manual) : 'Produto não identificado';
+        }
+
+        function atualizarTituloComVariacao(nome, variacao) {
+            const titulo = document.getElementById('titulo-manual');
+            if (titulo && variacao) {
+                titulo.textContent = `🔧 ${nome} - Tamanho: ${variacao}`;
+            }
+            const info = document.getElementById('info-manual');
+            if (info && variacao) {
+                info.textContent = `Tamanho: ${variacao}`;
+            }
+            document.getElementById('produto-atual-display').textContent = `${nome}${variacao ? ` (📏 ${variacao})` : ''}`;
+        }
+
+        function mostrarVariacaoNoManual(variacao) {
+            if (!variacao) return;
+            
+            const titulo = document.querySelector('.manual-titulo');
+            if (titulo) {
+                const badgeAntiga = titulo.querySelector('.variacao-badge');
+                if (badgeAntiga) badgeAntiga.remove();
+                
+                const badge = document.createElement('span');
+                badge.className = 'variacao-badge';
+                badge.textContent = `📏 ${variacao}`;
+                titulo.appendChild(badge);
+            }
+        }
+
+        // ============================================
+        // FORMULÁRIO DO CLIENTE
+        // ============================================
+        function abrirFormularioCliente() {
+            if (carrinho.length === 0) {
+                alert('⚠️ Adicione pelo menos uma peça ao carrinho!');
+                return;
+            }
+            document.getElementById('card-cliente').style.display = 'block';
+            document.getElementById('card-cliente').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function fecharFormularioCliente() {
+            document.getElementById('card-cliente').style.display = 'none';
+        }
+
+        // ============================================
+        // CARREGAR CONFIGURAÇÕES
+        // ============================================
+        async function carregarConfig() {
+            try {
+                const res = await fetch('/api/config-estilos');
+                const data = await res.json();
+                if (data.success && data.config) {
+                    configAtual = {
+                        tamanhoFonte: data.config.tamanho_fonte,
+                        corPin: data.config.cor_pin,
+                        corFonte: data.config.cor_fonte,
+                        estilo: String(data.config.estilo)
+                    };
+                }
+            } catch (e) {}
+        }
+
+        function aplicarEstilosPinos() {
+            document.querySelectorAll('.pin-peca').forEach(pin => {
+                pin.classList.remove('estilo-1', 'estilo-2', 'estilo-3', 'estilo-4', 'estilo-5', 'estilo-6', 'estilo-7', 'estilo-8');
+                pin.classList.add(`estilo-${configAtual.estilo}`);
+                pin.style.fontSize = `${configAtual.tamanhoFonte}px`;
+
+                if (['1', '2', '6', '7'].includes(configAtual.estilo)) {
+                    pin.style.background = configAtual.corPin;
+                    pin.style.color = configAtual.corFonte;
+                } else {
+                    pin.style.color = configAtual.corFonte;
+                }
+
+                if (configAtual.estilo === '1' || configAtual.estilo === '2') {
+                    const size = Math.max(configAtual.tamanhoFonte + 10, 24);
+                    pin.style.minWidth = size + 'px';
+                    pin.style.minHeight = size + 'px';
+                } else {
+                    pin.style.minWidth = 'auto';
+                    pin.style.minHeight = 'auto';
+                }
+            });
+        }
+
+        // ============================================
+        // CARREGAR VENDEDORES
+        // ============================================
+        async function carregarVendedores() {
+            try {
+                const res = await fetch('/api/vendedores');
+                const data = await res.json();
+
+                const select = document.getElementById('cliente-vendedor');
+                if (!select) return;
+
+                select.innerHTML = '<option value="">-- Selecione um vendedor --</option>';
+
+                if (data.success && data.vendedores && data.vendedores.length > 0) {
+                    data.vendedores.forEach(v => {
+                        const option = document.createElement('option');
+                        option.value = v.id;
+                        option.textContent = `${v.nome} ${v.codigo ? `(${v.codigo})` : ''}`;
+                        option.dataset.telefone = v.telefone || '';
+                        option.dataset.email = v.email || '';
+                        select.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('❌ Erro ao carregar vendedores:', error);
+            }
+        }
+
+        // ============================================
+        // FORMATAR CNPJ
+        // ============================================
+        function formatarCNPJ(input) {
+            let valor = input.value.replace(/\D/g, '');
+            if (valor.length <= 14) {
+                valor = valor.replace(/^(\d{2})(\d)/, '$1.$2');
+                valor = valor.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
+                valor = valor.replace(/\.(\d{3})(\d)/, '.$1/$2');
+                valor = valor.replace(/(\d{4})(\d)/, '$1-$2');
+                input.value = valor;
+            }
+            return valor.replace(/\D/g, '');
+        }
+
+        // ============================================
+        // BUSCAR CNPJ
+        // ============================================
+        function buscarCNPJAutomatico(input) {
+            const cnpj = formatarCNPJ(input);
+            const statusDiv = document.getElementById('cnpj-status');
+            const icon = document.getElementById('cnpj-icon');
+
+            if (timeoutCNPJ) {
+                clearTimeout(timeoutCNPJ);
+                timeoutCNPJ = null;
+            }
+
+            if (cnpj.length < 14) {
+                statusDiv.className = 'cnpj-status';
+                statusDiv.style.display = 'none';
+                icon.textContent = '🔍';
+                return;
+            }
+
+            statusDiv.className = 'cnpj-status loading';
+            statusDiv.style.display = 'block';
+            statusDiv.textContent = '⏳ Consultando CNPJ...';
+            icon.textContent = '⏳';
+            icon.className = 'input-icon loading';
+
+            timeoutCNPJ = setTimeout(async () => {
+                await consultarCNPJ(cnpj);
+            }, 500);
+        }
+
+        async function consultarCNPJ(cnpj) {
+            const statusDiv = document.getElementById('cnpj-status');
+            const icon = document.getElementById('cnpj-icon');
+
+            try {
+                const res = await fetch(`/api/consultar-cnpj/${cnpj}`);
+                const data = await res.json();
+
+                if (data.success) {
+                    document.getElementById('cliente-nome').value = data.razao_social || data.nome_fantasia || '';
+                    document.getElementById('cliente-telefone').value = data.telefone || '';
+                    document.getElementById('cliente-email').value = data.email || '';
+
+                    let endereco = '';
+                    if (data.endereco) endereco += data.endereco;
+                    if (data.numero) endereco += `, ${data.numero}`;
+                    if (data.cidade) endereco += ` - ${data.cidade}`;
+                    if (data.uf) endereco += `/${data.uf}`;
+                    if (data.cep) endereco += ` - CEP: ${data.cep}`;
+                    document.getElementById('cliente-endereco').value = endereco;
+
+                    statusDiv.className = 'cnpj-status success';
+                    statusDiv.style.display = 'block';
+                    statusDiv.textContent = '✅ Dados carregados com sucesso!';
+                    icon.textContent = '✅';
+                    icon.className = 'input-icon';
+
+                    document.getElementById('cliente-nome').readOnly = false;
+                    document.getElementById('cliente-telefone').readOnly = false;
+                    document.getElementById('cliente-email').readOnly = false;
+                    document.getElementById('cliente-endereco').readOnly = false;
+
+                } else {
+                    statusDiv.className = 'cnpj-status error';
+                    statusDiv.style.display = 'block';
+                    statusDiv.textContent = '⚠️ ' + (data.error || 'CNPJ não encontrado.');
+                    icon.textContent = '❌';
+                    icon.className = 'input-icon';
+
+                    document.getElementById('cliente-nome').readOnly = false;
+                    document.getElementById('cliente-telefone').readOnly = false;
+                    document.getElementById('cliente-email').readOnly = false;
+                    document.getElementById('cliente-endereco').readOnly = false;
+                    document.getElementById('cliente-nome').focus();
+                }
+            } catch (error) {
+                console.error('Erro ao consultar CNPJ:', error);
+                statusDiv.className = 'cnpj-status error';
+                statusDiv.style.display = 'block';
+                statusDiv.textContent = '❌ Erro ao consultar CNPJ. Preencha os dados manualmente.';
+                icon.textContent = '❌';
+                icon.className = 'input-icon';
+
+                document.getElementById('cliente-nome').readOnly = false;
+                document.getElementById('cliente-telefone').readOnly = false;
+                document.getElementById('cliente-email').readOnly = false;
+                document.getElementById('cliente-endereco').readOnly = false;
+            }
+        }
+
+        // ============================================
+        // CARREGAR MANUAL
+        // ============================================
+        async function carregarManual(nome) {
+            const params = getParamsFromURL();
+            const variacao = params.variacao;
+
+            const container = document.getElementById('diagrama-wrapper');
+            const img = document.getElementById('img-esquema');
+            const loading = document.getElementById('loading');
+            const card = document.getElementById('card-manual');
+            const titulo = document.getElementById('nome-manual');
+            const info = document.getElementById('info-manual2');
+            const contador = document.getElementById('contador-hotspots');
+            const gridPecas = document.getElementById('grid-pecas');
+            const wrapper = document.getElementById('imagem-wrapper');
+            const tituloHeader = document.getElementById('titulo-manual');
+            const infoHeader = document.getElementById('info-manual');
+
+            document.querySelectorAll('.pin-peca').forEach(p => p.remove());
+
+            card.style.display = 'block';
+            loading.style.display = 'block';
+            img.style.display = 'none';
+            titulo.textContent = nome;
+            
+            const produtoNome = getProdutoNome();
+            document.getElementById('produto-atual-display').textContent = `${produtoNome}${variacao ? ` (📏 ${variacao})` : ''}`;
+            
+            if (variacao) {
+                atualizarTituloComVariacao(nome, variacao);
+            }
+            
+            info.textContent = 'carregando...';
+            infoHeader.textContent = 'Carregando...';
+            contador.textContent = 'Carregando...';
+            gridPecas.innerHTML =
+                '<div style="grid-column: 1/-1; text-align:center; color:#888; padding:20px;"><div class="spinner" style="margin:0 auto 10px; width:25px; height:25px; border-width:3px;"></div>Carregando peças...</div>';
+
+            zoomLevel = 1;
+            wrapper.classList.remove('zoom-150', 'zoom-200');
+            document.getElementById('zoom-level').textContent = '100%';
+
+            try {
+                const res = await fetch(`/api/esquemas/${encodeURIComponent(nome)}`);
+                const data = await res.json();
+
+                if (!data.success) {
+                    container.innerHTML = `<div class="erro-msg">❌ ${data.error}</div>`;
+                    info.textContent = '⚠️ erro';
+                    infoHeader.textContent = '⚠️ erro';
+                    gridPecas.innerHTML =
+                        `<div style="grid-column: 1/-1; text-align:center; color:#d32f2f; padding:20px;">❌ ${data.error}</div>`;
+                    return;
+                }
+
+                manualAtual = data;
+                info.textContent = `${data.totalHotspots || 0} peças mapeadas`;
+                infoHeader.textContent = `${data.totalHotspots || 0} peças mapeadas`;
+
+                img.src = data.imagemUrl;
+                img.style.display = 'block';
+                loading.style.display = 'none';
+                contador.textContent = `${data.totalHotspots || 0} peças mapeadas`;
+
+                if (variacao) {
+                    mostrarVariacaoNoManual(variacao);
+                }
+
+                await new Promise((resolve) => {
+                    if (img.complete) {
+                        resolve();
+                    } else {
+                        img.onload = resolve;
+                    }
+                });
+
+                const hotspots = data.hotspots || [];
+                const pecasLista = data.pecas || [];
+
+                olhoAberto = true;
+                document.getElementById('btn-olho').textContent = '👁️';
+                document.getElementById('btn-olho').classList.add('ativo');
+
+                hotspots.sort((a, b) => parseInt(a.numero) - parseInt(b.numero));
+
+                hotspots.forEach((item) => {
+                    const pin = document.createElement('div');
+                    pin.className = 'pin-peca visivel';
+                    pin.innerText = item.numero;
+                    pin.style.left = `${item.x_percent}%`;
+                    pin.style.top = `${item.y_percent}%`;
+
+                    const peca = pecasLista.find(p => p.numero === item.numero);
+                    const nomePeca = peca ? peca.nome : 'Peça';
+
+                    const tooltip = document.createElement('span');
+                    tooltip.className = 'tooltip';
+                    tooltip.textContent = `#${item.numero} - ${nomePeca}`;
+                    pin.appendChild(tooltip);
+
+                    pin.onclick = () => {
+                        hotspotAtual = {
+                            numero: item.numero,
+                            nome: nomePeca
+                        };
+                        abrirModal(hotspotAtual);
+                    };
+
+                    wrapper.appendChild(pin);
+                });
+
+                aplicarEstilosPinos();
+
+                gridPecas.innerHTML = '';
+                if (pecasLista.length > 0) {
+                    pecasLista.forEach(peca => {
+                        const btn = document.createElement('div');
+                        btn.className = 'btn-peca';
+                        btn.dataset.numero = peca.numero;
+
+                        btn.innerHTML = `
+                            <span class="numero-peca">#${peca.numero}</span>
+                            <span class="nome-peca">${peca.nome || 'Peça'}</span>
+                        `;
+
+                        btn.onclick = () => {
+                            hotspotAtual = {
+                                numero: peca.numero,
+                                nome: peca.nome || 'Peça'
+                            };
+                            abrirModal(hotspotAtual);
+                        };
+
+                        gridPecas.appendChild(btn);
+                    });
+                } else {
+                    gridPecas.innerHTML =
+                        '<div style="grid-column: 1/-1; text-align:center; color:#888; padding:20px;">📭 Nenhuma peça encontrada</div>';
+                }
+
+                renderizarCarrinho();
+
+            } catch (error) {
+                console.error('Erro:', error);
+                container.innerHTML = `<div class="erro-msg">❌ ${error.message}</div>`;
+                info.textContent = '⚠️ erro';
+                infoHeader.textContent = '⚠️ erro';
+                gridPecas.innerHTML =
+                    `<div style="grid-column: 1/-1; text-align:center; color:#d32f2f; padding:20px;">❌ ${error.message}</div>`;
+            }
+        }
+
+        // ============================================
+        // TROCAR ABA
+        // ============================================
+        function trocarAba(aba) {
+            document.querySelectorAll('.aba').forEach(a => a.classList.remove('ativo'));
+            document.querySelectorAll('.aba-conteudo').forEach(c => c.classList.remove('ativo'));
+
+            document.querySelector(`.aba[data-aba="${aba}"]`).classList.add('ativo');
+            document.getElementById(`aba-${aba}`).classList.add('ativo');
+        }
+
+        // ============================================
+        // ZOOM
+        // ============================================
+        function zoomIn() {
+            if (zoomLevel < 2) {
+                zoomLevel = zoomLevel === 1 ? 1.5 : 2;
+                aplicarZoom();
+            }
+        }
+
+        function zoomOut() {
+            if (zoomLevel > 0.5) {
+                zoomLevel = zoomLevel === 2 ? 1.5 : 1;
+                aplicarZoom();
+            }
+        }
+
+        function zoomReset() {
+            zoomLevel = 1;
+            aplicarZoom();
+        }
+
+        function aplicarZoom() {
+            const wrapper = document.getElementById('imagem-wrapper');
+            wrapper.classList.remove('zoom-150', 'zoom-200');
+
+            if (zoomLevel === 1.5) {
+                wrapper.classList.add('zoom-150');
+            } else if (zoomLevel === 2) {
+                wrapper.classList.add('zoom-200');
+            }
+
+            document.getElementById('zoom-level').textContent = Math.round(zoomLevel * 100) + '%';
+        }
+
+        function toggleOlho() {
+            olhoAberto = !olhoAberto;
+            const btn = document.getElementById('btn-olho');
+
+            if (olhoAberto) {
+                btn.textContent = '👁️';
+                btn.classList.add('ativo');
+                document.querySelectorAll('.pin-peca').forEach(pin => {
+                    pin.classList.remove('oculto');
+                    pin.classList.add('visivel');
+                });
+            } else {
+                btn.textContent = '👁️‍🗨️';
+                btn.classList.remove('ativo');
+                document.querySelectorAll('.pin-peca').forEach(pin => {
+                    pin.classList.add('oculto');
+                    pin.classList.remove('visivel');
+                });
+            }
+        }
+
+        // ============================================
+        // MODAL ADICIONAR PEÇA
+        // ============================================
+        function abrirModal(hotspot) {
+            hotspotAtual = hotspot;
+            document.getElementById('modal-numero').textContent = `#${hotspot.numero}`;
+            document.getElementById('modal-descricao').textContent = hotspot.nome || 'Peça';
+            
+            const produtoNome = getProdutoNome();
+            const variacao = getVariacaoFromURL() || 'N/A';
+            document.getElementById('modal-produto').textContent = `📦 ${produtoNome}${variacao ? ` (📏 ${variacao})` : ''}`;
+            
+            document.getElementById('modal-qtd').value = 1;
+            document.getElementById('modal').classList.add('active');
+        }
+
+        function fecharModal() {
+            document.getElementById('modal').classList.remove('active');
+            hotspotAtual = null;
+        }
+
+        function confirmarAdicao() {
+            if (!hotspotAtual) return;
+            const qtd = parseInt(document.getElementById('modal-qtd').value) || 1;
+            adicionarItem(hotspotAtual.numero, hotspotAtual.nome, qtd);
+            fecharModal();
+        }
+
+        document.getElementById('modal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) fecharModal();
+        });
+
+        document.getElementById('modal-qtd').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') confirmarAdicao();
+        });
+
+        // ============================================
+        // CARRINHO
+        // ============================================
+        function adicionarItem(numero, nome, qtd = 1) {
+            const variacao = getVariacaoFromURL() || 'N/A';
+            const manualNome = getProdutoNome();
+            
+            const existe = carrinho.find(i => 
+                i.numero === numero && 
+                i.variacao === variacao && 
+                i.manual_nome === manualNome
+            );
+            
+            if (existe) {
+                existe.qtd += qtd;
+            } else {
+                carrinho.push({ 
+                    numero, 
+                    nome: nome || `Peça #${numero}`, 
+                    qtd,
+                    variacao: variacao,
+                    manual_nome: manualNome
+                });
+            }
+
+            renderizarCarrinho();
+            atualizarBadge();
+            sessionStorage.setItem('carrinho_pecas', JSON.stringify(carrinho));
+        }
+
+        function alterarQtd(index, novaQtd) {
+            if (index >= 0 && index < carrinho.length) {
+                carrinho[index].qtd = Math.max(1, parseInt(novaQtd) || 1);
+                renderizarCarrinho();
+                atualizarBadge();
+                sessionStorage.setItem('carrinho_pecas', JSON.stringify(carrinho));
+            }
+        }
+
+        function removerItem(index) {
+            carrinho.splice(index, 1);
+            renderizarCarrinho();
+            atualizarBadge();
+            sessionStorage.setItem('carrinho_pecas', JSON.stringify(carrinho));
+        }
+
+        function limparCarrinho() {
+            if (carrinho.length === 0) return;
+            if (!confirm('🗑️ Tem certeza que deseja limpar todo o carrinho?')) return;
+            carrinho = [];
+            renderizarCarrinho();
+            atualizarBadge();
+            sessionStorage.setItem('carrinho_pecas', JSON.stringify(carrinho));
+        }
+
+        function atualizarBadge() {
+            const totalItens = carrinho.reduce((sum, i) => sum + i.qtd, 0);
+            document.getElementById('total-itens').textContent = `${totalItens} itens`;
+            document.getElementById('btn-finalizar').disabled = carrinho.length === 0;
+            document.getElementById('btn-limpar').style.display = carrinho.length > 0 ? 'inline-block' : 'none';
+        }
+
+        // ============================================
+        // RENDERIZAR CARRINHO
+        // ============================================
+        function renderizarCarrinho() {
+            const container = document.getElementById('carrinho-grupos');
+            const vazio = document.getElementById('carrinho-vazio');
+
+            if (carrinho.length === 0) {
+                vazio.style.display = 'block';
+                container.style.display = 'none';
+                container.innerHTML = '';
+                atualizarBadge();
+                return;
+            }
+
+            vazio.style.display = 'none';
+            container.style.display = 'block';
+
+            const grupos = {};
+            carrinho.forEach((item, index) => {
+                const chave = `${item.manual_nome}|${item.variacao}`;
+                if (!grupos[chave]) {
+                    grupos[chave] = {
+                        manual_nome: item.manual_nome,
+                        variacao: item.variacao,
+                        itens: [],
+                        total: 0
+                    };
+                }
+                grupos[chave].itens.push({ ...item, index });
+                grupos[chave].total += item.qtd;
+            });
+
+            let html = '';
+            Object.keys(grupos).forEach(chave => {
+                const grupo = grupos[chave];
+                html += `
+                    <div class="grupo-produto">
+                        <div class="grupo-header">
+                            <span>📦 ${grupo.manual_nome} ${grupo.variacao ? `(📏 ${grupo.variacao})` : ''}</span>
+                            <span>${grupo.total} item(ns)</span>
+                        </div>
+                        <div class="grupo-itens">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th style="width:80px;">Posição</th>
+                                        <th>Descrição</th>
+                                        <th style="width:80px;">Qtd</th>
+                                        <th style="width:70px;">Ação</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                `;
+
+                grupo.itens.forEach(item => {
+                    html += `
+                        <tr>
+                            <td><strong>#${item.numero}</strong></td>
+                            <td>${item.nome}</td>
+                            <td><input type="number" min="1" value="${item.qtd}" onchange="alterarQtd(${item.index}, this.value)"></td>
+                            <td><button class="btn-remover" onclick="removerItem(${item.index})">✕</button></td>
+                        </tr>
+                    `;
+                });
+
+                html += `
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+            atualizarBadge();
+        }
+
+        // ============================================
+        // ENVIAR PEDIDO
+        // ============================================
+        async function enviarPedido() {
+            const nomeCliente = document.getElementById('cliente-nome').value.trim();
+            const cnpj = document.getElementById('cliente-cnpj').value.replace(/\D/g, '');
+            const vendedorId = document.getElementById('cliente-vendedor').value;
+            const vendedorSelect = document.getElementById('cliente-vendedor');
+            const vendedorNome = vendedorSelect.options[vendedorSelect.selectedIndex]?.text || '';
+            const telefone = document.getElementById('cliente-telefone').value.trim();
+            const email = document.getElementById('cliente-email').value.trim();
+            const endereco = document.getElementById('cliente-endereco').value.trim();
+            const observacoes = document.getElementById('cliente-obs').value.trim();
+
+            if (!cnpj || cnpj.length !== 14) {
+                alert('⚠️ Digite um CNPJ válido com 14 dígitos!');
+                document.getElementById('cliente-cnpj').focus();
+                return;
+            }
+
+            if (!nomeCliente) {
+                alert('⚠️ Digite o nome do cliente!');
+                document.getElementById('cliente-nome').focus();
+                return;
+            }
+
+            if (!vendedorId) {
+                alert('⚠️ Selecione um vendedor!');
+                document.getElementById('cliente-vendedor').focus();
+                return;
+            }
+
+            if (carrinho.length === 0) {
+                alert('⚠️ Adicione pelo menos uma peça ao carrinho!');
+                return;
+            }
+
+            const totalItens = carrinho.reduce((sum, i) => sum + i.qtd, 0);
+            const produtos = [...new Set(carrinho.map(i => `${i.manual_nome} (${i.variacao})`))];
+            
+            const confirmMsg = `📋 Confirmar pedido?\n\n` +
+                `Cliente: ${nomeCliente}\n` +
+                `CNPJ: ${cnpj}\n` +
+                `Vendedor: ${vendedorNome}\n` +
+                `Produtos:\n${produtos.map(p => `  • ${p}`).join('\n')}\n` +
+                `Total de itens: ${totalItens}\n\n` +
+                `Enviar pedido?`;
+
+            if (!confirm(confirmMsg)) return;
+
+            const pedido = {
+                cliente_nome: nomeCliente,
+                cliente_cnpj: cnpj,
+                cliente_telefone: telefone || null,
+                cliente_email: email || null,
+                cliente_endereco: endereco || null,
+                vendedor_id: parseInt(vendedorId),
+                vendedor_nome: vendedorNome,
+                manual_nome: produtos.join(' | '),
+                observacoes: observacoes || null,
+                itens: carrinho.map(item => ({
+                    numero: item.numero,
+                    nome: item.nome,
+                    qtd: item.qtd,
+                    variacao: item.variacao,
+                    manual_nome: item.manual_nome
+                }))
+            };
+
+            try {
+                const res = await fetch('/api/pedidos', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(pedido)
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    document.getElementById('numero-chamado-gerado').textContent = data.numero_chamado;
+                    document.getElementById('msg-sucesso').classList.add('show');
+                    
+                    carrinho = [];
+                    renderizarCarrinho();
+                    atualizarBadge();
+                    document.getElementById('cliente-obs').value = '';
+                    sessionStorage.removeItem('carrinho_pecas');
+                    
+                    document.getElementById('msg-sucesso').scrollIntoView({ behavior: 'smooth' });
+                    
+                    // Esconde o formulário após 3 segundos
+                    setTimeout(() => {
+                        document.getElementById('card-cliente').style.display = 'none';
+                    }, 5000);
+                } else {
+                    alert('❌ Erro ao enviar pedido: ' + data.error);
+                }
+            } catch (error) {
+                alert('❌ Erro ao enviar pedido. Tente novamente.');
+                console.error(error);
+            }
+        }
+
+        // ============================================
+        // INICIALIZAÇÃO
+        // ============================================
+        document.addEventListener('DOMContentLoaded', async () => {
+            await carregarConfig();
+            await carregarVendedores();
+
+            const manual = getManualFromURL();
+            const variacao = getVariacaoFromURL();
+
+            // Recupera carrinho do sessionStorage
+            try {
+                const saved = sessionStorage.getItem('carrinho_pecas');
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                        carrinho = parsed;
+                        renderizarCarrinho();
+                        atualizarBadge();
+                        console.log(`🔄 Carrinho restaurado: ${carrinho.length} itens`);
+                    }
+                }
+            } catch (e) {}
+
+            if (manual) {
+                if (variacao) {
+                    atualizarTituloComVariacao(decodeURIComponent(manual), variacao);
+                }
+                carregarManual(decodeURIComponent(manual));
+            } else {
+                document.getElementById('titulo-manual').textContent = '⚠️ Nenhum produto selecionado';
+                document.getElementById('info-manual').textContent = 'Selecione um produto na página anterior';
+                document.getElementById('produto-atual-display').textContent = 'Nenhum produto selecionado';
+                document.getElementById('card-manual').style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

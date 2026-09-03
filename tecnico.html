@@ -1,0 +1,1491 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Técnico</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f0f2f5;
+            color: #333;
+            padding: 20px;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .header-top h1 { color: #1a237e; font-size: 24px; }
+        .btn-voltar {
+            background: #e0e0e0;
+            padding: 8px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #1a1a2e;
+            font-weight: 600;
+        }
+        .btn-voltar:hover { background: #ccc; }
+        .filtros {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .filtros select, .filtros input {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .filtros button {
+            padding: 10px 20px;
+            background: #1a237e;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .filtros button:hover { background: #0d1555; }
+
+        .config-global {
+            background: #f8f9fa;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            transition: 0.3s;
+        }
+        .config-global .config-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+        .config-global .config-header:hover { color: #1a237e; }
+        .config-global .config-header .titulo {
+            font-weight: 700;
+            color: #1a237e;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .config-global .config-header .toggle-icon {
+            font-size: 20px;
+            color: #666;
+            transition: 0.3s;
+        }
+        .config-global .config-body {
+            display: none;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid #e0e0e0;
+        }
+        .config-global .config-body .config-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            gap: 15px;
+        }
+        .config-global .config-body .config-row .campo {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+        .config-global .config-body .config-row .campo label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #555;
+        }
+        .config-global .config-body .config-row .campo input {
+            padding: 8px 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            width: 120px;
+            transition: 0.3s;
+        }
+        .config-global .config-body .config-row .campo input:focus {
+            border-color: #1a237e;
+            outline: none;
+        }
+        .config-global .config-body .config-row .btn-salvar-config {
+            background: #1a237e;
+            color: white;
+            border: none;
+            padding: 8px 25px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+        .config-global .config-body .config-row .btn-salvar-config:hover {
+            background: #0d1555;
+        }
+        .config-global .config-body .config-info {
+            font-size: 12px;
+            color: #888;
+            margin-top: 10px;
+        }
+        .config-global .config-body .config-info strong { color: #1a237e; }
+        .config-global .config-body .status-msg {
+            font-size: 13px;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 4px;
+            margin-top: 10px;
+            display: none;
+        }
+        .config-global .config-body .status-msg.sucesso {
+            display: block;
+            color: #155724;
+            background: #d4edda;
+        }
+        .config-global .config-body .status-msg.erro {
+            display: block;
+            color: #721c24;
+            background: #f8d7da;
+        }
+        .config-global .config-body .status-msg.salvo {
+            display: block;
+            color: #004085;
+            background: #cce5ff;
+        }
+        .config-global .valor-atual {
+            font-size: 13px;
+            color: #666;
+            margin-top: 5px;
+        }
+        .config-global .valor-atual strong { color: #1a237e; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px 8px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 13px;
+        }
+        th {
+            background: #f5f5f5;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+        .status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        .status-analise { background: #cce5ff; color: #004085; }
+        .status-orcamento { background: #d4edda; color: #155724; }
+        .status-aguardando { background: #fff3cd; color: #856404; }
+        .status-enviado { background: #d1ecf1; color: #0c5460; }
+        .status-finalizado { background: #d4edda; color: #155724; }
+        .status-cancelado { background: #f8d7da; color: #721c24; }
+        .btn-acao {
+            padding: 5px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+        .btn-orcamento { background: #00b894; color: white; }
+        .btn-orcamento:hover { background: #00a381; }
+        .btn-detalhes { background: #6c5ce7; color: white; }
+        .btn-detalhes:hover { background: #5a4bd1; }
+        .btn-finalizar { background: #d63031; color: white; }
+        .btn-finalizar:hover { background: #b71c1c; }
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            max-width: 1200px;
+            width: 98%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalIn 0.3s ease;
+        }
+        @keyframes modalIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .modal h2 { color: #1a237e; margin-bottom: 20px; }
+        .modal .info-cliente {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        .modal .info-cliente p { margin: 5px 0; font-size: 14px; }
+        .modal .info-cliente strong { color: #1a237e; }
+        .modal table { font-size: 12px; }
+        .modal table th { background: #e8eaf6; }
+        .modal table td input {
+            width: 100%;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .modal table td input:focus {
+            border-color: #1a237e;
+            outline: none;
+        }
+        .modal .btn-fechar {
+            background: #e0e0e0;
+            color: #333;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+        .modal .btn-fechar:hover { background: #bdbdbd; }
+        .modal .btn-salvar {
+            background: #1a237e;
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 15px;
+            margin-left: 10px;
+        }
+        .modal .btn-salvar:hover { background: #0d1555; }
+        .btn-add-linha {
+            background: #0984e3;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+        .btn-add-linha:hover { background: #0652DD; }
+        .btn-remove-linha {
+            background: #e94560;
+            color: white;
+            border: none;
+            padding: 4px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .btn-remove-linha:hover { background: #c62828; }
+        .total-orcamento {
+            text-align: right;
+            font-size: 18px;
+            font-weight: bold;
+            color: #1a237e;
+            padding: 15px 0;
+            border-top: 2px solid #e0e0e0;
+            margin-top: 10px;
+        }
+        .empty {
+            text-align: center;
+            color: #888;
+            padding: 40px;
+        }
+        .scroll-table {
+            overflow-x: auto;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        .textarea-obs {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            resize: vertical;
+            margin: 10px 0;
+        }
+        .imagem-esquema {
+            margin: 15px 0;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            position: relative;
+        }
+        .imagem-esquema img {
+            max-width: 100%;
+            border-radius: 4px;
+        }
+        .imagem-esquema h3 {
+            margin-bottom: 10px;
+            color: #1a237e;
+        }
+        .campo-fixo {
+            background: #f0f0f0;
+            cursor: not-allowed;
+            color: #555;
+        }
+        .compat-input {
+            width: 100%;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .variacao-tag {
+            background: #e8eaf6;
+            color: #1a237e;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        .produto-tag {
+            background: #1a237e;
+            color: white;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        .btn-manual {
+            background: #0984e3;
+            color: white;
+            border: none;
+            padding: 4px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 11px;
+            transition: 0.3s;
+            white-space: nowrap;
+        }
+        .btn-manual:hover {
+            background: #0652DD;
+            transform: scale(1.05);
+        }
+        .btn-esquema {
+            background: #00b894;
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 12px;
+            transition: 0.3s;
+        }
+        .btn-esquema:hover {
+            background: #00a381;
+        }
+        .upload-area {
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            margin: 15px 0;
+            background: #fafafa;
+            transition: 0.3s;
+        }
+        .upload-area:hover {
+            border-color: #1a237e;
+            background: #f0f2ff;
+        }
+        .upload-area input[type="file"] {
+            display: none;
+        }
+        .upload-area label {
+            cursor: pointer;
+            color: #1a237e;
+            font-weight: 600;
+        }
+        .upload-area label:hover {
+            text-decoration: underline;
+        }
+        .btn-importar {
+            background: #0984e3;
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        .btn-importar:hover { background: #0652DD; }
+        .btn-importar:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .status-importacao {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            display: none;
+        }
+        .status-importacao.success {
+            display: block;
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status-importacao.error {
+            display: block;
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .status-importacao.loading {
+            display: block;
+            background: #cce5ff;
+            color: #004085;
+            border: 1px solid #b8daff;
+        }
+        .btn-manual-linha {
+            background: #0984e3;
+            color: white;
+            border: none;
+            padding: 3px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 10px;
+            transition: 0.3s;
+            white-space: nowrap;
+        }
+        .btn-manual-linha:hover {
+            background: #0652DD;
+            transform: scale(1.05);
+        }
+        @media (max-width: 768px) {
+            .container { padding: 0; }
+            .card { padding: 15px; }
+            .filtros { flex-direction: column; }
+            table { font-size: 11px; }
+            th, td { padding: 6px; }
+            .config-global .config-body .config-row { flex-direction: column; align-items: stretch; }
+            .config-global .config-body .config-row .campo input { width: 100%; }
+            .modal table { font-size: 10px; }
+            .modal table td input { font-size: 10px; padding: 3px; }
+            .btn-manual-linha { font-size: 9px; padding: 2px 6px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-top">
+            <h1>🔧 Painel do Técnico</h1>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <span id="total-pedidos" style="font-size: 14px; color: #666;">Carregando...</span>
+                <a href="/" class="btn-voltar">← Voltar</a>
+            </div>
+        </div>
+
+        <!-- CONFIGURAÇÃO GLOBAL -->
+        <div class="card config-global" id="config-global">
+            <div class="config-header" onclick="abrirConfig()">
+                <span class="titulo">🔒 Configurações Avançadas</span>
+                <span class="toggle-icon" id="config-icon">🔽</span>
+            </div>
+            <div class="config-body" id="config-body">
+                <div style="margin-bottom: 10px; font-size: 13px; color: #666;">
+                    ⚠️ Apenas usuários autorizados. Digite a senha para acessar.
+                </div>
+                <div class="config-row">
+                    <div class="campo">
+                        <label for="global-cambio">Câmbio</label>
+                        <input type="number" id="global-cambio" step="0.01" value="1" placeholder="Ex: 5.95">
+                    </div>
+                    <div class="campo">
+                        <label for="global-coeficiente">Coeficiente</label>
+                        <input type="number" id="global-coeficiente" step="0.01" value="1" placeholder="Ex: 1.6">
+                    </div>
+                    <div class="campo">
+                        <label>&nbsp;</label>
+                        <button class="btn-salvar-config" onclick="salvarConfigGlobal()">💾 Salvar</button>
+                    </div>
+                </div>
+                <div id="config-status" class="status-msg"></div>
+                <div class="valor-atual" id="valor-atual">
+                    Valores atuais: <strong>Câmbio: 1.00</strong> | <strong>Coeficiente: 1.00</strong>
+                </div>
+                <div class="config-info">
+                    💡 Após salvar, todos os pedidos em análise serão recalculados automaticamente.
+                </div>
+            </div>
+        </div>
+
+        <!-- LISTA DE PEDIDOS -->
+        <div class="card">
+            <div class="filtros">
+                <select id="filtro-status" onchange="carregarPedidos()">
+                    <option value="">Todos os Status</option>
+                    <option value="EM_ANALISE_TECNICA" selected>🔧 Em Análise Técnica</option>
+                    <option value="ORCAMENTO_FINALIZADO">📊 Orçamento Finalizado</option>
+                    <option value="AGUARDANDO">⏳ Aguardando</option>
+                    <option value="ENVIADO_CLIENTE">📨 Enviado ao Cliente</option>
+                    <option value="FINALIZADO">✅ Finalizado</option>
+                </select>
+                <input type="text" id="filtro-busca" placeholder="🔍 Buscar por cliente ou chamado..." oninput="carregarPedidos()">
+                <button onclick="carregarPedidos()">🔄 Atualizar</button>
+            </div>
+
+            <div class="scroll-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Chamado</th>
+                            <th>Cliente</th>
+                            <th>CNPJ</th>
+                            <th>Vendedor</th>
+                            <th>Produto</th>
+                            <th>Variação</th>
+                            <th>Itens</th>
+                            <th>Status</th>
+                            <th>Data</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela-pedidos">
+                        <tr><td colspan="10" class="empty">Carregando pedidos...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ÁREA DE IMPORTAÇÃO DE EXCEL -->
+        <div class="card">
+            <h3>📊 Importar Base de Preços</h3>
+            <p style="color: #666; font-size: 14px; margin-bottom: 10px;">
+                Faça upload de um arquivo Excel (.xlsx) com as colunas: 
+                <strong>COD., DESCRICAO, PREÇOS, COD. MANUAL, DSCRICAO MANUAL, COMPATIBILIDADE</strong>
+            </p>
+            <div class="upload-area">
+                <label for="file-upload">📁 Clique aqui para selecionar o arquivo Excel</label>
+                <input type="file" id="file-upload" accept=".xlsx,.xls" onchange="prepararImportacao(event)">
+                <div id="nome-arquivo" style="margin-top: 10px; color: #666;"></div>
+                <button class="btn-importar" id="btn-importar" disabled onclick="importarExcel()">📤 Importar</button>
+                <div id="status-importacao" class="status-importacao"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-orcamento">
+        <div class="modal" id="modal-content">
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script>
+        let pedidos = [];
+        let orcamentoAtual = [];
+        let pedidoAtual = null;
+        let dadosImportacao = null;
+        let arquivoSelecionado = null;
+        let globalCambio = 1;
+        let globalCoeficiente = 1;
+
+        // ============================================
+        // FUNÇÃO PARA ABRIR MANUAL COM VARIAÇÃO
+        // ============================================
+        function abrirManual(nomeProduto, variacao) {
+            // Converte o nome para o formato da URL
+            const nomeEncoded = encodeURIComponent(nomeProduto);
+            let url = `/pecas.html?manual=${nomeEncoded}`;
+            if (variacao && variacao !== 'N/A') {
+                url += `&variacao=${encodeURIComponent(variacao)}`;
+            }
+            window.open(url, '_blank');
+        }
+
+        // ============================================
+        // FUNÇÃO PARA VER IMAGEM DO ESQUEMA
+        // ============================================
+        function verImagemEsquema(imagemUrl) {
+            window.open(imagemUrl, '_blank');
+        }
+
+        // ============================================
+        // CARREGAR CONFIGURAÇÃO GLOBAL
+        // ============================================
+        async function carregarConfigGlobal() {
+            try {
+                const res = await fetch('/api/config-tecnico');
+                const data = await res.json();
+
+                if (data.success && data.config) {
+                    globalCambio = data.config.cambio || 1;
+                    globalCoeficiente = data.config.coeficiente || 1;
+
+                    document.getElementById('global-cambio').value = globalCambio;
+                    document.getElementById('global-coeficiente').value = globalCoeficiente;
+                    document.getElementById('valor-atual').innerHTML = 
+                        `Valores atuais: <strong>Câmbio: ${globalCambio.toFixed(2)}</strong> | <strong>Coeficiente: ${globalCoeficiente.toFixed(2)}</strong>`;
+                }
+            } catch (error) {
+                console.error('Erro ao carregar config:', error);
+            }
+        }
+
+        // ============================================
+        // ABRIR CONFIGURAÇÃO
+        // ============================================
+        function abrirConfig() {
+            const body = document.getElementById('config-body');
+            const icon = document.getElementById('config-icon');
+
+            if (body.style.display === 'block') {
+                body.style.display = 'none';
+                icon.textContent = '🔽';
+                return;
+            }
+
+            const senha = prompt('🔒 Digite a senha para acessar as configurações:');
+            if (senha !== 'MEUPATO') {
+                alert('⚠️ Senha incorreta!');
+                return;
+            }
+
+            body.style.display = 'block';
+            icon.textContent = '🔼';
+            document.getElementById('config-status').className = 'status-msg';
+            document.getElementById('config-status').style.display = 'none';
+        }
+
+        // ============================================
+        // SALVAR CONFIGURAÇÃO GLOBAL
+        // ============================================
+        async function salvarConfigGlobal() {
+            const cambio = parseFloat(document.getElementById('global-cambio').value) || 1;
+            const coeficiente = parseFloat(document.getElementById('global-coeficiente').value) || 1;
+
+            if (cambio <= 0 || coeficiente <= 0) {
+                alert('⚠️ Os valores devem ser maiores que zero.');
+                return;
+            }
+
+            const statusDiv = document.getElementById('config-status');
+
+            try {
+                const res = await fetch('/api/config-tecnico', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        cambio: cambio,
+                        coeficiente: coeficiente,
+                        senha: 'MEUPATO',
+                        atualizado_por: 'Técnico'
+                    })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    globalCambio = cambio;
+                    globalCoeficiente = coeficiente;
+
+                    document.getElementById('valor-atual').innerHTML = 
+                        `Valores atuais: <strong>Câmbio: ${cambio.toFixed(2)}</strong> | <strong>Coeficiente: ${coeficiente.toFixed(2)}</strong>`;
+
+                    statusDiv.className = 'status-msg salvo';
+                    statusDiv.style.display = 'block';
+                    statusDiv.textContent = '✅ Configuração salva com sucesso! Todos os pedidos foram recalculados.';
+
+                    carregarPedidos();
+
+                    setTimeout(() => {
+                        document.getElementById('config-body').style.display = 'none';
+                        document.getElementById('config-icon').textContent = '🔽';
+                        statusDiv.style.display = 'none';
+                    }, 3000);
+
+                } else {
+                    statusDiv.className = 'status-msg erro';
+                    statusDiv.style.display = 'block';
+                    statusDiv.textContent = '❌ ' + data.error;
+                }
+            } catch (error) {
+                statusDiv.className = 'status-msg erro';
+                statusDiv.style.display = 'block';
+                statusDiv.textContent = '❌ Erro ao salvar: ' + error.message;
+            }
+        }
+
+        // ============================================
+        // CARREGAR PEDIDOS
+        // ============================================
+        async function carregarPedidos() {
+            const status = document.getElementById('filtro-status').value;
+            const busca = document.getElementById('filtro-busca').value.trim();
+            const tbody = document.getElementById('tabela-pedidos');
+            const totalSpan = document.getElementById('total-pedidos');
+
+            tbody.innerHTML = '<tr><td colspan="10" class="empty">⏳ Carregando...</td></tr>';
+
+            try {
+                let url = '/api/pedidos';
+                const params = new URLSearchParams();
+                if (status) params.append('status', status);
+                if (busca) params.append('busca', busca);
+                if (params.toString()) url += '?' + params.toString();
+
+                const res = await fetch(url);
+                const data = await res.json();
+
+                if (!data.success) {
+                    tbody.innerHTML = `<tr><td colspan="10" class="empty">❌ ${data.error}</td></tr>`;
+                    return;
+                }
+
+                pedidos = data.pedidos;
+                totalSpan.textContent = `${pedidos.length} pedido(s)`;
+
+                if (pedidos.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="10" class="empty">📭 Nenhum pedido encontrado</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = '';
+                pedidos.forEach(p => {
+                    const tr = document.createElement('tr');
+                    const statusClass = getStatusClass(p.status);
+                    const statusLabel = getStatusLabel(p.status);
+
+                    const nomeProduto = p.manual_nome || 'Produto não identificado';
+                    const variacoes = p.itens ? [...new Set(p.itens.map(item => item.variacao || 'N/A'))] : ['N/A'];
+                    const variacaoDisplay = variacoes.join(', ');
+
+                    tr.innerHTML = `
+                        <td><strong>${p.numero_chamado}</strong></td>
+                        <td>${p.cliente_nome}</td>
+                        <td>${p.cliente_cnpj}</td>
+                        <td>${p.vendedor_nome || '-'}</td>
+                        <td><span class="produto-tag">${nomeProduto}</span></td>
+                        <td><span class="variacao-tag">${variacaoDisplay}</span></td>
+                        <td>${p.total_itens || p.itens?.length || 0}</td>
+                        <td><span class="status ${statusClass}">${statusLabel}</span></td>
+                        <td>${formatarData(p.data_pedido)}</td>
+                        <td>
+                            <button class="btn-acao btn-detalhes" onclick="verDetalhes(${p.id})">📄 Detalhes</button>
+                            ${p.status === 'EM_ANALISE_TECNICA' ? `<button class="btn-acao btn-orcamento" onclick="abrirOrcamento(${p.id})">📊 Orçamento</button>` : ''}
+                            ${p.status === 'ORCAMENTO_FINALIZADO' ? `<button class="btn-acao btn-finalizar" onclick="finalizarOrcamento(${p.id})">✅ Finalizar</button>` : ''}
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+            } catch (error) {
+                tbody.innerHTML = `<tr><td colspan="10" class="empty">❌ Erro: ${error.message}</td></tr>`;
+            }
+        }
+
+        // ============================================
+        // ABRIR ORÇAMENTO (COM BOTÃO VER MANUAL EM CADA LINHA)
+        // ============================================
+        async function abrirOrcamento(id) {
+            const modal = document.getElementById('modal-orcamento');
+            const body = document.getElementById('modal-body');
+
+            try {
+                const res = await fetch(`/api/pedidos/${id}`);
+                const data = await res.json();
+
+                if (!data.success) {
+                    body.innerHTML = `<p class="empty">❌ ${data.error}</p>`;
+                    modal.classList.add('active');
+                    return;
+                }
+
+                pedidoAtual = data.pedido;
+                const p = pedidoAtual;
+                const itens = p.itens || [];
+                const orcamentoSalvo = p.orcamento || [];
+                const nomeProduto = p.manual_nome || 'Produto não identificado';
+
+                const cambio = globalCambio;
+                const coeficiente = globalCoeficiente;
+
+                if (orcamentoSalvo.length > 0) {
+                    orcamentoAtual = orcamentoSalvo.map(item => ({
+                        codigo: item.codigo || '',
+                        descricao: item.descricao || '',
+                        qtd: item.qtd || 1,
+                        preco_base: item.preco_base || item.preco_unitario || 0,
+                        preco_unitario: item.preco_unitario || 0,
+                        total: item.total || 0,
+                        codigo_manual: item.codigo_manual || '',
+                        descricao_manual: item.descricao_manual || '',
+                        compatibilidade: item.compatibilidade || '',
+                        variacao: item.variacao || 'N/A',
+                        manual_nome: item.manual_nome || nomeProduto
+                    }));
+
+                    orcamentoAtual.forEach(item => {
+                        const precoBase = item.preco_base || item.preco_unitario || 0;
+                        const novoPreco = precoBase * cambio * coeficiente;
+                        item.preco_unitario = parseFloat(novoPreco.toFixed(2));
+                        item.total = item.preco_unitario * item.qtd;
+                    });
+
+                } else {
+                    orcamentoAtual = itens.map(item => ({
+                        codigo: '',
+                        descricao: item.nome || '',
+                        qtd: item.qtd || 1,
+                        preco_unitario: 0,
+                        preco_base: 0,
+                        total: 0,
+                        codigo_manual: item.numero || '',
+                        descricao_manual: item.nome || '',
+                        compatibilidade: '',
+                        variacao: item.variacao || 'N/A',
+                        manual_nome: item.manual_nome || nomeProduto
+                    }));
+                }
+
+                let html = `
+                    <h2>📊 Orçamento - #${p.numero_chamado}</h2>
+                    <div style="background:#1a237e; color:white; padding:12px; border-radius:8px; margin-bottom:15px; font-size:15px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                        <span>🎣 <strong>${nomeProduto}</strong> 
+                        ${orcamentoAtual.length > 0 && orcamentoAtual[0].variacao ? `| 📏 Variação: <strong>${orcamentoAtual[0].variacao}</strong>` : ''}</span>
+                        <button onclick="abrirManual('${nomeProduto}', '${orcamentoAtual.length > 0 ? orcamentoAtual[0].variacao : ''}')" class="btn-manual">
+                            📖 Ver Manual
+                        </button>
+                    </div>
+                    <div style="background:#e8eaf6; padding:10px; border-radius:8px; margin-bottom:15px; font-size:13px; color:#1a237e;">
+                        ⚙️ Câmbio: <strong>${cambio}</strong> | Coeficiente: <strong>${coeficiente}</strong>
+                        <span style="margin-left:15px; color:#666; font-size:11px;">(Configuração global)</span>
+                    </div>
+                    
+                    <div class="info-cliente">
+                        <p><strong>Cliente:</strong> ${p.cliente_nome}</p>
+                        <p><strong>CNPJ:</strong> ${p.cliente_cnpj}</p>
+                        <p><strong>Vendedor:</strong> ${p.vendedor_nome || '-'}</p>
+                    </div>
+                `;
+
+                if (p.imagem_url) {
+                    html += `
+                        <div class="imagem-esquema">
+                            <h3>📷 Esquema do Produto</h3>
+                            <img src="${p.imagem_url}" alt="Esquema do produto" onerror="this.style.display='none'">
+                            <button onclick="verImagemEsquema('${p.imagem_url}')" 
+                                    style="position:absolute; top:10px; right:10px; background:#1a237e; color:white; border:none; padding:5px 15px; border-radius:6px; cursor:pointer; font-weight:600; font-size:12px;">
+                                🔍 Ampliar
+                            </button>
+                        </div>
+                    `;
+                }
+
+                html += `
+                    <div style="margin: 15px 0;">
+                        <button class="btn-add-linha" onclick="adicionarLinhaOrcamento()">➕ Adicionar Linha</button>
+                        <span style="margin-left: 10px; color: #666; font-size: 12px;">
+                            💡 Digite o código técnico para buscar preço automaticamente
+                        </span>
+                    </div>
+
+                    <div style="overflow-x:auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="min-width:70px;">Código</th>
+                                <th style="min-width:100px;">Descrição</th>
+                                <th style="min-width:50px;text-align:center;">Qtd</th>
+                                <th style="min-width:100px;">Produto</th>
+                                <th style="min-width:70px;text-align:center;">Variação</th>
+                                <th style="min-width:80px;text-align:right;">Preço Unit.</th>
+                                <th style="min-width:70px;text-align:right;">Total</th>
+                                <th style="min-width:70px;">Manual</th>
+                                <th style="min-width:70px;">Cod. Manual</th>
+                                <th style="min-width:90px;">Desc. Manual</th>
+                                <th style="min-width:90px;">Compatibilidade</th>
+                                <th style="min-width:50px;text-align:center;">Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabela-orcamento">
+                `;
+
+                orcamentoAtual.forEach((item, index) => {
+                    const total = (item.preco_unitario || 0) * (item.qtd || 0);
+                    const variacao = item.variacao || 'N/A';
+                    const produtoNomeItem = item.manual_nome || nomeProduto;
+                    html += `
+                        <tr id="linha-${index}">
+                            <td><input type="text" value="${item.codigo || ''}" onchange="buscarPreco(this, ${index})" placeholder="Código"></td>
+                            <td><input type="text" value="${item.descricao || ''}" onchange="atualizarOrcamento(${index}, 'descricao', this.value)"></td>
+                            <td style="text-align:center;"><input type="number" min="1" value="${item.qtd || 1}" style="width:55px;text-align:center;" onchange="atualizarOrcamento(${index}, 'qtd', parseInt(this.value) || 1)"></td>
+                            <td><span class="produto-tag">${produtoNomeItem}</span></td>
+                            <td style="text-align:center;"><span class="variacao-tag">${variacao}</span></td>
+                            <td style="text-align:right;"><input type="number" step="0.01" min="0" value="${item.preco_unitario || 0}" style="width:90px;text-align:right;" onchange="atualizarOrcamento(${index}, 'preco_unitario', parseFloat(this.value) || 0)"></td>
+                            <td style="text-align:right;font-weight:bold;">R$ ${total.toFixed(2)}</td>
+                            <td>
+                                <button class="btn-manual-linha" onclick="abrirManual('${produtoNomeItem}', '${variacao}')">📖</button>
+                            </td>
+                            <td>
+                                <input type="text" value="${item.codigo_manual || ''}" 
+                                       readonly 
+                                       class="campo-fixo"
+                                       placeholder="Cod.">
+                            </td>
+                            <td>
+                                <input type="text" value="${item.descricao_manual || ''}" 
+                                       readonly 
+                                       class="campo-fixo"
+                                       placeholder="Desc.">
+                            </td>
+                            <td><input type="text" value="${item.compatibilidade || ''}" onchange="atualizarOrcamento(${index}, 'compatibilidade', this.value)" placeholder="Compat." class="compat-input"></td>
+                            <td style="text-align:center;"><button class="btn-remove-linha" onclick="removerLinhaOrcamento(${index})">✕</button></td>
+                        </tr>
+                    `;
+                });
+
+                const totalGeral = orcamentoAtual.reduce((sum, item) => {
+                    return sum + ((item.preco_unitario || 0) * (item.qtd || 0));
+                }, 0);
+
+                html += `
+                        </tbody>
+                    </table>
+                    </div>
+
+                    <div class="total-orcamento">
+                        TOTAL: R$ ${totalGeral.toFixed(2)}
+                    </div>
+
+                    <div>
+                        <label style="font-weight:600;display:block;margin-bottom:5px;">Observações do Técnico</label>
+                        <textarea class="textarea-obs" id="obs-tecnico" rows="3" placeholder="Observações sobre o orçamento...">${p.observacoes_tecnico || ''}</textarea>
+                    </div>
+
+                    <div style="margin-top:20px; display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap;">
+                        <button class="btn-fechar" onclick="fecharModal()">🔙 Cancelar</button>
+                        <button class="btn-salvar" onclick="salvarOrcamento(${p.id})">💾 Salvar Orçamento</button>
+                    </div>
+                `;
+
+                body.innerHTML = html;
+                modal.classList.add('active');
+
+            } catch (error) {
+                body.innerHTML = `<p class="empty">❌ Erro: ${error.message}</p>`;
+                modal.classList.add('active');
+            }
+        }
+
+        // ============================================
+        // BUSCAR PREÇO POR CÓDIGO
+        // ============================================
+        async function buscarPreco(input, index) {
+            const codigo = input.value.trim().toUpperCase();
+            if (!codigo) return;
+
+            try {
+                const res = await fetch(`/api/precos/${codigo}`);
+                const data = await res.json();
+
+                if (data.success && data.preco) {
+                    const p = data.preco;
+                    const cambio = globalCambio;
+                    const coeficiente = globalCoeficiente;
+
+                    orcamentoAtual[index].codigo = codigo;
+                    orcamentoAtual[index].preco_base = p.preco;
+                    
+                    const precoCalculado = p.preco * cambio * coeficiente;
+                    orcamentoAtual[index].preco_unitario = parseFloat(precoCalculado.toFixed(2));
+                    orcamentoAtual[index].descricao = p.descricao || orcamentoAtual[index].descricao;
+                    orcamentoAtual[index].compatibilidade = p.compatibilidade || '';
+                    orcamentoAtual[index].total = orcamentoAtual[index].preco_unitario * orcamentoAtual[index].qtd;
+
+                    const linha = document.getElementById(`linha-${index}`);
+                    if (linha) {
+                        const inputs = linha.querySelectorAll('input');
+                        if (inputs[1]) inputs[1].value = orcamentoAtual[index].descricao;
+                        if (inputs[5]) inputs[5].value = orcamentoAtual[index].preco_unitario;
+                        if (inputs[10]) inputs[10].value = orcamentoAtual[index].compatibilidade;
+                    }
+
+                    atualizarTabelaOrcamento();
+                    console.log(`✅ Preço encontrado: ${codigo} = R$ ${p.preco} → Calculado: R$ ${orcamentoAtual[index].preco_unitario}`);
+                } else {
+                    const linha = document.getElementById(`linha-${index}`);
+                    if (linha) {
+                        const precoInput = linha.querySelector('td:nth-child(6) input');
+                        if (precoInput) {
+                            precoInput.focus();
+                            precoInput.style.borderColor = '#f39c12';
+                            setTimeout(() => { precoInput.style.borderColor = '#ddd'; }, 3000);
+                        }
+                    }
+                    console.log(`⚠️ Código ${codigo} não encontrado. Digite o preço para salvar.`);
+                }
+            } catch (error) {
+                console.error('❌ Erro ao buscar preço:', error);
+            }
+        }
+
+        // ============================================
+        // ADICIONAR LINHA
+        // ============================================
+        function adicionarLinhaOrcamento() {
+            const nomeProduto = pedidoAtual?.manual_nome || 'Produto';
+            const variacao = pedidoAtual?.itens?.[0]?.variacao || 'N/A';
+            orcamentoAtual.push({
+                codigo: '',
+                descricao: '',
+                qtd: 1,
+                preco_unitario: 0,
+                preco_base: 0,
+                total: 0,
+                codigo_manual: '',
+                descricao_manual: '',
+                compatibilidade: '',
+                variacao: variacao,
+                manual_nome: nomeProduto
+            });
+            atualizarTabelaOrcamento();
+        }
+
+        // ============================================
+        // REMOVER LINHA
+        // ============================================
+        function removerLinhaOrcamento(index) {
+            if (orcamentoAtual.length <= 1) {
+                alert('⚠️ Mantenha pelo menos uma linha no orçamento.');
+                return;
+            }
+            orcamentoAtual.splice(index, 1);
+            atualizarTabelaOrcamento();
+        }
+
+        // ============================================
+        // ATUALIZAR ORÇAMENTO
+        // ============================================
+        function atualizarOrcamento(index, campo, valor) {
+            orcamentoAtual[index][campo] = valor;
+            const item = orcamentoAtual[index];
+            
+            if (campo === 'preco_unitario') {
+                item.preco_base = parseFloat(valor) || 0;
+            }
+            
+            item.total = (item.preco_unitario || 0) * (item.qtd || 0);
+            atualizarTabelaOrcamento();
+        }
+
+        // ============================================
+        // ATUALIZAR TABELA ORÇAMENTO
+        // ============================================
+        function atualizarTabelaOrcamento() {
+            const tbody = document.getElementById('tabela-orcamento');
+            if (!tbody) return;
+
+            let html = '';
+            let totalGeral = 0;
+            const nomeProduto = pedidoAtual?.manual_nome || 'Produto';
+
+            orcamentoAtual.forEach((item, index) => {
+                const total = (item.preco_unitario || 0) * (item.qtd || 0);
+                const variacao = item.variacao || 'N/A';
+                const produtoNomeItem = item.manual_nome || nomeProduto;
+                totalGeral += total;
+                html += `
+                    <tr id="linha-${index}">
+                        <td><input type="text" value="${item.codigo || ''}" onchange="buscarPreco(this, ${index})" placeholder="Código"></td>
+                        <td><input type="text" value="${item.descricao || ''}" onchange="atualizarOrcamento(${index}, 'descricao', this.value)"></td>
+                        <td style="text-align:center;"><input type="number" min="1" value="${item.qtd || 1}" style="width:55px;text-align:center;" onchange="atualizarOrcamento(${index}, 'qtd', parseInt(this.value) || 1)"></td>
+                        <td><span class="produto-tag">${produtoNomeItem}</span></td>
+                        <td style="text-align:center;"><span class="variacao-tag">${variacao}</span></td>
+                        <td style="text-align:right;"><input type="number" step="0.01" min="0" value="${item.preco_unitario || 0}" style="width:90px;text-align:right;" onchange="atualizarOrcamento(${index}, 'preco_unitario', parseFloat(this.value) || 0)"></td>
+                        <td style="text-align:right;font-weight:bold;">R$ ${total.toFixed(2)}</td>
+                        <td>
+                            <button class="btn-manual-linha" onclick="abrirManual('${produtoNomeItem}', '${variacao}')">📖</button>
+                        </td>
+                        <td>
+                            <input type="text" value="${item.codigo_manual || ''}" 
+                                   readonly 
+                                   class="campo-fixo"
+                                   placeholder="Cod.">
+                        </td>
+                        <td>
+                            <input type="text" value="${item.descricao_manual || ''}" 
+                                   readonly 
+                                   class="campo-fixo"
+                                   placeholder="Desc.">
+                        </td>
+                        <td><input type="text" value="${item.compatibilidade || ''}" onchange="atualizarOrcamento(${index}, 'compatibilidade', this.value)" placeholder="Compat." class="compat-input"></td>
+                        <td style="text-align:center;"><button class="btn-remove-linha" onclick="removerLinhaOrcamento(${index})">✕</button></td>
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = html;
+
+            const totalDiv = document.querySelector('.total-orcamento');
+            if (totalDiv) {
+                totalDiv.textContent = `TOTAL: R$ ${totalGeral.toFixed(2)}`;
+            }
+        }
+
+        // ============================================
+        // SALVAR ORÇAMENTO
+        // ============================================
+        async function salvarOrcamento(id) {
+            const observacoes = document.getElementById('obs-tecnico')?.value || '';
+
+            const temPreco = orcamentoAtual.some(item => (item.preco_unitario || 0) > 0);
+            if (!temPreco) {
+                alert('⚠️ Adicione pelo menos um item com preço no orçamento.');
+                return;
+            }
+
+            if (!confirm('Finalizar orçamento e enviar para o vendedor?')) return;
+
+            try {
+                for (const item of orcamentoAtual) {
+                    if (item.codigo && item.preco_unitario > 0) {
+                        try {
+                            await fetch('/api/precos', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    codigo: item.codigo,
+                                    descricao: item.descricao || '',
+                                    preco: item.preco_unitario,
+                                    codigo_manual: item.codigo_manual || '',
+                                    descricao_manual: item.descricao_manual || '',
+                                    compatibilidade: item.compatibilidade || ''
+                                })
+                            });
+                            console.log(`✅ Preço ${item.codigo} salvo na base de referência`);
+                        } catch (e) {
+                            console.warn(`⚠️ Não foi possível salvar ${item.codigo}:`, e);
+                        }
+                    }
+                }
+
+                const res = await fetch(`/api/pedidos/${id}/orcamento`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        orcamento: orcamentoAtual,
+                        observacoes_tecnico: observacoes
+                    })
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    alert('✅ Orçamento finalizado com sucesso!');
+                    fecharModal();
+                    carregarPedidos();
+                } else {
+                    alert('❌ ' + data.error);
+                }
+            } catch (error) {
+                alert('❌ Erro: ' + error.message);
+            }
+        }
+
+        // ============================================
+        // FINALIZAR ORÇAMENTO
+        // ============================================
+        async function finalizarOrcamento(id) {
+            if (!confirm('Confirmar que este orçamento está pronto para o cliente?')) return;
+
+            try {
+                const res = await fetch(`/api/pedidos/${id}/status`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'ENVIADO_CLIENTE' })
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    alert('✅ Orçamento enviado para o vendedor!');
+                    carregarPedidos();
+                } else {
+                    alert('❌ ' + data.error);
+                }
+            } catch (error) {
+                alert('❌ Erro: ' + error.message);
+            }
+        }
+
+        // ============================================
+        // VER DETALHES
+        // ============================================
+        async function verDetalhes(id) {
+            const modal = document.getElementById('modal-orcamento');
+            const body = document.getElementById('modal-body');
+
+            try {
+                const res = await fetch(`/api/pedidos/${id}`);
+                const data = await res.json();
+
+                if (!data.success) {
+                    body.innerHTML = `<p class="empty">❌ ${data.error}</p>`;
+                    modal.classList.add('active');
+                    return;
+                }
+
+                const p = data.pedido;
+                const itens = p.itens || [];
+                const statusLabel = getStatusLabel(p.status);
+                const nomeProduto = p.manual_nome || 'Produto não identificado';
+
+                let html = `
+                    <h2>📄 Pedido #${p.numero_chamado}</h2>
+                    
+                    <div style="background:#1a237e; color:white; padding:10px; border-radius:8px; margin-bottom:15px; font-size:14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                        <span>🎣 <strong>${nomeProduto}</strong></span>
+                        <button onclick="abrirManual('${nomeProduto}', '')" class="btn-manual" style="font-size:12px; padding:4px 14px;">
+                            📖 Ver Manual
+                        </button>
+                    </div>
+                    
+                    <div class="info-cliente">
+                        <p><strong>Status:</strong> <span class="status ${getStatusClass(p.status)}">${statusLabel}</span></p>
+                        <p><strong>Cliente:</strong> ${p.cliente_nome}</p>
+                        <p><strong>CNPJ:</strong> ${p.cliente_cnpj}</p>
+                        ${p.cliente_telefone ? `<p><strong>Telefone:</strong> ${p.cliente_telefone}</p>` : ''}
+                        ${p.cliente_email ? `<p><strong>E-mail:</strong> ${p.cliente_email}</p>` : ''}
+                        <p><strong>Vendedor:</strong> ${p.vendedor_nome || '-'}</p>
+                        <p><strong>Data:</strong> ${formatarData(p.data_pedido)}</p>
+                    </div>
+
+                    <h3>📋 Peças Solicitadas</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Posição</th>
+                                <th>Descrição</th>
+                                <th>Produto</th>
+                                <th style="text-align:center;">Variação</th>
+                                <th style="text-align:center;">Qtd</th>
+                                <th>Manual</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+
+                if (itens.length === 0) {
+                    html += `<tr><td colspan="6" class="empty">Nenhum item</td></tr>`;
+                } else {
+                    itens.forEach(item => {
+                        const variacao = item.variacao || 'N/A';
+                        const produtoItem = item.manual_nome || nomeProduto;
+                        html += `
+                            <tr>
+                                <td><strong>#${item.numero}</strong></td>
+                                <td>${item.nome}</td>
+                                <td><span class="produto-tag">${produtoItem}</span></td>
+                                <td style="text-align:center;"><span class="variacao-tag">${variacao}</span></td>
+                                <td style="text-align:center;">${item.qtd}</td>
+                                <td>
+                                    <button class="btn-manual-linha" onclick="abrirManual('${produtoItem}', '${variacao}')">📖</button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                }
+
+                html += `
+                        </tbody>
+                    </table>
+                `;
+
+                if (p.imagem_url) {
+                    html += `
+                        <div class="imagem-esquema">
+                            <h3>📷 Esquema do Produto</h3>
+                            <img src="${p.imagem_url}" alt="Esquema do produto" onerror="this.style.display='none'">
+                            <button onclick="verImagemEsquema('${p.imagem_url}')" 
+                                    style="position:absolute; top:10px; right:10px; background:#1a237e; color:white; border:none; padding:5px 15px; border-radius:6px; cursor:pointer; font-weight:600; font-size:12px;">
+                                🔍 Ampliar
+                            </button>
+                        </div>
+                    `;
+                }
+
+                html += `
+                    <div style="margin-top:20px; display:flex; gap:10px; justify-content:flex-end;">
+                        <button class="btn-fechar" onclick="fecharModal()">🔙 Fechar</button>
+                    </div>
+                `;
+
+                body.innerHTML = html;
+                modal.classList.add('active');
+
+            } catch (error) {
+                body.innerHTML = `<p class="empty">❌ Erro: ${error.message}</p>`;
+                modal.classList.add('active');
+            }
+        }
+
+        function getStatusClass(status) {
+            const map = {
+                'AGUARDANDO': 'status-aguardando',
+                'EM_ANALISE_TECNICA': 'status-analise',
+                'ORCAMENTO_FINALIZADO': 'status-orcamento',
+                'ENVIADO_CLIENTE': 'status-enviado',
+                'FINALIZADO': 'status-finalizado',
+                'CANCELADO': 'status-cancelado'
+            };
+            return map[status] || 'status-aguardando';
+        }
+
+        function getStatusLabel(status) {
+            const map = {
+                'AGUARDANDO': '⏳ Aguardando',
+                'EM_ANALISE_TECNICA': '🔧 Em Análise',
+                'ORCAMENTO_FINALIZADO': '📊 Orçamento Pronto',
+                'ENVIADO_CLIENTE': '📨 Enviado ao Cliente',
+                'FINALIZADO': '✅ Finalizado',
+                'CANCELADO': '❌ Cancelado'
+            };
+            return map[status] || status;
+        }
+
+        function formatarData(data) {
+            if (!data) return '-';
+            const d = new Date(data);
+            return d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function fecharModal() {
+            document.getElementById('modal-orcamento').classList.remove('active');
+            pedidoAtual = null;
+            orcamentoAtual = [];
+        }
+
+        document.getElementById('modal-orcamento').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) fecharModal();
+        });
+
+        // ============================================
+        // IMPORTAÇÃO DE EXCEL
+        // ============================================
+        function prepararImportacao(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            arquivoSelecionado = file;
+            document.getElementById('nome-arquivo').textContent = `📄 ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+            document.getElementById('btn-importar').disabled = false;
+            document.getElementById('status-importacao').className = 'status-importacao';
+            document.getElementById('status-importacao').style.display = 'none';
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const jsonData = XLSX.utils.sheet_to_json(firstSheet);
+
+                    dadosImportacao = jsonData.map(row => ({
+                        codigo: row['COD.'] || row['COD'] || row['CÓDIGO'] || '',
+                        descricao: row['DESCRICAO'] || row['DESCRIÇÃO'] || '',
+                        preco: parseFloat(row['PREÇOS'] || row['PREÇO'] || row['PRECO'] || 0),
+                        codigo_manual: row['COD. MANUAL'] || row['COD MANUAL'] || row['COD_MANUAL'] || '',
+                        descricao_manual: row['DSCRICAO MANUAL'] || row['DESCRICAO MANUAL'] || row['DESC_MANUAL'] || '',
+                        compatibilidade: row['COMPATIBILIDADE'] || ''
+                    })).filter(item => item.codigo && item.preco > 0);
+
+                    document.getElementById('status-importacao').className = 'status-importacao success';
+                    document.getElementById('status-importacao').style.display = 'block';
+                    document.getElementById('status-importacao').innerHTML = 
+                        `✅ ${dadosImportacao.length} registros preparados para importação. Clique em "Importar" para confirmar.`;
+                } catch (error) {
+                    document.getElementById('status-importacao').className = 'status-importacao error';
+                    document.getElementById('status-importacao').style.display = 'block';
+                    document.getElementById('status-importacao').textContent = '❌ Erro ao ler o arquivo: ' + error.message;
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        async function importarExcel() {
+            if (!dadosImportacao || dadosImportacao.length === 0) {
+                alert('⚠️ Nenhum dado para importar. Selecione um arquivo Excel válido.');
+                return;
+            }
+
+            const btn = document.getElementById('btn-importar');
+            const statusDiv = document.getElementById('status-importacao');
+
+            btn.disabled = true;
+            statusDiv.className = 'status-importacao loading';
+            statusDiv.style.display = 'block';
+            statusDiv.textContent = '⏳ Importando dados...';
+
+            try {
+                const res = await fetch('/api/precos/importar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ precos: dadosImportacao })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    statusDiv.className = 'status-importacao success';
+                    statusDiv.innerHTML = `✅ ${data.total} registros importados com sucesso!`;
+                    dadosImportacao = null;
+                    document.getElementById('nome-arquivo').textContent = '';
+                    document.getElementById('file-upload').value = '';
+                    btn.disabled = true;
+                } else {
+                    statusDiv.className = 'status-importacao error';
+                    statusDiv.textContent = '❌ ' + data.error;
+                }
+            } catch (error) {
+                statusDiv.className = 'status-importacao error';
+                statusDiv.textContent = '❌ Erro ao importar: ' + error.message;
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await carregarConfigGlobal();
+            carregarPedidos();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1423 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Catálogo</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f0f4f8;
+            color: #2d3436;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #002B49;
+            margin-bottom: 30px;
+            font-size: 32px;
+        }
+
+        .form-section {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-section h2 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-section h2 .icon {
+            font-size: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        .form-group .input-wrapper {
+            display: flex;
+            gap: 10px;
+        }
+
+        .form-group .input-wrapper input {
+            flex: 1;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        input:focus, select:focus {
+            border-color: #0984e3;
+            outline: none;
+        }
+
+        button {
+            background: #00b894;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        button:hover {
+            background: #00a381;
+            transform: translateY(-2px);
+        }
+
+        .btn-small {
+            background: #0984e3;
+            padding: 6px 15px;
+            font-size: 12px;
+            width: auto;
+            margin-top: 5px;
+            white-space: nowrap;
+        }
+
+        .btn-small:hover {
+            background: #0652DD;
+            transform: none;
+        }
+
+        .btn-danger {
+            background: #e94560;
+        }
+
+        .btn-danger:hover {
+            background: #c62828;
+        }
+
+        .btn-danger-small {
+            background: #e94560;
+            color: white;
+            border: none;
+            padding: 4px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            width: auto;
+        }
+
+        .btn-danger-small:hover {
+            background: #c62828;
+        }
+
+        .btn-upload {
+            background: #6c5ce7;
+        }
+
+        .btn-upload:hover {
+            background: #5a4bd1;
+        }
+
+        .list-group {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .list-group h3 {
+            margin-bottom: 10px;
+            color: #002B49;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .list-group h3 .badge {
+            background: #e8eaf6;
+            color: #1a237e;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .list-item {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .list-item .info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .list-item .info .sub-info {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .list-item span {
+            font-weight: bold;
+        }
+
+        .list-item button {
+            background: #e94560;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            width: auto;
+        }
+
+        .list-item button:hover {
+            background: #c62828;
+        }
+
+        .preview-imagem {
+            max-width: 40px;
+            max-height: 40px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            object-fit: cover;
+        }
+
+        .variacoes-container {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 2px dashed #ddd;
+        }
+
+        .variacoes-container .variacao-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 5px;
+        }
+
+        .variacoes-container .variacao-item button {
+            background: #e94560;
+            color: white;
+            border: none;
+            padding: 3px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            width: auto;
+        }
+
+        .variacoes-container .variacao-item button:hover {
+            background: #c62828;
+        }
+
+        .variacoes-container .add-variacao {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .variacoes-container .add-variacao input {
+            flex: 1;
+        }
+
+        .variacoes-container .add-variacao button {
+            width: auto;
+            padding: 10px 20px;
+            background: #0984e3;
+        }
+
+        .variacoes-container .add-variacao button:hover {
+            background: #0652DD;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            font-weight: 600;
+            color: #333;
+            cursor: pointer;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            max-width: 700px;
+            width: 95%;
+            max-height: 85vh;
+            overflow-y: auto;
+            animation: modalIn 0.3s ease;
+        }
+
+        @keyframes modalIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal h2 {
+            color: #1a237e;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal .close-btn {
+            background: #e0e0e0;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 18px;
+            width: auto;
+        }
+
+        .modal .close-btn:hover {
+            background: #bdbdbd;
+            transform: none;
+        }
+
+        .modal .upload-area {
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 15px;
+            background: #fafafa;
+            transition: 0.3s;
+        }
+
+        .modal .upload-area:hover {
+            border-color: #1a237e;
+            background: #f0f2ff;
+        }
+
+        .modal .upload-area input[type="file"] {
+            display: none;
+        }
+
+        .modal .upload-area label {
+            cursor: pointer;
+            color: #1a237e;
+            font-weight: 600;
+            display: block;
+        }
+
+        .modal .upload-area label:hover {
+            text-decoration: underline;
+        }
+
+        .modal .imagens-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .modal .imagem-item {
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            background: #f8f9fa;
+        }
+
+        .modal .imagem-item:hover {
+            border-color: #1a237e;
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .modal .imagem-item img {
+            width: 100%;
+            height: 80px;
+            object-fit: contain;
+            border-radius: 4px;
+        }
+
+        .modal .imagem-item .nome-arquivo {
+            font-size: 10px;
+            color: #888;
+            margin-top: 5px;
+            word-break: break-all;
+        }
+
+        .modal .imagem-item.selecionada {
+            border-color: #1a237e;
+            background: #e8eaf6;
+        }
+
+        .modal .loading-spinner {
+            text-align: center;
+            padding: 30px;
+            color: #888;
+        }
+
+        .modal .loading-spinner .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #1a237e;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .modal .btn-selecionar {
+            background: #1a237e;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .modal .btn-selecionar:hover {
+            background: #0d1555;
+            transform: none;
+        }
+
+        .modal .btn-selecionar:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .campo-com-preview {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            min-height: 50px;
+        }
+
+        .campo-com-preview .preview {
+            width: 50px;
+            height: 50px;
+            border-radius: 4px;
+            object-fit: contain;
+            border: 1px solid #ddd;
+            background: white;
+        }
+
+        .campo-com-preview .info {
+            flex: 1;
+        }
+
+        .campo-com-preview .info .nome {
+            font-weight: 600;
+            color: #1a237e;
+        }
+
+        .campo-com-preview .info .url {
+            font-size: 11px;
+            color: #888;
+            word-break: break-all;
+        }
+
+        .btn-limpar {
+            background: #e94560;
+            color: white;
+            border: none;
+            padding: 4px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .btn-limpar:hover {
+            background: #c62828;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab {
+            padding: 8px 20px;
+            cursor: pointer;
+            border-radius: 8px 8px 0 0;
+            transition: all 0.2s;
+            font-weight: 600;
+            color: #666;
+            border: none;
+            background: none;
+            width: auto;
+        }
+
+        .tab:hover {
+            background: #f5f5f5;
+            transform: none;
+        }
+
+        .tab.ativo {
+            background: #1a237e;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+            margin-top: 10px;
+        }
+
+        .tab-content.ativo {
+            display: block;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: #888;
+        }
+
+        .empty-state .icone {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .modal .imagens-grid {
+                grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+            }
+            .modal .imagem-item img {
+                height: 60px;
+            }
+            .form-group .input-wrapper {
+                flex-direction: column;
+            }
+            .tabs {
+                flex-wrap: wrap;
+            }
+            .tab {
+                padding: 6px 14px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>⚙️ Admin Catálogo</h1>
+
+        <!-- FÓRMULÁRIO 1: GRUPO -->
+        <div class="form-section">
+            <h2><span class="icon">📂</span> 1. Cadastrar Grupo</h2>
+            <p style="font-size: 13px; margin-bottom: 15px;">Exemplo: "Molinetes" ou "Carretilhas"</p>
+            <div class="form-group">
+                <label>Nome do Grupo</label>
+                <input type="text" id="input-nome-grupo" placeholder="Digite o nome do grupo">
+            </div>
+            <div class="form-group">
+                <label>Imagem do Grupo</label>
+                <div class="input-wrapper">
+                    <input type="text" id="input-icone-grupo" placeholder="URL da imagem" readonly style="background:#f5f5f5;">
+                    <button class="btn-small" onclick="abrirSeletorImagens('input-icone-grupo')">📂 Selecionar</button>
+                </div>
+                <div id="preview-icone-grupo" class="campo-com-preview" style="display:none; margin-top:10px;">
+                    <img class="preview" id="preview-img-grupo" src="" alt="Preview">
+                    <div class="info">
+                        <div class="nome" id="preview-nome-grupo">-</div>
+                        <div class="url" id="preview-url-grupo">-</div>
+                    </div>
+                    <button class="btn-limpar" onclick="limparPreview('input-icone-grupo', 'preview-icone-grupo', 'preview-img-grupo', 'preview-nome-grupo', 'preview-url-grupo')">✕</button>
+                </div>
+            </div>
+            <button onclick="criarGrupo()">➕ Cadastrar Grupo</button>
+        </div>
+
+        <!-- FÓRMULÁRIO 2: SUBGRUPO -->
+        <div class="form-section">
+            <h2><span class="icon">📁</span> 2. Cadastrar Subgrupo</h2>
+            <p style="font-size: 13px; margin-bottom: 15px;">Exemplo: "Molinete Prisma" (dentro de "Molinetes")</p>
+            <div class="form-group">
+                <label>Selecione o Grupo</label>
+                <select id="select-grupo-sub"></select>
+            </div>
+            <div class="form-group">
+                <label>Nome do Subgrupo</label>
+                <input type="text" id="input-nome-sub" placeholder="Digite o nome do subgrupo">
+            </div>
+            <div class="form-group">
+                <label>Imagem do Subgrupo</label>
+                <div class="input-wrapper">
+                    <input type="text" id="input-icone-sub" placeholder="URL da imagem" readonly style="background:#f5f5f5;">
+                    <button class="btn-small" onclick="abrirSeletorImagens('input-icone-sub')">📂 Selecionar</button>
+                </div>
+                <div id="preview-icone-sub" class="campo-com-preview" style="display:none; margin-top:10px;">
+                    <img class="preview" id="preview-img-sub" src="" alt="Preview">
+                    <div class="info">
+                        <div class="nome" id="preview-nome-sub">-</div>
+                        <div class="url" id="preview-url-sub">-</div>
+                    </div>
+                    <button class="btn-limpar" onclick="limparPreview('input-icone-sub', 'preview-icone-sub', 'preview-img-sub', 'preview-nome-sub', 'preview-url-sub')">✕</button>
+                </div>
+            </div>
+            <button onclick="criarSubgrupo()">➕ Cadastrar Subgrupo</button>
+        </div>
+
+        <!-- FÓRMULÁRIO 3: PRODUTO -->
+        <div class="form-section">
+            <h2><span class="icon">🏷️</span> 3. Cadastrar Produto</h2>
+            <p style="font-size: 13px; margin-bottom: 15px;">Exemplo: "MOLINETE ALTIMA PRO" (dentro de "Molinetes")</p>
+            <div class="form-group">
+                <label>Selecione o Subgrupo</label>
+                <select id="select-sub-prod"></select>
+            </div>
+            <div class="form-group">
+                <label>Nome do Produto</label>
+                <input type="text" id="input-nome-prod" placeholder="Digite o nome do produto">
+            </div>
+            <div class="form-group">
+                <label>Imagem do Produto</label>
+                <div class="input-wrapper">
+                    <input type="text" id="input-icone-prod" placeholder="URL da imagem" readonly style="background:#f5f5f5;">
+                    <button class="btn-small" onclick="abrirSeletorImagens('input-icone-prod')">📂 Selecionar</button>
+                </div>
+                <div id="preview-icone-prod" class="campo-com-preview" style="display:none; margin-top:10px;">
+                    <img class="preview" id="preview-img-prod" src="" alt="Preview">
+                    <div class="info">
+                        <div class="nome" id="preview-nome-prod">-</div>
+                        <div class="url" id="preview-url-prod">-</div>
+                    </div>
+                    <button class="btn-limpar" onclick="limparPreview('input-icone-prod', 'preview-icone-prod', 'preview-img-prod', 'preview-nome-prod', 'preview-url-prod')">✕</button>
+                </div>
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="check-possui-variacoes" onchange="toggleVariacoes()">
+                <label for="check-possui-variacoes">🔁 Este produto possui variações</label>
+            </div>
+
+            <div id="variacoes-area" style="display: none;">
+                <div class="variacoes-container">
+                    <label style="font-weight: 600; margin-bottom: 5px; display: block;">Variações do Produto</label>
+                    <p style="font-size: 12px; color: #888; margin-bottom: 10px;">Ex: 1000, 2000, 3000, 4000</p>
+                    <div id="lista-variacoes"></div>
+                    <div class="add-variacao">
+                        <input type="text" id="input-variacao" placeholder="Ex: 1000" onkeydown="if(event.key==='Enter') adicionarVariacao()">
+                        <button onclick="adicionarVariacao()">➕ Adicionar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-top:15px;">
+                <label>Link do Manual</label>
+                <div class="input-wrapper">
+                    <input type="text" id="input-manual-prod" placeholder="Ex: pecas.html?manual=MOLINETE%20ALTIMA%20PRO">
+                    <button class="btn-small" onclick="abrirSeletorManuais()">📂 Selecionar Manual</button>
+                </div>
+                <p style="font-size: 12px; color: #888; margin-top: 5px;">Se o produto tiver variações, o link será o mesmo para todas.</p>
+                <div id="preview-manual" style="display:none; margin-top:10px; padding:10px; background:#e8eaf6; border-radius:8px;">
+                    <span style="font-weight:600;">📄 Manual selecionado:</span>
+                    <span id="preview-manual-nome" style="color:#1a237e;"></span>
+                </div>
+            </div>
+
+            <button onclick="criarProduto()">➕ Cadastrar Produto</button>
+        </div>
+
+        <!-- LISTAGEM COM ABAS -->
+        <div class="list-group">
+            <h3>📋 Lista de Itens</h3>
+            
+            <div class="tabs">
+                <button class="tab ativo" data-tab="grupos" onclick="trocarAba('grupos')">📂 Grupos</button>
+                <button class="tab" data-tab="subgrupos" onclick="trocarAba('subgrupos')">📁 Subgrupos</button>
+                <button class="tab" data-tab="produtos" onclick="trocarAba('produtos')">🏷️ Produtos</button>
+            </div>
+
+            <!-- ABRA GRUPOS -->
+            <div class="tab-content ativo" id="tab-grupos">
+                <div id="lista-grupos"></div>
+            </div>
+
+            <!-- ABRA SUBGRUPOS -->
+            <div class="tab-content" id="tab-subgrupos">
+                <div id="lista-subgrupos"></div>
+            </div>
+
+            <!-- ABRA PRODUTOS -->
+            <div class="tab-content" id="tab-produtos">
+                <div id="lista-produtos"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL SELETOR DE IMAGENS -->
+    <div class="modal-overlay" id="modal-imagens">
+        <div class="modal">
+            <h2>
+                📂 Selecionar Imagem
+                <button class="close-btn" onclick="fecharModalImagens()">✕</button>
+            </h2>
+            
+            <div class="upload-area">
+                <label for="upload-imagem">
+                    📤 Clique para enviar uma nova imagem
+                    <input type="file" id="upload-imagem" accept="image/*" onchange="uploadImagem(event)">
+                </label>
+                <div id="upload-status" style="margin-top:10px; font-size:13px; color:#666;"></div>
+            </div>
+
+            <div id="lista-imagens-modal">
+                <div class="loading-spinner">
+                    <div class="spinner"></div>
+                    <p>Carregando imagens...</p>
+                </div>
+            </div>
+
+            <button class="btn-selecionar" id="btn-selecionar-imagem" disabled onclick="selecionarImagem()">
+                ✅ Selecionar esta imagem
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // VARIÁVEIS
+        // ============================================
+        let grupos = [];
+        let subgrupos = [];
+        let produtos = [];
+        let variacoes = [];
+        let imagensBucket = [];
+        let imagemSelecionada = null;
+        let inputAlvo = null;
+        let modoSeletor = 'imagem';
+        let manualNomeSelecionado = '';
+
+        // ============================================
+        // TROCAR ABA
+        // ============================================
+        function trocarAba(aba) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('ativo'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('ativo'));
+            
+            document.querySelector(`.tab[data-tab="${aba}"]`).classList.add('ativo');
+            document.getElementById(`tab-${aba}`).classList.add('ativo');
+        }
+
+        // ============================================
+        // TOGGLE VARIAÇÕES
+        // ============================================
+        function toggleVariacoes() {
+            const checked = document.getElementById('check-possui-variacoes').checked;
+            document.getElementById('variacoes-area').style.display = checked ? 'block' : 'none';
+            if (!checked) {
+                variacoes = [];
+                renderizarVariacoes();
+            }
+        }
+
+        function adicionarVariacao() {
+            const input = document.getElementById('input-variacao');
+            const valor = input.value.trim();
+            if (!valor) return alert('⚠️ Digite uma variação!');
+            if (variacoes.includes(valor)) return alert('⚠️ Esta variação já foi adicionada!');
+            
+            variacoes.push(valor);
+            input.value = '';
+            renderizarVariacoes();
+        }
+
+        function removerVariacao(index) {
+            variacoes.splice(index, 1);
+            renderizarVariacoes();
+        }
+
+        function renderizarVariacoes() {
+            const container = document.getElementById('lista-variacoes');
+            if (variacoes.length === 0) {
+                container.innerHTML = '<p style="color: #888; font-size: 13px;">Nenhuma variação adicionada.</p>';
+                return;
+            }
+
+            let html = '';
+            variacoes.forEach((v, i) => {
+                html += `
+                    <div class="variacao-item">
+                        <span>📌 ${v}</span>
+                        <button onclick="removerVariacao(${i})">✕ Remover</button>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        // ============================================
+        // PREVIEW DE IMAGEM
+        // ============================================
+        function mostrarPreview(inputId, previewId, imgId, nomeId, urlId, url) {
+            const previewContainer = document.getElementById(previewId);
+            const img = document.getElementById(imgId);
+            const nome = document.getElementById(nomeId);
+            const urlEl = document.getElementById(urlId);
+            const input = document.getElementById(inputId);
+
+            if (url) {
+                img.src = url;
+                const nomeArquivo = url.split('/').pop();
+                nome.textContent = nomeArquivo;
+                urlEl.textContent = url;
+                input.value = url;
+                previewContainer.style.display = 'flex';
+            } else {
+                previewContainer.style.display = 'none';
+                input.value = '';
+            }
+        }
+
+        function limparPreview(inputId, previewId, imgId, nomeId, urlId) {
+            document.getElementById(inputId).value = '';
+            document.getElementById(previewId).style.display = 'none';
+            document.getElementById(imgId).src = '';
+            document.getElementById(nomeId).textContent = '-';
+            document.getElementById(urlId).textContent = '-';
+        }
+
+        // ============================================
+        // SELETOR DE IMAGENS (VIA SERVIDOR)
+        // ============================================
+        function abrirSeletorImagens(inputId) {
+            inputAlvo = inputId;
+            modoSeletor = 'imagem';
+            document.getElementById('modal-imagens').classList.add('active');
+            carregarImagensBucket();
+        }
+
+        function abrirSeletorManuais() {
+            inputAlvo = 'input-manual-prod';
+            modoSeletor = 'manual';
+            document.getElementById('modal-imagens').classList.add('active');
+            carregarManuaisBucket();
+        }
+
+        function fecharModalImagens() {
+            document.getElementById('modal-imagens').classList.remove('active');
+            imagemSelecionada = null;
+            document.getElementById('btn-selecionar-imagem').disabled = true;
+        }
+
+        // ============================================
+        // CARREGAR IMAGENS DO BUCKET
+        // ============================================
+        async function carregarImagensBucket() {
+            const container = document.getElementById('lista-imagens-modal');
+            container.innerHTML = `
+                <div class="loading-spinner">
+                    <div class="spinner"></div>
+                    <p>Carregando imagens...</p>
+                </div>
+            `;
+
+            try {
+                const response = await fetch('/api/imagens');
+                const data = await response.json();
+
+                if (!data.success) {
+                    throw new Error(data.error || 'Erro ao carregar imagens');
+                }
+
+                imagensBucket = data.imagens || [];
+
+                if (imagensBucket.length === 0) {
+                    container.innerHTML = `
+                        <div style="text-align:center; padding:30px; color:#888;">
+                            <p>📭 Nenhuma imagem encontrada.</p>
+                            <p style="font-size:13px;">Faça upload de uma imagem acima.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                let html = '<div class="imagens-grid">';
+                imagensBucket.forEach((img, index) => {
+                    html += `
+                        <div class="imagem-item" data-index="${index}" onclick="selecionarItemImagem(${index})">
+                            <img src="${img.url}" alt="${img.name}" onerror="this.src='https://via.placeholder.com/100?text=Erro'">
+                            <div class="nome-arquivo">${img.name}</div>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                container.innerHTML = html;
+
+                document.getElementById('btn-selecionar-imagem').disabled = true;
+
+            } catch (error) {
+                console.error('❌ Erro ao carregar imagens:', error);
+                container.innerHTML = `
+                    <div style="text-align:center; padding:30px; color:#e94560;">
+                        <p>❌ Erro ao carregar imagens: ${error.message}</p>
+                        <button onclick="carregarImagensBucket()" style="margin-top:15px; padding:8px 20px; background:#1a237e; color:white; border:none; border-radius:6px; cursor:pointer;">🔄 Tentar novamente</button>
+                    </div>
+                `;
+            }
+        }
+
+        // ============================================
+        // CARREGAR MANUAIS DO BUCKET
+        // ============================================
+        async function carregarManuaisBucket() {
+            const container = document.getElementById('lista-imagens-modal');
+            container.innerHTML = `
+                <div class="loading-spinner">
+                    <div class="spinner"></div>
+                    <p>Carregando manuais...</p>
+                </div>
+            `;
+
+            try {
+                const response = await fetch('/api/manuais-lista');
+                const data = await response.json();
+
+                if (!data.success) {
+                    throw new Error(data.error || 'Erro ao carregar manuais');
+                }
+
+                const manuais = data.manuais || [];
+
+                if (manuais.length === 0) {
+                    container.innerHTML = `
+                        <div style="text-align:center; padding:30px; color:#888;">
+                            <p>📭 Nenhum manual encontrado.</p>
+                            <p style="font-size:13px;">Envie os manuais para a pasta "esquemas".</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                let html = '<div style="margin-bottom:15px; font-size:13px; color:#666;">Selecione o manual que deseja vincular ao produto:</div>';
+                html += '<div class="imagens-grid">';
+                manuais.forEach((manual, index) => {
+                    html += `
+                        <div class="imagem-item" data-index="${index}" onclick="selecionarItemManual(${index}, '${manual.nomeManual}')">
+                            <img src="${manual.url}" alt="${manual.name}" onerror="this.src='https://via.placeholder.com/100?text=Manual'">
+                            <div class="nome-arquivo">${manual.nomeManual}</div>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                container.innerHTML = html;
+
+                document.getElementById('btn-selecionar-imagem').disabled = true;
+
+            } catch (error) {
+                console.error('❌ Erro ao carregar manuais:', error);
+                container.innerHTML = `
+                    <div style="text-align:center; padding:30px; color:#e94560;">
+                        <p>❌ Erro ao carregar manuais: ${error.message}</p>
+                        <button onclick="carregarManuaisBucket()" style="margin-top:15px; padding:8px 20px; background:#1a237e; color:white; border:none; border-radius:6px; cursor:pointer;">🔄 Tentar novamente</button>
+                    </div>
+                `;
+            }
+        }
+
+        // ============================================
+        // SELECIONAR ITENS
+        // ============================================
+        function selecionarItemImagem(index) {
+            const items = document.querySelectorAll('.imagem-item');
+            items.forEach(item => item.classList.remove('selecionada'));
+            items[index].classList.add('selecionada');
+            
+            imagemSelecionada = imagensBucket[index];
+            document.getElementById('btn-selecionar-imagem').disabled = false;
+            document.getElementById('btn-selecionar-imagem').textContent = `✅ Selecionar: ${imagemSelecionada.name}`;
+        }
+
+        function selecionarItemManual(index, nomeManual) {
+            const items = document.querySelectorAll('.imagem-item');
+            items.forEach(item => item.classList.remove('selecionada'));
+            items[index].classList.add('selecionada');
+            
+            manualNomeSelecionado = nomeManual;
+            document.getElementById('btn-selecionar-imagem').disabled = false;
+            document.getElementById('btn-selecionar-imagem').textContent = `✅ Selecionar: ${nomeManual}`;
+        }
+
+        function selecionarImagem() {
+            if (modoSeletor === 'imagem') {
+                if (!imagemSelecionada) return;
+                const url = imagemSelecionada.url;
+                
+                if (inputAlvo) {
+                    const input = document.getElementById(inputAlvo);
+                    input.value = url;
+                    
+                    if (inputAlvo === 'input-icone-grupo') {
+                        mostrarPreview('input-icone-grupo', 'preview-icone-grupo', 'preview-img-grupo', 'preview-nome-grupo', 'preview-url-grupo', url);
+                    } else if (inputAlvo === 'input-icone-sub') {
+                        mostrarPreview('input-icone-sub', 'preview-icone-sub', 'preview-img-sub', 'preview-nome-sub', 'preview-url-sub', url);
+                    } else if (inputAlvo === 'input-icone-prod') {
+                        mostrarPreview('input-icone-prod', 'preview-icone-prod', 'preview-img-prod', 'preview-nome-prod', 'preview-url-prod', url);
+                    }
+                }
+            } else if (modoSeletor === 'manual') {
+                if (!manualNomeSelecionado) return;
+                
+                const urlManual = `pecas.html?manual=${encodeURIComponent(manualNomeSelecionado)}`;
+                
+                const input = document.getElementById('input-manual-prod');
+                input.value = urlManual;
+                
+                const preview = document.getElementById('preview-manual');
+                const nomeEl = document.getElementById('preview-manual-nome');
+                preview.style.display = 'block';
+                nomeEl.textContent = `${manualNomeSelecionado}`;
+            }
+            
+            fecharModalImagens();
+        }
+
+        // ============================================
+        // UPLOAD DE IMAGEM
+        // ============================================
+        async function uploadImagem(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const statusEl = document.getElementById('upload-status');
+            statusEl.textContent = '⏳ Enviando imagem...';
+            statusEl.style.color = '#004085';
+
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+
+                const response = await fetch('/api/upload-imagem', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    statusEl.textContent = '✅ Imagem enviada com sucesso!';
+                    statusEl.style.color = '#155724';
+                    document.getElementById('upload-imagem').value = '';
+                    
+                    setTimeout(() => {
+                        carregarImagensBucket();
+                    }, 1000);
+                } else {
+                    statusEl.textContent = '❌ ' + data.error;
+                    statusEl.style.color = '#721c24';
+                }
+            } catch (error) {
+                statusEl.textContent = '❌ Erro ao enviar: ' + error.message;
+                statusEl.style.color = '#721c24';
+            }
+        }
+
+        // ============================================
+        // CARREGAR GRUPOS
+        // ============================================
+        async function carregarGrupos() {
+            const res = await fetch('/api/grupos');
+            const data = await res.json();
+            grupos = data.grupos || [];
+
+            // Atualiza select de grupo no subgrupo
+            const selectGrupo = document.getElementById('select-grupo-sub');
+            selectGrupo.innerHTML = '<option value="">Selecione um grupo</option>';
+            grupos.forEach(grupo => {
+                const option = document.createElement('option');
+                option.value = grupo.id;
+                option.textContent = grupo.nome;
+                selectGrupo.appendChild(option);
+            });
+
+            // Lista grupos
+            const lista = document.getElementById('lista-grupos');
+            if (grupos.length === 0) {
+                lista.innerHTML = `<div class="empty-state"><div class="icone">📂</div><p>Nenhum grupo cadastrado</p></div>`;
+                return;
+            }
+
+            lista.innerHTML = '';
+            grupos.forEach(grupo => {
+                const item = document.createElement('div');
+                item.className = 'list-item';
+                const icone = grupo.icone_url ? `<img src="${grupo.icone_url}" class="preview-imagem">` : '📂';
+                item.innerHTML = `
+                    <div class="info">
+                        ${icone}
+                        <span>${grupo.nome}</span>
+                    </div>
+                    <button onclick="deletarGrupo(${grupo.id})">🗑️ Deletar</button>
+                `;
+                lista.appendChild(item);
+            });
+        }
+
+        // ============================================
+        // CARREGAR SUBGRUPOS
+        // ============================================
+        async function carregarSubgrupos() {
+            const res = await fetch('/api/subgrupos');
+            const data = await res.json();
+            subgrupos = data.subgrupos || [];
+
+            // Atualiza select de subgrupo no produto
+            const selectSubProd = document.getElementById('select-sub-prod');
+            selectSubProd.innerHTML = '<option value="">Selecione um subgrupo</option>';
+            subgrupos.forEach(sub => {
+                const option = document.createElement('option');
+                option.value = sub.id;
+                option.textContent = sub.nome;
+                selectSubProd.appendChild(option);
+            });
+
+            // Lista subgrupos
+            const lista = document.getElementById('lista-subgrupos');
+            if (subgrupos.length === 0) {
+                lista.innerHTML = `<div class="empty-state"><div class="icone">📁</div><p>Nenhum subgrupo cadastrado</p></div>`;
+                return;
+            }
+
+            lista.innerHTML = '';
+            subgrupos.forEach(sub => {
+                const grupo = grupos.find(g => g.id === sub.grupo_id);
+                const item = document.createElement('div');
+                item.className = 'list-item';
+                const icone = sub.icone_url ? `<img src="${sub.icone_url}" class="preview-imagem">` : '📁';
+                item.innerHTML = `
+                    <div class="info">
+                        ${icone}
+                        <div>
+                            <span>${sub.nome}</span>
+                            <span class="sub-info">(${grupo ? grupo.nome : 'Sem grupo'})</span>
+                        </div>
+                    </div>
+                    <button onclick="deletarSubgrupo(${sub.id})">🗑️ Deletar</button>
+                `;
+                lista.appendChild(item);
+            });
+        }
+
+        // ============================================
+        // CARREGAR PRODUTOS
+        // ============================================
+        async function carregarProdutos() {
+            const res = await fetch('/api/produtos');
+            const data = await res.json();
+            produtos = data.produtos || [];
+
+            const lista = document.getElementById('lista-produtos');
+            if (produtos.length === 0) {
+                lista.innerHTML = `<div class="empty-state"><div class="icone">🏷️</div><p>Nenhum produto cadastrado</p></div>`;
+                return;
+            }
+
+            lista.innerHTML = '';
+            produtos.forEach(prod => {
+                const sub = subgrupos.find(s => s.id === prod.subgrupo_id);
+                const grupo = sub ? grupos.find(g => g.id === sub.grupo_id) : null;
+                const item = document.createElement('div');
+                item.className = 'list-item';
+                const icone = prod.icone_url ? `<img src="${prod.icone_url}" class="preview-imagem">` : '🏷️';
+                const temVariacao = prod.possui_variacoes ? '🔁' : '';
+                const variacoesText = prod.variacoes ? prod.variacoes.map(v => v.variacao || v).join(', ') : '';
+                
+                item.innerHTML = `
+                    <div class="info">
+                        ${icone}
+                        <div>
+                            <span>${prod.nome} ${temVariacao}</span>
+                            <span class="sub-info">${sub ? sub.nome : 'Sem subgrupo'} ${grupo ? `(${grupo.nome})` : ''}</span>
+                            ${variacoesText ? `<span class="sub-info">| Variações: ${variacoesText}</span>` : ''}
+                        </div>
+                    </div>
+                    <button onclick="deletarProduto(${prod.id})">🗑️ Deletar</button>
+                `;
+                lista.appendChild(item);
+            });
+        }
+
+        // ============================================
+        // DELETAR GRUPO
+        // ============================================
+        async function deletarGrupo(id) {
+            const grupo = grupos.find(g => g.id === id);
+            if (!confirm(`Deletar o grupo "${grupo ? grupo.nome : id}"? Isso também deletará todos os subgrupos e produtos vinculados.`)) return;
+            
+            const res = await fetch(`/api/grupos/${id}`, { method: 'DELETE' });
+            const data = await res.json();
+            
+            if (data.success) {
+                alert('✅ Grupo deletado!');
+                await carregarTodos();
+            } else {
+                alert('❌ ' + data.error);
+            }
+        }
+
+        // ============================================
+        // DELETAR SUBGRUPO
+        // ============================================
+        async function deletarSubgrupo(id) {
+            const sub = subgrupos.find(s => s.id === id);
+            if (!confirm(`Deletar o subgrupo "${sub ? sub.nome : id}"? Isso também deletará todos os produtos vinculados.`)) return;
+
+            try {
+                // Primeiro deleta os produtos do subgrupo
+                const produtosDoSub = produtos.filter(p => p.subgrupo_id === id);
+                for (const prod of produtosDoSub) {
+                    await fetch(`/api/produtos/${prod.id}`, { method: 'DELETE' });
+                }
+
+                // Depois deleta o subgrupo
+                const res = await fetch(`/api/subgrupos/${id}`, { method: 'DELETE' });
+                const data = await res.json();
+                
+                if (data.success) {
+                    alert('✅ Subgrupo deletado!');
+                    await carregarTodos();
+                } else {
+                    alert('❌ ' + data.error);
+                }
+            } catch (error) {
+                alert('❌ Erro ao deletar: ' + error.message);
+            }
+        }
+
+        // ============================================
+        // DELETAR PRODUTO
+        // ============================================
+        async function deletarProduto(id) {
+            const prod = produtos.find(p => p.id === id);
+            if (!confirm(`Deletar o produto "${prod ? prod.nome : id}"?`)) return;
+            
+            const res = await fetch(`/api/produtos/${id}`, { method: 'DELETE' });
+            const data = await res.json();
+            
+            if (data.success) {
+                alert('✅ Produto deletado!');
+                await carregarTodos();
+            } else {
+                alert('❌ ' + data.error);
+            }
+        }
+
+        // ============================================
+        // DELETAR SUBGRUPO (VIA API)
+        // ============================================
+        // Adicione esta rota no server.js
+        // app.delete('/api/subgrupos/:id', async (req, res) => {
+        //     try {
+        //         const { error } = await supabase.from('subgrupos').delete().eq('id', req.params.id);
+        //         if (error) throw error;
+        //         res.json({ success: true });
+        //     } catch (error) {
+        //         res.status(500).json({ success: false, error: error.message });
+        //     }
+        // });
+
+        // ============================================
+        // CARREGAR TUDO
+        // ============================================
+        async function carregarTodos() {
+            await carregarGrupos();
+            await carregarSubgrupos();
+            await carregarProdutos();
+        }
+
+        // ============================================
+        // CRIAR GRUPO
+        // ============================================
+        async function criarGrupo() {
+            const nome = document.getElementById('input-nome-grupo').value;
+            const icone_url = document.getElementById('input-icone-grupo').value;
+
+            if (!nome) return alert('⚠️ Digite o nome do grupo!');
+
+            const res = await fetch('/api/grupos', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nome, icone_url })
+            });
+
+            const data = await res.json();
+            if (data.success) {
+                alert('✅ Grupo cadastrado!');
+                document.getElementById('input-nome-grupo').value = '';
+                document.getElementById('input-icone-grupo').value = '';
+                document.getElementById('preview-icone-grupo').style.display = 'none';
+                await carregarTodos();
+            } else {
+                alert('❌ ' + data.error);
+            }
+        }
+
+        // ============================================
+        // CRIAR SUBGRUPO
+        // ============================================
+        async function criarSubgrupo() {
+            const grupo_id = document.getElementById('select-grupo-sub').value;
+            const nome = document.getElementById('input-nome-sub').value;
+            const icone_url = document.getElementById('input-icone-sub').value;
+
+            if (!grupo_id || !nome) return alert('⚠️ Selecione um grupo e digite o nome!');
+
+            const res = await fetch('/api/subgrupos', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ grupo_id, nome, icone_url })
+            });
+
+            const data = await res.json();
+            if (data.success) {
+                alert('✅ Subgrupo cadastrado!');
+                document.getElementById('input-nome-sub').value = '';
+                document.getElementById('input-icone-sub').value = '';
+                document.getElementById('preview-icone-sub').style.display = 'none';
+                await carregarTodos();
+            } else {
+                alert('❌ ' + data.error);
+            }
+        }
+
+        // ============================================
+        // CRIAR PRODUTO
+        // ============================================
+        async function criarProduto() {
+            const subgrupo_id = document.getElementById('select-sub-prod').value;
+            const nome = document.getElementById('input-nome-prod').value;
+            const icone_url = document.getElementById('input-icone-prod').value;
+            const manual_url = document.getElementById('input-manual-prod').value;
+            const possuiVariacoes = document.getElementById('check-possui-variacoes').checked;
+
+            if (!subgrupo_id || !nome) return alert('⚠️ Selecione um subgrupo e digite o nome!');
+
+            const body = {
+                subgrupo_id,
+                nome,
+                icone_url,
+                manual_url,
+                possui_variacoes: possuiVariacoes,
+                variacoes: possuiVariacoes ? variacoes : []
+            };
+
+            const res = await fetch('/api/produtos', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+
+            const data = await res.json();
+            if (data.success) {
+                alert('✅ Produto cadastrado com sucesso!');
+                document.getElementById('input-nome-prod').value = '';
+                document.getElementById('input-icone-prod').value = '';
+                document.getElementById('input-manual-prod').value = '';
+                document.getElementById('preview-icone-prod').style.display = 'none';
+                document.getElementById('preview-manual').style.display = 'none';
+                document.getElementById('check-possui-variacoes').checked = false;
+                document.getElementById('variacoes-area').style.display = 'none';
+                variacoes = [];
+                renderizarVariacoes();
+                document.getElementById('input-variacao').value = '';
+                await carregarTodos();
+            } else {
+                alert('❌ ' + data.error);
+            }
+        }
+
+        // ============================================
+        // INICIALIZAÇÃO
+        // ============================================
+        document.addEventListener('DOMContentLoaded', async () => {
+            await carregarTodos();
+        });
+
+        document.getElementById('modal-imagens').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) fecharModalImagens();
+        });
+    </script>
+</body>
+</html>
