@@ -8,6 +8,13 @@ import { Resend } from 'resend';
 import multer from 'multer';
 import dotenv from 'dotenv';
 
+try {
+    dotenv.config();
+    console.log('✅ .env carregado com sucesso');
+} catch (err) {
+    console.error('❌ Erro ao carregar .env:', err.message);
+}
+
 dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
@@ -1441,6 +1448,31 @@ app.get('/images/*', (req, res) => {
     } else {
         res.status(404).send('Imagem não encontrada');
     }
+});
+
+// ============================================
+// INICIALIZAÇÃO DO SERVIDOR
+// ============================================
+try {
+    app.listen(PORT, '0.0.0.0', () => {
+        console.log(`🚀 Servidor rodando em http://0.0.0.0:${PORT}`);
+        console.log(`📦 Projeto: Marine Peças`);
+        console.log(`🔗 URL Base: ${BASE_URL}`);
+    });
+} catch (error) {
+    console.error('❌ Erro ao iniciar servidor:', error);
+    process.exit(1);
+}
+
+// CAPTURA ERROS NÃO TRATADOS
+process.on('uncaughtException', (err) => {
+    console.error('❌ Erro não capturado:', err);
+    process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('❌ Promessa rejeitada não tratada:', reason);
+    process.exit(1);
 });
 
 // ============================================
