@@ -3,102 +3,709 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Marine Fishing - Manuais</title>
+    <title>Marine Fishing - Manuais Técnicos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background: #f0f2f5;
-            color: #333;
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
 
+        body {
+            font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+            background: #f0f4f8;
+            color: #1a2a3a;
+            min-height: 100vh;
+        }
+
+        /* ===== TOP BAR ===== */
+        .top-bar {
+            background: #0a2a4a;
+            color: rgba(255, 255, 255, 0.8);
+            padding: 8px 0;
+            font-size: 0.78rem;
+            text-align: center;
+            border-bottom: 2px solid #f8b81f;
+        }
+
+        .top-bar span {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin: 0 12px;
+        }
+
+        .top-bar i {
+            color: #f8b81f;
+        }
+
+        .top-bar .divider {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: #f8b81f;
+            display: inline-block;
+            opacity: 0.5;
+            margin: 0 6px;
+        }
+
+        /* ===== HEADER ===== */
+        .main-header {
+            background: #ffffff;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid #e8edf3;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo-img {
+            height: 55px;
+            width: auto;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        .logo-text {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #0a2a4a;
+            letter-spacing: 0.5px;
+        }
+
+        .logo-text span {
+            color: #f8b81f;
+        }
+
+        .logo-sub {
+            font-size: 0.7rem;
+            font-weight: 400;
+            color: #6b7a8a;
+            display: block;
+            letter-spacing: 0.3px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-header {
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.82rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-header-primary {
+            background: #f8b81f;
+            color: #0a2a4a;
+        }
+
+        .btn-header-primary:hover {
+            background: #e0a312;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(248, 184, 31, 0.3);
+        }
+
+        .btn-header-outline {
+            background: transparent;
+            color: #0a2a4a;
+            border: 1.5px solid #dce1e8;
+        }
+
+        .btn-header-outline:hover {
+            border-color: #0a2a4a;
+            background: #f5f7fa;
+        }
+
+        /* ===== HERO ===== */
         .hero {
-            background: linear-gradient(135deg, #002B49, #005792);
+            background: linear-gradient(135deg, #0a2a4a 0%, #0d3b66 50%, #1a5276 100%);
             color: white;
             text-align: center;
-            padding: 60px 20px;
-            margin-bottom: 30px;
+            padding: 60px 20px 50px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(248, 184, 31, 0.08) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(248, 184, 31, 0.05) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: rgba(248, 184, 31, 0.15);
+            border: 1px solid rgba(248, 184, 31, 0.3);
+            padding: 4px 16px;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #f8b81f;
+            letter-spacing: 0.5px;
+            margin-bottom: 20px;
         }
 
         .hero h1 {
-            font-size: 48px;
-            margin-bottom: 10px;
+            font-size: 2.8rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .hero h1 span {
+            color: #f8b81f;
         }
 
         .hero p {
-            font-size: 18px;
-            opacity: 0.9;
+            font-size: 1.1rem;
+            opacity: 0.85;
+            max-width: 550px;
+            margin: 0 auto 30px;
+            line-height: 1.6;
+        }
+
+        .hero-search {
+            display: flex;
+            max-width: 480px;
+            margin: 0 auto;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            padding: 4px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .hero-search input {
+            flex: 1;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 50px;
+            font-size: 0.95rem;
+            background: rgba(255, 255, 255, 0.9);
+            color: #1a2a3a;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .hero-search input::placeholder {
+            color: #8a9aa8;
+        }
+
+        .hero-search button {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 50px;
+            background: #f8b81f;
+            color: #0a2a4a;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+
+        .hero-search button:hover {
+            background: #e0a312;
+            transform: scale(1.02);
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 35px;
+            flex-wrap: wrap;
+        }
+
+        .hero-stats .stat {
+            text-align: center;
+        }
+
+        .hero-stats .stat .number {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #f8b81f;
+            display: block;
+        }
+
+        .hero-stats .stat .label {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        /* ===== CATEGORIAS ===== */
+        .section-title {
+            text-align: center;
+            padding: 50px 20px 10px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #0a2a4a;
+        }
+
+        .section-title span {
+            color: #f8b81f;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: #6b7a8a;
+            font-size: 1rem;
+            margin-bottom: 30px;
         }
 
         .categorias {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            padding: 20px;
-            max-width: 1000px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 24px;
+            padding: 20px 24px 40px;
+            max-width: 1200px;
             margin: 0 auto;
         }
 
         .card-categoria {
             background: white;
-            border-radius: 15px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            padding: 28px 20px;
             text-align: center;
-            width: 300px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-categoria::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: #f8b81f;
+            transform: scaleX(0);
+            transition: transform 0.35s ease;
         }
 
         .card-categoria:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+            transform: translateY(-6px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+            border-color: rgba(248, 184, 31, 0.3);
+        }
+
+        .card-categoria:hover::after {
+            transform: scaleX(1);
         }
 
         .card-categoria img {
-            width: 150px;
-            height: 150px;
+            width: 90px;
+            height: 90px;
             object-fit: contain;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
+            border-radius: 12px;
+            background: #f8fafc;
+            padding: 8px;
         }
 
-        .card-categoria h2 {
-            color: #002B49;
-            margin-bottom: 10px;
+        .card-categoria h3 {
+            color: #0a2a4a;
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 4px;
         }
 
         .card-categoria p {
-            color: #666;
+            color: #8a9aa8;
+            font-size: 0.8rem;
         }
 
-        .admin-link {
+        .card-categoria .icon-arrow {
+            color: #f8b81f;
+            font-size: 0.7rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+            display: inline-block;
+        }
+
+        .card-categoria:hover .icon-arrow {
+            opacity: 1;
+        }
+
+        /* ===== LOADING ===== */
+        .loading-spinner {
+            text-align: center;
+            padding: 60px 20px;
+            color: #8a9aa8;
+        }
+
+        .loading-spinner .spinner {
+            border: 4px solid #e8edf3;
+            border-top: 4px solid #f8b81f;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            background: #0a2a4a;
+            color: rgba(255, 255, 255, 0.8);
+            text-align: center;
+            padding: 30px 20px;
+            border-top: 2px solid rgba(248, 184, 31, 0.2);
+        }
+
+        footer .footer-logo {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        footer .footer-logo span {
+            color: #f8b81f;
+        }
+
+        footer p {
+            font-size: 0.85rem;
+            opacity: 0.7;
+            margin-top: 8px;
+        }
+
+        footer .footer-social {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 14px;
+        }
+
+        footer .footer-social a {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1.1rem;
+            transition: all 0.3s;
+        }
+
+        footer .footer-social a:hover {
+            color: #f8b81f;
+            transform: translateY(-2px);
+        }
+
+        /* ===== ADMIN BUTTON ===== */
+        .admin-fab {
             position: fixed;
-            top: 20px;
-            right: 20px;
+            bottom: 24px;
+            right: 24px;
             background: #e94560;
             color: white;
-            padding: 10px 15px;
-            border-radius: 8px;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 16px rgba(233, 69, 96, 0.3);
             text-decoration: none;
-            font-size: 13px;
+            transition: all 0.3s;
+            z-index: 50;
+        }
+
+        .admin-fab:hover {
+            transform: scale(1.1) rotate(-10deg);
+            box-shadow: 0 6px 24px rgba(233, 69, 96, 0.4);
+        }
+
+        .admin-fab .tooltip {
+            position: absolute;
+            right: 60px;
+            background: #1a2a3a;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .admin-fab:hover .tooltip {
+            opacity: 1;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+
+            .hero p {
+                font-size: 0.95rem;
+            }
+
+            .hero-search {
+                flex-direction: column;
+                background: transparent;
+                padding: 0;
+                border: none;
+            }
+
+            .hero-search input {
+                border-radius: 12px;
+            }
+
+            .hero-search button {
+                border-radius: 12px;
+                width: 100%;
+            }
+
+            .hero-stats {
+                gap: 20px;
+            }
+
+            .hero-stats .stat .number {
+                font-size: 1.4rem;
+            }
+
+            .categorias {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 16px;
+                padding: 16px;
+            }
+
+            .header-container {
+                padding: 10px 16px;
+            }
+
+            .logo-img {
+                height: 40px;
+            }
+
+            .logo-text {
+                font-size: 0.9rem;
+            }
+
+            .btn-header {
+                padding: 6px 14px;
+                font-size: 0.7rem;
+            }
+
+            .section-title {
+                font-size: 1.4rem;
+            }
+
+            .admin-fab {
+                width: 42px;
+                height: 42px;
+                font-size: 1rem;
+                bottom: 16px;
+                right: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-actions .btn-header-outline {
+                display: none;
+            }
+
+            .categorias {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+                padding: 12px;
+            }
+
+            .card-categoria {
+                padding: 16px 12px;
+            }
+
+            .card-categoria img {
+                width: 60px;
+                height: 60px;
+            }
+
+            .hero {
+                padding: 40px 16px 30px;
+            }
+
+            .hero h1 {
+                font-size: 1.5rem;
+            }
         }
     </style>
 </head>
 <body>
 
-    <a href="/admin_catalogo.html" class="admin-link">⚙️ Admin</a>
-
-    <div class="hero">
-        <h1>🎣 MARINE FISHING</h1>
-        <p>Manuais técnicos e catálogo de peças</p>
+    <!-- ===== TOP BAR ===== -->
+    <div class="top-bar">
+        <span><i class="fas fa-headset"></i> Suporte Técnico Marine</span>
+        <span class="divider"></span>
+        <span><i class="fab fa-whatsapp"></i> (45) 98831-5455</span>
+        <span class="divider"></span>
+        <span><i class="fas fa-envelope"></i> atendimento@marinefishing.com.br</span>
     </div>
+
+    <!-- ===== HEADER ===== -->
+    <header class="main-header">
+        <div class="header-container">
+            <div class="logo-area">
+                <img class="logo-img" src="https://gjshdfnpzmitrerzrxkb.supabase.co/storage/v1/object/public/icones/marine.JPG" 
+                     alt="Marine Fishing" 
+                     onerror="this.src='https://via.placeholder.com/200x60?text=MARINE+FISHING'">
+                <div>
+                    <div class="logo-text">Marine <span>Fishing</span></div>
+                    <span class="logo-sub"><i class="fas fa-wrench"></i> Manuais Técnicos</span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <a href="https://www.marinefishing.com.br" target="_blank" class="btn-header btn-header-outline">
+                    <i class="fas fa-external-link-alt"></i> Site Oficial
+                </a>
+                <a href="/admin_catalogo.html" class="btn-header btn-header-primary">
+                    <i class="fas fa-cog"></i> Admin
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- ===== HERO ===== -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <i class="fas fa-book-open"></i> Biblioteca Técnica
+            </div>
+            <h1>Manuais e <span>Peças</span></h1>
+            <p>Encontre o manual técnico do seu equipamento Marine Fishing e consulte todas as peças com facilidade.</p>
+
+            <div class="hero-search" id="hero-search">
+                <input type="text" id="search-input" placeholder="🔍 Buscar produto ou categoria..." 
+                       onkeydown="if(event.key==='Enter') buscarProduto()">
+                <button onclick="buscarProduto()"><i class="fas fa-search"></i> Buscar</button>
+            </div>
+
+            <div class="hero-stats" id="hero-stats">
+                <div class="stat">
+                    <span class="number" id="stat-manuais">0</span>
+                    <span class="label">Manuais disponíveis</span>
+                </div>
+                <div class="stat">
+                    <span class="number" id="stat-pecas">0</span>
+                    <span class="label">Peças cadastradas</span>
+                </div>
+                <div class="stat">
+                    <span class="number" id="stat-hotspots">0</span>
+                    <span class="label">Hotspots mapeados</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== CATEGORIAS ===== -->
+    <h2 class="section-title">Explore as <span>Categorias</span></h2>
+    <p class="section-subtitle">Selecione uma categoria para visualizar os manuais disponíveis</p>
 
     <div class="categorias" id="categorias-container">
-        <!-- As categorias serão carregadas via API -->
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p>Carregando categorias...</p>
+        </div>
     </div>
 
+    <!-- ===== ADMIN FAB ===== -->
+    <a href="/admin_catalogo.html" class="admin-fab" title="Painel Admin">
+        <i class="fas fa-cog"></i>
+        <span class="tooltip">Admin</span>
+    </a>
+
+    <!-- ===== FOOTER ===== -->
+    <footer>
+        <div class="footer-logo">Marine <span>Fishing</span></div>
+        <p>© 2026 Marine Fishing - Todos os direitos reservados</p>
+        <p style="font-size:0.75rem; opacity:0.5; margin-top:4px;">
+            <i class="fas fa-fish"></i> Qualidade e confiança desde 1998
+        </p>
+        <div class="footer-social">
+            <a href="https://www.instagram.com/marinefishing/" target="_blank" aria-label="Instagram">
+                <i class="fab fa-instagram"></i>
+            </a>
+            <a href="https://www.youtube.com/@MarineFishingBrasil" target="_blank" aria-label="YouTube">
+                <i class="fab fa-youtube"></i>
+            </a>
+            <a href="https://www.facebook.com/marinefishing" target="_blank" aria-label="Facebook">
+                <i class="fab fa-facebook"></i>
+            </a>
+            <a href="https://www.tiktok.com/@marinefishing" target="_blank" aria-label="TikTok">
+                <i class="fab fa-tiktok"></i>
+            </a>
+        </div>
+    </footer>
+
     <script>
+        // ============================================
+        // CARREGAR CATEGORIAS
+        // ============================================
         async function carregarCategorias() {
             const container = document.getElementById('categorias-container');
             
@@ -107,7 +714,15 @@
                 const data = await res.json();
                 
                 if (!data.success || data.grupos.length === 0) {
-                    container.innerHTML = '<p style="text-align:center; color:#888;">Nenhuma categoria cadastrada ainda.</p>';
+                    container.innerHTML = `
+                        <div style="grid-column:1/-1; text-align:center; color:#8a9aa8; padding:40px;">
+                            <div style="font-size:48px; margin-bottom:16px;">📭</div>
+                            <p>Nenhuma categoria cadastrada ainda.</p>
+                            <p style="font-size:0.85rem; margin-top:8px;">
+                                <a href="/admin_catalogo.html" style="color:#f8b81f; font-weight:600;">Cadastre uma categoria</a>
+                            </p>
+                        </div>
+                    `;
                     return;
                 }
                 
@@ -118,20 +733,75 @@
                     card.onclick = () => window.location.href = `/categoria.html?grupo=${grupo.id}&nome=${encodeURIComponent(grupo.nome)}`;
                     
                     card.innerHTML = `
-                        <img src="${grupo.icone_url || 'https://via.placeholder.com/150'}" alt="${grupo.nome}">
-                        <h2>${grupo.nome}</h2>
-                        <p>Clique para ver os modelos</p>
+                        <img src="${grupo.icone_url || 'https://via.placeholder.com/90'}" alt="${grupo.nome}" 
+                             onerror="this.src='https://via.placeholder.com/90?text=${grupo.nome.charAt(0)}'">
+                        <h3>${grupo.nome}</h3>
+                        <p>Ver manuais <span class="icon-arrow"><i class="fas fa-arrow-right"></i></span></p>
                     `;
                     
                     container.appendChild(card);
                 });
                 
             } catch (error) {
-                container.innerHTML = `<p style="text-align:center; color:#e94560;">Erro: ${error.message}</p>`;
+                container.innerHTML = `
+                    <div style="grid-column:1/-1; text-align:center; color:#e94560; padding:40px;">
+                        <p>❌ Erro ao carregar categorias: ${error.message}</p>
+                        <button onclick="carregarCategorias()" style="margin-top:12px; padding:8px 24px; background:#f8b81f; color:#0a2a4a; border:none; border-radius:8px; cursor:pointer; font-weight:600;">
+                            🔄 Tentar novamente
+                        </button>
+                    </div>
+                `;
             }
         }
 
-        document.addEventListener('DOMContentLoaded', carregarCategorias);
+        // ============================================
+        // BUSCAR PRODUTO
+        // ============================================
+        function buscarProduto() {
+            const termo = document.getElementById('search-input').value.trim();
+            if (!termo) return;
+            
+            // Tenta encontrar o produto no catálogo
+            window.location.href = `/categoria.html?busca=${encodeURIComponent(termo)}`;
+        }
+
+        // ============================================
+        // CARREGAR ESTATÍSTICAS
+        // ============================================
+        async function carregarEstatisticas() {
+            try {
+                // Busca manuais
+                const resManuais = await fetch('/api/manuais');
+                const dataManuais = await resManuais.json();
+                if (dataManuais.success) {
+                    document.getElementById('stat-manuais').textContent = dataManuais.manuais.length;
+                }
+
+                // Busca peças
+                const resPecas = await fetch('/api/pecas?limit=1');
+                const dataPecas = await resPecas.json();
+                if (dataPecas.success && dataPecas.total !== undefined) {
+                    document.getElementById('stat-pecas').textContent = dataPecas.total;
+                }
+
+                // Busca hotspots
+                const resHotspots = await fetch('/api/hotspots?limit=1');
+                const dataHotspots = await resHotspots.json();
+                if (dataHotspots.success && dataHotspots.total !== undefined) {
+                    document.getElementById('stat-hotspots').textContent = dataHotspots.total;
+                }
+            } catch (error) {
+                console.log('⚠️ Não foi possível carregar estatísticas:', error.message);
+            }
+        }
+
+        // ============================================
+        // INICIALIZAÇÃO
+        // ============================================
+        document.addEventListener('DOMContentLoaded', () => {
+            carregarCategorias();
+            carregarEstatisticas();
+        });
     </script>
 </body>
 </html>
