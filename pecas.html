@@ -3,91 +3,380 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Peças - Sistema</title>
+    <title>Marine Fishing - Peças</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background: #f0f2f5;
-            color: #333;
-            padding: 20px;
+            font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+            background: #f0f4f8;
+            color: #1a2a3a;
+            min-height: 100vh;
         }
 
         .container {
             max-width: 1400px;
             margin: 0 auto;
+            padding: 0 24px 40px;
         }
 
-        .card {
+        /* ===== TOP BAR ===== */
+        .top-bar {
+            background: #0a2a4a;
+            color: rgba(255, 255, 255, 0.8);
+            padding: 8px 0;
+            font-size: 0.78rem;
+            text-align: center;
+            border-bottom: 2px solid #f8b81f;
+        }
+
+        .top-bar span {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin: 0 12px;
+        }
+
+        .top-bar i {
+            color: #f8b81f;
+        }
+
+        .top-bar .divider {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: #f8b81f;
+            display: inline-block;
+            opacity: 0.5;
+            margin: 0 6px;
+        }
+
+        /* ===== HEADER ===== */
+        .main-header {
+            background: #ffffff;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid #e8edf3;
+        }
+
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo-img {
+            height: 45px;
+            width: auto;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        .logo-text {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #0a2a4a;
+            letter-spacing: 0.5px;
+        }
+
+        .logo-text span {
+            color: #f8b81f;
+        }
+
+        .logo-sub {
+            font-size: 0.7rem;
+            font-weight: 400;
+            color: #6b7a8a;
+            display: block;
+            letter-spacing: 0.3px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn-header {
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.82rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: inherit;
+        }
+
+        .btn-header-outline {
+            background: transparent;
+            color: #0a2a4a;
+            border: 1.5px solid #dce1e8;
+        }
+
+        .btn-header-outline:hover {
+            border-color: #0a2a4a;
+            background: #f5f7fa;
+        }
+
+        .btn-header-primary {
+            background: #f8b81f;
+            color: #0a2a4a;
+        }
+
+        .btn-header-primary:hover {
+            background: #e0a312;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(248, 184, 31, 0.3);
+        }
+
+        /* ===== BREADCRUMB ===== */
+        .breadcrumb {
+            padding: 16px 0 8px;
+            font-size: 0.85rem;
+            color: #6b7a8a;
+        }
+
+        .breadcrumb a {
+            color: #0a2a4a;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .breadcrumb a:hover {
+            color: #f8b81f;
+        }
+
+        .breadcrumb .current {
+            color: #1a237e;
+            font-weight: 600;
+        }
+
+        /* ===== PRODUTO ATUAL ===== */
+        .produto-atual {
             background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 16px;
+            padding: 16px 24px;
             margin-bottom: 20px;
-        }
-
-        .header-top {
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+            border: 1px solid #e8edf3;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .produto-atual .info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .produto-atual .info .icone {
+            width: 48px;
+            height: 48px;
+            background: #e8eaf6;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            color: #1a237e;
+        }
+
+        .produto-atual .info .nome {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #0a2a4a;
+        }
+
+        .produto-atual .info .detalhes {
+            font-size: 0.85rem;
+            color: #6b7a8a;
+        }
+
+        .produto-atual .info .detalhes .variacao-tag {
+            background: #e8eaf6;
+            color: #1a237e;
+            padding: 2px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .produto-atual .acoes {
+            display: flex;
             gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-acao {
+            padding: 8px 18px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: inherit;
+            text-decoration: none;
+        }
+
+        .btn-acao.azul {
+            background: #0984e3;
+            color: white;
+        }
+
+        .btn-acao.azul:hover {
+            background: #0652DD;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(9, 132, 227, 0.3);
+        }
+
+        .btn-acao.verde {
+            background: #00b894;
+            color: white;
+        }
+
+        .btn-acao.verde:hover {
+            background: #00a381;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 184, 148, 0.3);
+        }
+
+        .btn-acao.vermelho {
+            background: #e94560;
+            color: white;
+        }
+
+        .btn-acao.vermelho:hover {
+            background: #c62828;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(233, 69, 96, 0.3);
+        }
+
+        .btn-acao.roxo {
+            background: #6c5ce7;
+            color: white;
+        }
+
+        .btn-acao.roxo:hover {
+            background: #5a4bd1;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
+        }
+
+        /* ===== MANUAL ===== */
+        .card-manual {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+            border: 1px solid #e8edf3;
             margin-bottom: 20px;
         }
 
-        .header-top h1 {
-            color: #1a237e;
-            font-size: 24px;
+        .card-manual .header-manual {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 16px;
         }
 
-        .btn-voltar {
-            background: #e0e0e0;
-            padding: 8px 20px;
-            border-radius: 8px;
-            text-decoration: none;
-            color: #1a1a2e;
-            font-weight: 600;
-            transition: 0.3s;
+        .card-manual .header-manual h2 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #0a2a4a;
         }
 
-        .btn-voltar:hover {
-            background: #ccc;
+        .card-manual .header-manual h2 small {
+            font-weight: 400;
+            color: #6b7a8a;
+            font-size: 0.85rem;
         }
 
-        .btn-produtos {
-            background: #0984e3;
-            color: white;
-            padding: 8px 20px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: 0.3s;
-            border: none;
-            cursor: pointer;
-        }
-
-        .btn-produtos:hover {
-            background: #0652DD;
-        }
-
-        .variacao-badge {
-            background: #e8eaf6;
-            color: #1a237e;
-            padding: 4px 12px;
+        .card-manual .header-manual .total {
+            font-size: 0.85rem;
+            color: #6b7a8a;
+            background: #f8fafc;
+            padding: 4px 16px;
             border-radius: 20px;
-            font-size: 14px;
-            font-weight: 600;
-            margin-left: 10px;
+            border: 1px solid #e8edf3;
         }
 
-        /* DIAGRAMA */
+        /* ===== ABAS ===== */
+        .aba-container {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e8edf3;
+        }
+
+        .aba {
+            padding: 10px 24px;
+            cursor: pointer;
+            border-radius: 8px 8px 0 0;
+            transition: all 0.3s;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: #6b7a8a;
+            border-bottom: 3px solid transparent;
+        }
+
+        .aba:hover {
+            color: #0a2a4a;
+            background: #f8fafc;
+        }
+
+        .aba.ativo {
+            color: #1a237e;
+            border-bottom-color: #1a237e;
+            font-weight: 600;
+        }
+
+        .aba-conteudo {
+            display: none;
+        }
+
+        .aba-conteudo.ativo {
+            display: block;
+        }
+
+        /* ===== DIAGRAMA ===== */
         .diagrama-wrapper {
             position: relative;
             width: 100%;
             background: #f8f9fa;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
+            border: 2px solid #e8edf3;
+            border-radius: 12px;
             overflow: hidden;
             min-height: 400px;
         }
@@ -128,13 +417,13 @@
             padding: 6px 10px;
             border-radius: 10px;
             box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
-            border: 1px solid #dce1e8;
+            border: 1px solid #e8edf3;
             align-items: center;
         }
 
         .zoom-controls button {
             background: #ffffff;
-            border: 1px solid #dce1e8;
+            border: 1px solid #e8edf3;
             border-radius: 6px;
             padding: 4px 12px;
             cursor: pointer;
@@ -142,6 +431,7 @@
             font-weight: 700;
             color: #2d3436;
             transition: 0.2s;
+            font-family: inherit;
         }
 
         .zoom-controls button:hover {
@@ -150,7 +440,37 @@
             border-color: #1a237e;
         }
 
-        /* HOTSPOTS */
+        .zoom-controls .zoom-level {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #6b7a8a;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .btn-olho {
+            background: #ffffff;
+            border: 1px solid #e8edf3;
+            border-radius: 6px;
+            padding: 4px 10px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .btn-olho:hover {
+            background: #1a237e;
+            color: white;
+            border-color: #1a237e;
+        }
+
+        .btn-olho.ativo {
+            background: #1a237e;
+            color: white;
+            border-color: #1a237e;
+        }
+
+        /* ===== HOTSPOTS ===== */
         .pin-peca {
             position: absolute;
             padding: 4px 8px;
@@ -164,7 +484,7 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
             user-select: none;
             z-index: 10;
-            font-family: 'Segoe UI', Arial, sans-serif;
+            font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
             line-height: 1;
             animation: pinAppear 0.3s ease-out;
             min-width: 28px;
@@ -311,6 +631,7 @@
 
         .pin-peca:hover .tooltip { display: block; }
 
+        /* ===== LISTA DE PEÇAS ===== */
         .grid-pecas {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -325,30 +646,102 @@
             align-items: center;
             gap: 10px;
             padding: 8px 12px;
-            background: #f8f9fa;
-            border: 2px solid #e0e0e0;
+            background: #f8fafc;
+            border: 2px solid #e8edf3;
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.2s;
-            font-size: 13px;
+            font-size: 0.8rem;
+            font-family: inherit;
         }
 
         .btn-peca:hover {
             border-color: #1a237e;
             background: #e8eaf6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
         }
 
         .btn-peca .numero-peca {
-            font-weight: bold;
+            font-weight: 700;
             color: #1a237e;
             min-width: 40px;
+            font-size: 0.85rem;
         }
 
         .btn-peca .nome-peca {
             color: #555;
-            font-size: 12px;
+            font-size: 0.75rem;
             flex: 1;
             word-break: break-word;
+        }
+
+        /* ===== CARRINHO ===== */
+        .card-carrinho {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+            border: 1px solid #e8edf3;
+            margin-bottom: 20px;
+        }
+
+        .card-carrinho .header-carrinho {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .card-carrinho .header-carrinho h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #0a2a4a;
+        }
+
+        .card-carrinho .header-carrinho .badge {
+            background: #e94560;
+            color: white;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .carrinho-vazio {
+            text-align: center;
+            padding: 40px 20px;
+            color: #8a9aa8;
+        }
+
+        .carrinho-vazio .icone {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .grupo-produto {
+            background: #f8fafc;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            overflow: hidden;
+            border: 1px solid #e8edf3;
+        }
+
+        .grupo-produto .grupo-header {
+            background: #e8eaf6;
+            padding: 10px 16px;
+            font-weight: 600;
+            color: #1a237e;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+        }
+
+        .grupo-produto .grupo-itens {
+            padding: 8px 16px;
         }
 
         table {
@@ -357,113 +750,48 @@
         }
 
         th, td {
-            padding: 12px;
+            padding: 10px 8px;
             text-align: left;
-            border-bottom: 1px solid #e0e0e0;
+            border-bottom: 1px solid #e8edf3;
+            font-size: 0.85rem;
         }
 
         th {
-            background: #f5f5f5;
+            background: #f5f7fa;
             font-weight: 600;
+            color: #0a2a4a;
         }
 
         input[type="number"] {
-            width: 60px;
+            width: 55px;
             padding: 6px;
             text-align: center;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            border: 1.5px solid #e8edf3;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-family: inherit;
+        }
+
+        input[type="number"]:focus {
+            border-color: #1a237e;
+            outline: none;
         }
 
         .btn-remover {
-            background: #d32f2f;
+            background: #e94560;
             color: white;
             border: none;
-            padding: 6px 14px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .btn-remover:hover { background: #b71c1c; }
-
-        .badge {
-            background: #d32f2f;
-            color: white;
             padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 14px;
-        }
-
-        .info-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .manual-titulo {
-            color: #1a237e;
-            font-size: 20px;
-        }
-
-        .manual-titulo small {
-            color: #666;
-            font-size: 14px;
-            font-weight: normal;
-        }
-
-        .erro-msg {
-            color: #d32f2f;
-            font-weight: bold;
-            padding: 40px;
-            text-align: center;
-            font-size: 18px;
-        }
-
-        .aba-container {
-            display: flex;
-            gap: 4px;
-            margin-bottom: 16px;
-            border-bottom: 2px solid #e0e0e0;
-        }
-
-        .aba {
-            padding: 10px 20px;
+            border-radius: 6px;
             cursor: pointer;
-            border-radius: 8px 8px 0 0;
-            transition: all 0.2s;
-            font-weight: 500;
-            color: #666;
+            font-size: 0.75rem;
+            font-weight: 600;
+            transition: 0.2s;
+            font-family: inherit;
         }
 
-        .aba:hover { background: #f5f5f5; }
-        .aba.ativo { background: #1a237e; color: white; }
-
-        .aba-conteudo { display: none; }
-        .aba-conteudo.ativo { display: block; }
-
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: #888;
-        }
-
-        .loading .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #1a237e;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .btn-remover:hover {
+            background: #c62828;
         }
 
         .variacao-tag {
@@ -471,135 +799,46 @@
             color: #1a237e;
             padding: 2px 10px;
             border-radius: 12px;
-            font-size: 12px;
+            font-size: 0.7rem;
             font-weight: 600;
             display: inline-block;
         }
 
-        .carrinho-vazio {
-            text-align: center;
-            color: #888;
-            padding: 30px;
-        }
-
-        .grupo-produto {
-            background: #f8f9fa;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            overflow: hidden;
-        }
-
-        .grupo-produto .grupo-header {
-            background: #e8eaf6;
-            padding: 10px 15px;
-            font-weight: 600;
-            color: #1a237e;
+        /* ===== BOTÕES DO CARRINHO ===== */
+        .acoes-carrinho {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .grupo-produto .grupo-itens {
-            padding: 5px 15px;
-        }
-
-        .barra-produto-atual {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            gap: 12px;
             flex-wrap: wrap;
-            gap: 10px;
-            padding: 12px 20px;
-            background: #e8eaf6;
-            border-radius: 8px;
-            margin-bottom: 15px;
+            margin-top: 16px;
         }
 
-        .barra-produto-atual .produto-info {
-            font-weight: 600;
-            color: #1a237e;
-        }
-
-        .barra-produto-atual .produto-info span {
-            font-weight: normal;
-            color: #333;
-        }
-
-        .acoes-produto {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .btn-pequeno {
-            padding: 6px 15px;
-            border-radius: 6px;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 13px;
-            transition: 0.3s;
-        }
-
-        .btn-pequeno.azul { background: #0984e3; color: white; }
-        .btn-pequeno.azul:hover { background: #0652DD; }
-        .btn-pequeno.verde { background: #00b894; color: white; }
-        .btn-pequeno.verde:hover { background: #00a381; }
-        .btn-pequeno.vermelho { background: #e94560; color: white; }
-        .btn-pequeno.vermelho:hover { background: #c62828; }
-
-        .btn-enviar {
+        .btn-finalizar {
             background: #1a237e;
             color: white;
             border: none;
-            padding: 14px 30px;
-            font-size: 16px;
-            font-weight: bold;
-            border-radius: 8px;
+            padding: 14px 32px;
+            font-size: 1rem;
+            font-weight: 700;
+            border-radius: 30px;
             cursor: pointer;
             transition: all 0.3s;
+            font-family: inherit;
+            flex: 1;
+            min-width: 150px;
         }
 
-        .btn-enviar:hover {
+        .btn-finalizar:hover:not(:disabled) {
             transform: translateY(-2px);
-            box-shadow: 0 4px 16px rgba(26, 35, 126, 0.4);
+            box-shadow: 0 6px 20px rgba(26, 35, 126, 0.35);
         }
 
-        .btn-enviar:disabled {
+        .btn-finalizar:disabled {
             background: #ccc;
             cursor: not-allowed;
             transform: none;
         }
 
-        .btn-continuar {
-            background: #00b894;
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 15px;
-            transition: 0.3s;
-        }
-
-        .btn-continuar:hover { background: #00a381; }
-
-        .btn-add-produto {
-            background: #0984e3;
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 15px;
-            transition: 0.3s;
-        }
-
-        .btn-add-produto:hover { background: #0652DD; }
-
-        /* MODAL */
+        /* ===== MODAL ===== */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -608,6 +847,7 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
             z-index: 1000;
             align-items: center;
             justify-content: center;
@@ -617,117 +857,199 @@
 
         .modal {
             background: white;
-            padding: 30px;
-            border-radius: 12px;
-            max-width: 500px;
+            padding: 32px;
+            border-radius: 16px;
+            max-width: 450px;
             width: 95%;
             max-height: 90vh;
             overflow-y: auto;
             animation: modalIn 0.3s ease;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
 
         @keyframes modalIn {
-            from { transform: scale(0.9); opacity: 0; }
+            from { transform: scale(0.95); opacity: 0; }
             to { transform: scale(1); opacity: 1; }
         }
 
-        .modal h2 { color: #1a237e; margin-bottom: 20px; }
+        .modal h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #0a2a4a;
+            margin-bottom: 8px;
+        }
+
         .modal .numero-peca {
-            font-size: 32px;
-            font-weight: bold;
-            color: #d32f2f;
-            margin: 10px 0;
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #1a237e;
+            margin: 8px 0;
+        }
+
+        .modal .descricao {
+            color: #6b7a8a;
+            font-size: 0.95rem;
+            margin-bottom: 16px;
+        }
+
+        .modal .produto-info {
+            color: #1a237e;
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-bottom: 12px;
+            padding: 8px 12px;
+            background: #e8eaf6;
+            border-radius: 8px;
+        }
+
+        .modal label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.85rem;
+            color: #0a2a4a;
         }
 
         .modal input[type="number"] {
             width: 80px;
             padding: 10px;
-            font-size: 18px;
+            font-size: 1.1rem;
             text-align: center;
-            border: 2px solid #ddd;
-            border-radius: 6px;
-            margin: 10px 0;
+            border: 2px solid #e8edf3;
+            border-radius: 8px;
+            font-family: inherit;
+        }
+
+        .modal input[type="number"]:focus {
+            border-color: #1a237e;
+            outline: none;
+        }
+
+        .modal .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
         }
 
         .modal .btn-modal {
-            padding: 12px 30px;
+            padding: 10px 24px;
             border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            cursor: pointer;
-            margin: 5px;
-            transition: 0.2s;
-        }
-
-        .modal .btn-adicionar { background: #2e7d32; color: white; }
-        .modal .btn-adicionar:hover { background: #1b5e20; }
-        .modal .btn-cancelar { background: #e0e0e0; color: #333; }
-        .modal .btn-cancelar:hover { background: #bdbdbd; }
-
-        /* CLIENTE FORM - só aparece no final */
-        #card-cliente {
-            display: none;
-            border: 2px solid #1a237e;
-        }
-
-        #card-cliente .cliente-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 15px;
-            margin-top: 15px;
-        }
-
-        #card-cliente .cliente-grid .full { grid-column: 1 / -1; }
-        #card-cliente .cliente-grid .double { grid-column: span 2; }
-
-        #card-cliente .cliente-grid label {
+            border-radius: 8px;
+            font-size: 0.9rem;
             font-weight: 600;
-            display: block;
-            margin-bottom: 5px;
-            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: inherit;
+        }
+
+        .modal .btn-adicionar {
+            background: #2e7d32;
+            color: white;
+        }
+
+        .modal .btn-adicionar:hover {
+            background: #1b5e20;
+        }
+
+        .modal .btn-cancelar {
+            background: #e8edf3;
             color: #333;
         }
 
-        #card-cliente .cliente-grid input,
-        #card-cliente .cliente-grid select,
-        #card-cliente .cliente-grid textarea {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: border-color 0.3s;
+        .modal .btn-cancelar:hover {
+            background: #d5dce4;
         }
 
-        #card-cliente .cliente-grid input:focus,
-        #card-cliente .cliente-grid select:focus,
-        #card-cliente .cliente-grid textarea:focus {
+        /* ===== CLIENTE FORM ===== */
+        #card-cliente {
+            display: none;
+            border: 2px solid #1a237e;
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(26, 35, 126, 0.08);
+        }
+
+        #card-cliente h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #0a2a4a;
+            margin-bottom: 4px;
+        }
+
+        #card-cliente .sub {
+            color: #6b7a8a;
+            font-size: 0.85rem;
+            margin-bottom: 16px;
+        }
+
+        .cliente-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+        }
+
+        .cliente-grid .full { grid-column: 1 / -1; }
+        .cliente-grid .double { grid-column: span 2; }
+
+        .cliente-grid label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 4px;
+            font-size: 0.8rem;
+            color: #0a2a4a;
+        }
+
+        .cliente-grid input,
+        .cliente-grid select,
+        .cliente-grid textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1.5px solid #e8edf3;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-family: inherit;
+            transition: border-color 0.3s;
+            background: #fafbfc;
+        }
+
+        .cliente-grid input:focus,
+        .cliente-grid select:focus,
+        .cliente-grid textarea:focus {
             border-color: #1a237e;
             outline: none;
             box-shadow: 0 0 0 3px rgba(26, 35, 126, 0.1);
+            background: white;
         }
 
-        #card-cliente .cliente-grid .cnpj-status {
-            font-size: 13px;
-            margin-top: 5px;
-            padding: 5px 10px;
-            border-radius: 5px;
+        .cliente-grid textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .cliente-grid .cnpj-status {
+            font-size: 0.8rem;
+            margin-top: 4px;
+            padding: 4px 12px;
+            border-radius: 6px;
             display: none;
         }
 
-        #card-cliente .cliente-grid .cnpj-status.loading {
+        .cliente-grid .cnpj-status.loading {
             display: block;
             background: #fff3cd;
             color: #856404;
         }
 
-        #card-cliente .cliente-grid .cnpj-status.success {
+        .cliente-grid .cnpj-status.success {
             display: block;
             background: #d4edda;
             color: #155724;
         }
 
-        #card-cliente .cliente-grid .cnpj-status.error {
+        .cliente-grid .cnpj-status.error {
             display: block;
             background: #f8d7da;
             color: #721c24;
@@ -742,76 +1064,194 @@
             right: 12px;
             top: 50%;
             transform: translateY(-50%);
-            font-size: 18px;
-            color: #999;
+            font-size: 1.1rem;
+            color: #8a9aa8;
         }
 
         .input-group .input-icon.loading {
             animation: spin 1s linear infinite;
         }
 
+        @keyframes spin {
+            0% { transform: translateY(-50%) rotate(0deg); }
+            100% { transform: translateY(-50%) rotate(360deg); }
+        }
+
+        .acoes-cliente {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
         .msg-sucesso {
             background: #d4edda;
             color: #155724;
-            padding: 15px 20px;
-            border-radius: 8px;
+            padding: 16px 20px;
+            border-radius: 10px;
             border: 1px solid #c3e6cb;
-            margin-top: 15px;
+            margin-top: 16px;
             display: none;
         }
 
         .msg-sucesso.show { display: block; }
 
+        .msg-sucesso strong {
+            font-size: 1rem;
+        }
+
+        /* ===== LOADING ===== */
+        .loading {
+            text-align: center;
+            padding: 40px 20px;
+            color: #8a9aa8;
+        }
+
+        .loading .spinner {
+            border: 4px solid #e8edf3;
+            border-top: 4px solid #f8b81f;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        .erro-msg {
+            color: #e94560;
+            font-weight: 600;
+            padding: 40px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            background: #0a2a4a;
+            color: rgba(255, 255, 255, 0.8);
+            text-align: center;
+            padding: 20px 24px;
+            border-top: 2px solid rgba(248, 184, 31, 0.2);
+            margin-top: 20px;
+        }
+
+        footer p {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
-            .container { padding: 0; }
-            .card { padding: 15px; }
-            .pin-peca { font-size: 10px; min-width: 22px; min-height: 22px; }
-            .header-top h1 { font-size: 20px; }
-            #card-cliente .cliente-grid { grid-template-columns: 1fr; }
-            #card-cliente .cliente-grid .double { grid-column: span 1; }
-            .barra-produto-atual { flex-direction: column; align-items: stretch; }
-            .acoes-produto { justify-content: center; }
+            .container { padding: 0 16px 30px; }
+            .header-container { padding: 10px 16px; }
+            .logo-img { height: 36px; }
+            .logo-text { font-size: 0.85rem; }
+            .btn-header { padding: 6px 14px; font-size: 0.7rem; }
+            .produto-atual { padding: 12px 16px; flex-direction: column; align-items: stretch; }
+            .produto-atual .info { flex-wrap: wrap; }
+            .produto-atual .acoes { justify-content: center; }
+            .cliente-grid { grid-template-columns: 1fr; }
+            .cliente-grid .double { grid-column: span 1; }
+            .grid-pecas { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+            .card-manual { padding: 16px; }
+            .card-carrinho { padding: 16px; }
+            .top-bar span { margin: 0 6px; font-size: 0.7rem; }
+            .modal { padding: 24px; }
+            .acoes-carrinho { flex-direction: column; }
+            .btn-finalizar { width: 100%; }
+        }
+
+        @media (max-width: 480px) {
+            .produto-atual .info .nome { font-size: 0.95rem; }
+            .produto-atual .info .icone { width: 36px; height: 36px; font-size: 1rem; }
+            .aba { padding: 8px 14px; font-size: 0.8rem; }
+            .btn-acao { padding: 6px 12px; font-size: 0.7rem; }
+            .grid-pecas { grid-template-columns: repeat(2, 1fr); }
+            table { font-size: 0.75rem; }
+            th, td { padding: 6px 4px; }
+            .grupo-produto .grupo-header { font-size: 0.75rem; }
         }
     </style>
 </head>
 <body>
 
+    <!-- ===== TOP BAR ===== -->
+    <div class="top-bar">
+        <span><i class="fas fa-headset"></i> Suporte Técnico Marine</span>
+        <span class="divider"></span>
+        <span><i class="fab fa-whatsapp"></i> (45) 98831-5455</span>
+        <span class="divider"></span>
+        <span><i class="fas fa-envelope"></i> atendimento@marinefishing.com.br</span>
+    </div>
+
+    <!-- ===== HEADER ===== -->
+    <header class="main-header">
+        <div class="header-container">
+            <div class="logo-area">
+                <img class="logo-img" src="https://gjshdfnpzmitrerzrxkb.supabase.co/storage/v1/object/public/icones/marine.JPG" 
+                     alt="Marine Fishing" 
+                     onerror="this.src='https://via.placeholder.com/200x60?text=MARINE+FISHING'">
+                <div>
+                    <div class="logo-text">Marine <span>Fishing</span></div>
+                    <span class="logo-sub"><i class="fas fa-wrench"></i> Peças</span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <a href="/" class="btn-header btn-header-outline">
+                    <i class="fas fa-home"></i> Início
+                </a>
+                <a href="categoria.html" class="btn-header btn-header-primary">
+                    <i class="fas fa-th-large"></i> Catálogo
+                </a>
+            </div>
+        </div>
+    </header>
+
     <div class="container">
 
-        <!-- HEADER -->
-        <div class="header-top">
-            <h1>🔧 <span id="titulo-manual">Sistema de Peças</span></h1>
-            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                <span id="info-manual" style="font-size: 14px; color: #666;">Carregando...</span>
-                <a href="javascript:history.back()" class="btn-voltar">← Voltar</a>
-                <button class="btn-produtos" onclick="window.location.href='categoria.html'">📦 Trocar Produto</button>
+        <!-- ===== BREADCRUMB ===== -->
+        <div class="breadcrumb">
+            <a href="/"><i class="fas fa-home"></i> Início</a>
+            <span> / </span>
+            <a href="categoria.html">Catálogo</a>
+            <span> / </span>
+            <span class="current" id="breadcrumb-manual">Peças</span>
+        </div>
+
+        <!-- ===== PRODUTO ATUAL ===== -->
+        <div class="produto-atual" id="barra-produto">
+            <div class="info">
+                <div class="icone"><i class="fas fa-fish"></i></div>
+                <div>
+                    <div class="nome" id="produto-atual-display">Nenhum produto selecionado</div>
+                    <div class="detalhes" id="info-manual">Carregando...</div>
+                </div>
+            </div>
+            <div class="acoes">
+                <button class="btn-acao azul" onclick="window.location.href='categoria.html'">
+                    <i class="fas fa-plus"></i> Adicionar produto
+                </button>
             </div>
         </div>
 
-        <!-- BARRA DO PRODUTO ATUAL -->
-        <div class="barra-produto-atual" id="barra-produto">
-            <div class="produto-info">
-                📦 <span id="produto-atual-display">Nenhum produto selecionado</span>
-            </div>
-            <div class="acoes-produto">
-                <button class="btn-pequeno azul" onclick="window.location.href='categoria.html'">➕ Adicionar outro produto</button>
-            </div>
-        </div>
-
-        <!-- MANUAL -->
-        <div class="card" id="card-manual" style="display: none;">
-            <div class="info-bar">
-                <h2 class="manual-titulo">🎣 <span id="nome-manual">Manual</span> <small id="info-manual2"></small></h2>
+        <!-- ===== MANUAL ===== -->
+        <div class="card-manual" id="card-manual" style="display: none;">
+            <div class="header-manual">
+                <h2>🎣 <span id="nome-manual">Manual</span> <small id="info-manual2"></small></h2>
                 <span class="total" id="contador-hotspots">Carregando...</span>
             </div>
 
             <div class="aba-container">
-                <div class="aba ativo" data-aba="vista" onclick="trocarAba('vista')">📐 Vista Explodida</div>
-                <div class="aba" data-aba="lista" onclick="trocarAba('lista')">📋 Lista de Peças</div>
+                <div class="aba ativo" data-aba="vista" onclick="trocarAba('vista')">
+                    <i class="fas fa-image"></i> Vista Explodida
+                </div>
+                <div class="aba" data-aba="lista" onclick="trocarAba('lista')">
+                    <i class="fas fa-list"></i> Lista de Peças
+                </div>
             </div>
 
             <div class="aba-conteudo ativo" id="aba-vista">
-                <p style="color: #666; margin-bottom: 15px; font-size: 14px;">
+                <p style="color: #6b7a8a; margin-bottom: 16px; font-size: 0.85rem;">
                     💡 <strong>Clique nos números</strong> sobre a imagem para adicionar peças ao carrinho.
                 </p>
                 <div class="diagrama-wrapper" id="diagrama-wrapper">
@@ -835,53 +1275,56 @@
             </div>
 
             <div class="aba-conteudo" id="aba-lista">
-                <p style="color: #666; margin-bottom: 15px; font-size: 14px;">
+                <p style="color: #6b7a8a; margin-bottom: 16px; font-size: 0.85rem;">
                     💡 <strong>Clique em uma peça</strong> para adicionar ao carrinho.
                 </p>
                 <div class="grid-pecas" id="grid-pecas">
-                    <div style="grid-column: 1/-1; text-align:center; color:#888; padding:20px;">
-                        Carregando peças...
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>Carregando peças...</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- CARRINHO - SEMPRE VISÍVEL -->
-        <div class="card">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
-                <h3>🛒 Peças Selecionadas</h3>
+        <!-- ===== CARRINHO ===== -->
+        <div class="card-carrinho">
+            <div class="header-carrinho">
+                <h3><i class="fas fa-shopping-cart"></i> Peças Selecionadas</h3>
                 <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
                     <span class="badge" id="total-itens">0 itens</span>
-                    <button class="btn-pequeno vermelho" onclick="limparCarrinho()" style="display:none;" id="btn-limpar">🗑️ Limpar</button>
-                </div>
-            </div>
-            <div style="overflow-x: auto;">
-                <div id="carrinho-container">
-                    <div class="carrinho-vazio" id="carrinho-vazio">
-                        🛒 Nenhum item selecionado.
-                        <br><br>
-                        <button class="btn-continuar" onclick="window.location.href='categoria.html'">📦 Escolher um produto</button>
-                    </div>
-                    <div id="carrinho-grupos" style="display: none;"></div>
+                    <button class="btn-acao vermelho" onclick="limparCarrinho()" style="display:none; padding:4px 14px; font-size:0.75rem;" id="btn-limpar">
+                        <i class="fas fa-trash"></i> Limpar
+                    </button>
                 </div>
             </div>
 
-            <!-- BOTÃO FINALIZAR - abre o formulário do cliente -->
-            <button class="btn-enviar" id="btn-finalizar" disabled onclick="abrirFormularioCliente()">
-                📤 Finalizar Pedido
-            </button>
+            <div id="carrinho-container">
+                <div class="carrinho-vazio" id="carrinho-vazio">
+                    <div class="icone">🛒</div>
+                    <p>Nenhum item selecionado.</p>
+                    <button class="btn-acao azul" onclick="window.location.href='categoria.html'" style="margin-top:12px;">
+                        <i class="fas fa-plus"></i> Escolher um produto
+                    </button>
+                </div>
+                <div id="carrinho-grupos" style="display: none;"></div>
+            </div>
+
+            <div class="acoes-carrinho">
+                <button class="btn-finalizar" id="btn-finalizar" disabled onclick="abrirFormularioCliente()">
+                    <i class="fas fa-paper-plane"></i> Finalizar Pedido
+                </button>
+            </div>
         </div>
 
-        <!-- FORMULÁRIO DO CLIENTE - SÓ APARECE QUANDO CLICA EM FINALIZAR -->
-        <div class="card" id="card-cliente">
+        <!-- ===== FORMULÁRIO DO CLIENTE ===== -->
+        <div class="card-cliente" id="card-cliente">
             <h3>👤 Identificação do Cliente</h3>
-            <p style="color: #666; font-size: 14px; margin-top: 5px;">
-                Preencha os dados para finalizar o pedido.
-            </p>
+            <p class="sub">Preencha os dados para finalizar o pedido.</p>
 
             <div class="cliente-grid">
                 <div class="double">
-                    <label for="cliente-cnpj">CNPJ *</label>
+                    <label for="cliente-cnpj">CNPJ <span style="color:#e94560;">*</span></label>
                     <div class="input-group">
                         <input type="text" id="cliente-cnpj" placeholder="00.000.000/0000-00"
                                oninput="buscarCNPJAutomatico(this)" autocomplete="off">
@@ -894,7 +1337,7 @@
                     <input type="text" id="cliente-telefone" placeholder="(00) 00000-0000" readonly>
                 </div>
                 <div class="full">
-                    <label for="cliente-nome">Nome / Razão Social *</label>
+                    <label for="cliente-nome">Nome / Razão Social <span style="color:#e94560;">*</span></label>
                     <input type="text" id="cliente-nome" placeholder="Digite o nome do cliente" readonly>
                 </div>
                 <div class="full">
@@ -902,7 +1345,7 @@
                     <input type="text" id="cliente-endereco" placeholder="Endereço completo" readonly>
                 </div>
                 <div>
-                    <label for="cliente-vendedor">Selecione o Vendedor *</label>
+                    <label for="cliente-vendedor">Vendedor <span style="color:#e94560;">*</span></label>
                     <select id="cliente-vendedor">
                         <option value="">-- Selecione --</option>
                     </select>
@@ -920,33 +1363,42 @@
             <div id="msg-sucesso" class="msg-sucesso">
                 <strong>✅ Pedido enviado com sucesso!</strong><br>
                 Seu número de chamado é: <strong id="numero-chamado-gerado"></strong><br>
-                <small style="color: #666;">Um e-mail será enviado com os detalhes do pedido.</small>
+                <small>Um e-mail será enviado com os detalhes do pedido.</small>
             </div>
 
-            <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 20px;">
-                <button class="btn-pequeno vermelho" onclick="fecharFormularioCliente()" style="padding:10px 25px; font-size:14px;">✕ Fechar</button>
-                <button class="btn-enviar" onclick="enviarPedido()" style="flex:1; min-width:150px; margin-top:0;">
-                    📤 Enviar Pedido
+            <div class="acoes-cliente">
+                <button class="btn-acao vermelho" onclick="fecharFormularioCliente()" style="padding:10px 24px; font-size:0.9rem;">
+                    <i class="fas fa-times"></i> Fechar
+                </button>
+                <button class="btn-finalizar" onclick="enviarPedido()" style="flex:1; min-width:150px; margin-top:0;">
+                    <i class="fas fa-paper-plane"></i> Enviar Pedido
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL ADICIONAR PEÇA -->
+    <!-- ===== MODAL ADICIONAR PEÇA ===== -->
     <div class="modal-overlay" id="modal">
         <div class="modal">
             <h3>Adicionar ao Carrinho</h3>
             <div class="numero-peca" id="modal-numero">#000</div>
-            <div style="color: #666; margin-bottom: 20px; font-size: 14px;" id="modal-descricao">Carregando...</div>
-            <div style="color: #1a237e; font-weight: 600; font-size: 13px; margin-bottom: 10px;" id="modal-produto">Produto: ...</div>
-            <label style="display: block; font-weight: 600; margin-top: 10px;">Quantidade:</label>
+            <div class="descricao" id="modal-descricao">Carregando...</div>
+            <div class="produto-info" id="modal-produto">Produto: ...</div>
+            <label for="modal-qtd">Quantidade:</label>
             <input type="number" id="modal-qtd" value="1" min="1" max="99">
-            <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
+            <div class="modal-actions">
                 <button class="btn-modal btn-cancelar" onclick="fecharModal()">Cancelar</button>
-                <button class="btn-modal btn-adicionar" onclick="confirmarAdicao()">✅ Adicionar</button>
+                <button class="btn-modal btn-adicionar" onclick="confirmarAdicao()">
+                    <i class="fas fa-check"></i> Adicionar
+                </button>
             </div>
         </div>
     </div>
+
+    <!-- ===== FOOTER ===== -->
+    <footer>
+        <p>© 2026 Marine Fishing - Todos os direitos reservados</p>
+    </footer>
 
     <script>
         // ============================================
@@ -1002,6 +1454,7 @@
                 info.textContent = `Tamanho: ${variacao}`;
             }
             document.getElementById('produto-atual-display').textContent = `${nome}${variacao ? ` (📏 ${variacao})` : ''}`;
+            document.getElementById('breadcrumb-manual').textContent = nome;
         }
 
         function mostrarVariacaoNoManual(variacao) {
@@ -1013,8 +1466,9 @@
                 if (badgeAntiga) badgeAntiga.remove();
                 
                 const badge = document.createElement('span');
-                badge.className = 'variacao-badge';
+                badge.className = 'variacao-tag';
                 badge.textContent = `📏 ${variacao}`;
+                badge.style.marginLeft = '8px';
                 titulo.appendChild(badge);
             }
         }
@@ -1239,6 +1693,7 @@
             
             const produtoNome = getProdutoNome();
             document.getElementById('produto-atual-display').textContent = `${produtoNome}${variacao ? ` (📏 ${variacao})` : ''}`;
+            document.getElementById('breadcrumb-manual').textContent = produtoNome;
             
             if (variacao) {
                 atualizarTituloComVariacao(nome, variacao);
@@ -1247,8 +1702,12 @@
             info.textContent = 'carregando...';
             infoHeader.textContent = 'Carregando...';
             contador.textContent = 'Carregando...';
-            gridPecas.innerHTML =
-                '<div style="grid-column: 1/-1; text-align:center; color:#888; padding:20px;"><div class="spinner" style="margin:0 auto 10px; width:25px; height:25px; border-width:3px;"></div>Carregando peças...</div>';
+            gridPecas.innerHTML = `
+                <div class="loading" style="grid-column:1/-1;">
+                    <div class="spinner"></div>
+                    <p>Carregando peças...</p>
+                </div>
+            `;
 
             zoomLevel = 1;
             wrapper.classList.remove('zoom-150', 'zoom-200');
@@ -1262,8 +1721,9 @@
                     container.innerHTML = `<div class="erro-msg">❌ ${data.error}</div>`;
                     info.textContent = '⚠️ erro';
                     infoHeader.textContent = '⚠️ erro';
-                    gridPecas.innerHTML =
-                        `<div style="grid-column: 1/-1; text-align:center; color:#d32f2f; padding:20px;">❌ ${data.error}</div>`;
+                    gridPecas.innerHTML = `
+                        <div class="erro-msg" style="grid-column:1/-1;">❌ ${data.error}</div>
+                    `;
                     return;
                 }
 
@@ -1348,8 +1808,11 @@
                         gridPecas.appendChild(btn);
                     });
                 } else {
-                    gridPecas.innerHTML =
-                        '<div style="grid-column: 1/-1; text-align:center; color:#888; padding:20px;">📭 Nenhuma peça encontrada</div>';
+                    gridPecas.innerHTML = `
+                        <div style="grid-column:1/-1; text-align:center; color:#8a9aa8; padding:20px;">
+                            📭 Nenhuma peça encontrada
+                        </div>
+                    `;
                 }
 
                 renderizarCarrinho();
@@ -1359,8 +1822,9 @@
                 container.innerHTML = `<div class="erro-msg">❌ ${error.message}</div>`;
                 info.textContent = '⚠️ erro';
                 infoHeader.textContent = '⚠️ erro';
-                gridPecas.innerHTML =
-                    `<div style="grid-column: 1/-1; text-align:center; color:#d32f2f; padding:20px;">❌ ${error.message}</div>`;
+                gridPecas.innerHTML = `
+                    <div class="erro-msg" style="grid-column:1/-1;">❌ ${error.message}</div>
+                `;
             }
         }
 
@@ -1575,7 +2039,7 @@
                             <table>
                                 <thead>
                                     <tr>
-                                        <th style="width:80px;">Posição</th>
+                                        <th style="width:70px;">Posição</th>
                                         <th>Descrição</th>
                                         <th style="width:80px;">Qtd</th>
                                         <th style="width:70px;">Ação</th>
@@ -1697,7 +2161,6 @@
                     
                     document.getElementById('msg-sucesso').scrollIntoView({ behavior: 'smooth' });
                     
-                    // Esconde o formulário após 3 segundos
                     setTimeout(() => {
                         document.getElementById('card-cliente').style.display = 'none';
                     }, 5000);
@@ -1743,6 +2206,7 @@
                 document.getElementById('titulo-manual').textContent = '⚠️ Nenhum produto selecionado';
                 document.getElementById('info-manual').textContent = 'Selecione um produto na página anterior';
                 document.getElementById('produto-atual-display').textContent = 'Nenhum produto selecionado';
+                document.getElementById('breadcrumb-manual').textContent = 'Peças';
                 document.getElementById('card-manual').style.display = 'none';
             }
         });
