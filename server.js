@@ -1442,6 +1442,7 @@ app.post('/api/config-tecnico', async (req, res) => {
 // ============================================
 // SERVIDOR DE IMAGENS LOCAL
 // ============================================
+/*
 app.get('/images/:splat(.*)', (req, res) => {
     const imageName = decodeURIComponent(req.params.splat || '');
     const imagePath = path.join(__dirname, 'esquemas', imageName);
@@ -1452,6 +1453,7 @@ app.get('/images/:splat(.*)', (req, res) => {
         res.status(404).send('Imagem não encontrada');
     }
 });
+*/
 // ============================================
 // INICIALIZAÇÃO DO SERVIDOR
 // ============================================
