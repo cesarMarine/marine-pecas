@@ -26,7 +26,7 @@ const BASE_URL = process.env.BASE_URL || 'http://localhost:3001';
 
 // 🔑 CONFIGURAÇÃO DO SUPABASE
 const supabaseUrl = process.env.SUPABASE_URL || 'https://gjshdfnpzmitrerzrxkb.supabase.co';
-const supabaseKey = process.env.SUPABASE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdqc2hkZm5wem1pdHJlcnpyeGtiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc3ODExMDEsImV4cCI6MjEwMzM1NzEwMX0.G_6VWzeppHv1RtQrKsomywqLPd21J_l6A1LqKCVQu5o';
+const supabaseKey = process.env.SUPABASE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdqc2hkZm5wem1pdHJlcnpyeGtiIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4Nzc4MTEwMSwiZXhwIjoyMTAzMzU3MTAxfQ.NU21W7y0vTfB2pWfabb7BEZnA0fQIbBV0GHAGnHynl0';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 // ============================================
