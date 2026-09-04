@@ -392,21 +392,28 @@ app.get('/api/manuais', async (req, res) => {
 app.get('/api/esquemas/:nome', async (req, res) => {
     try {
         const nomeBase = decodeURIComponent(req.params.nome).trim();
+        console.log(`🔍 Buscando manual: "${nomeBase}"`);
 
+        // 🔥 USAR ILIKE PARA BUSCAR IGNORANDO CASE E ESPAÇOS
         const { data: manual, error: erroManual } = await supabase
             .from('manuais')
             .select('*')
-            .eq('nome_base', nomeBase)
+            .ilike('nome_base', nomeBase)
             .single();
+
         if (erroManual || !manual) {
+            console.log(`❌ Manual não encontrado: "${nomeBase}"`);
             return res.status(404).json({ success: false, error: 'Manual não encontrado' });
         }
+
+        console.log(`✅ Manual encontrado: ${manual.nome_base} (ID: ${manual.id})`);
 
         const { data: pecas, error: erroPecas } = await supabase
             .from('pecas_catalogo')
             .select('*')
             .eq('manual_id', manual.id)
             .order('numero');
+
         if (erroPecas) throw erroPecas;
 
         const { data: hotspots, error: erroHotspots } = await supabase
@@ -414,26 +421,32 @@ app.get('/api/esquemas/:nome', async (req, res) => {
             .select('*')
             .eq('manual_id', manual.id)
             .order('numero');
+
         if (erroHotspots) throw erroHotspots;
 
-        const nomeLimpo = nomeBase.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9]/g, '_');
+        const nomeLimpo = manual.nome_base
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/[^a-zA-Z0-9]/g, '_');
+
         const { data: imagemUrl } = supabase.storage
             .from('esquemas')
             .getPublicUrl(`${nomeLimpo}.jpg`);
 
         res.json({
             success: true,
-            nome: nomeBase,
+            nome: manual.nome_base,
             imagemUrl: imagemUrl.publicUrl,
-            pecas: pecas,
-            hotspots: hotspots,
-            totalHotspots: hotspots.length
+            pecas: pecas || [],
+            hotspots: hotspots || [],
+            totalHotspots: hotspots?.length || 0
         });
+
     } catch (error) {
+        console.error('❌ Erro ao buscar esquema:', error);
         res.status(500).json({ success: false, error: error.message });
     }
 });
-
 app.put('/api/manuais/:nome/hotspots', async (req, res) => {
     try {
         const nomeBase = req.params.nome.replace(/[^a-zA-Z0-9_\- ]/g, '').trim();
