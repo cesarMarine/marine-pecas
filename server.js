@@ -257,86 +257,52 @@ app.use(express.static(__dirname));
 // ============================================
 // ROTA DE UPLOAD DE IMAGEM (CORRIGIDA)
 // ============================================
+// ============================================
+// ROTA DE UPLOAD DE IMAGEM (VERSÃO SIMPLIFICADA)
+// ============================================
 app.post('/api/upload-imagem', upload.single('file'), async (req, res) => {
+    console.log('📤 Upload iniciado');
+    
     try {
-        // 🔥 LOG PARA DEBUG
-        console.log('📤 Recebendo upload...');
-        console.log('📁 Arquivo:', req.file ? req.file.originalname : 'NENHUM');
-
-        const file = req.file;
-        if (!file) {
-            console.log('❌ Nenhum arquivo enviado');
+        if (!req.file) {
+            console.log('❌ Nenhum arquivo');
             return res.status(400).json({ success: false, error: 'Nenhum arquivo enviado' });
         }
 
-        // Gera um nome único
-        const timestamp = Date.now();
-        const ext = path.extname(file.originalname);
-        const baseName = path.basename(file.originalname, ext);
-        const sanitizedName = baseName.replace(/[^a-zA-Z0-9]/g, '_');
-        const fileName = `${sanitizedName}_${timestamp}${ext}`;
+        console.log(`📁 Arquivo: ${req.file.originalname}, ${req.file.size} bytes`);
 
-        console.log(`📤 Upload: ${fileName} (${file.size} bytes)`);
+        // Nome único para o arquivo
+        const ext = path.extname(req.file.originalname);
+        const name = path.basename(req.file.originalname, ext).replace(/[^a-zA-Z0-9]/g, '_');
+        const fileName = `${name}_${Date.now()}${ext}`;
 
-        // Verifica se o bucket existe
-        const { data: buckets, error: listError } = await supabase.storage.listBuckets();
-        
-        if (listError) {
-            console.error('❌ Erro ao listar buckets:', listError);
-            return res.status(500).json({ success: false, error: 'Erro ao acessar storage: ' + listError.message });
-        }
-
-        const bucketExists = buckets?.some(b => b.name === 'icones');
-
-        if (!bucketExists) {
-            console.log('📦 Bucket "icones" não encontrado. Criando...');
-            const { error: createError } = await supabase.storage.createBucket('icones', {
-                public: true,
-                file_size_limit: 5242880 // 5MB
-            });
-            
-            if (createError) {
-                console.error('❌ Erro ao criar bucket:', createError);
-                return res.status(500).json({ success: false, error: 'Erro ao criar bucket: ' + createError.message });
-            }
-            console.log('✅ Bucket "icones" criado com sucesso!');
-        }
-
-        // Faz upload para o Supabase Storage
-        console.log(`📤 Enviando para Supabase: ${fileName}`);
+        // Upload para o Supabase
         const { data, error } = await supabase.storage
             .from('icones')
-            .upload(fileName, file.buffer, {
-                contentType: file.mimetype,
-                cacheControl: '3600',
-                upsert: true
+            .upload(fileName, req.file.buffer, {
+                contentType: req.file.mimetype,
+                cacheControl: '3600'
             });
 
         if (error) {
-            console.error('❌ Erro no upload Supabase:', error);
-            return res.status(500).json({ success: false, error: 'Erro no upload: ' + error.message });
+            console.error('❌ Supabase error:', error);
+            return res.status(500).json({ success: false, error: error.message });
         }
 
-        console.log('✅ Upload concluído!');
-
-        // Obtém a URL pública
         const { data: urlData } = supabase.storage
             .from('icones')
             .getPublicUrl(fileName);
 
+        console.log('✅ Upload concluído!');
         res.json({
             success: true,
             fileName: fileName,
-            url: urlData.publicUrl,
-            message: 'Imagem enviada com sucesso!'
+            url: urlData.publicUrl
         });
 
     } catch (error) {
-        console.error('❌ Erro no upload:', error);
-        res.status(500).json({ 
-            success: false, 
-            error: error.message || 'Erro interno ao fazer upload' 
-        });
+        console.error('❌ Erro:', error);
+        res.status(500).json({ success: false, error: error.message });
     }
 });
 
