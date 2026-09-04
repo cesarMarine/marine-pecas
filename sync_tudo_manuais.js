@@ -1,4 +1,4 @@
-// sync_tudo_manuais.js - MESMO do marine-v1, mas com SUPABASE!
+// sync_tudo_manuais.js - VERSÃO CORRIGIDA
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -12,10 +12,12 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const supabaseUrl = 'https://gjshdfnpzmitrerzrxkb.supabase.co';
-const supabaseKey = 'sb_secret_wmEOXF-i9w5zjrRr3DYJpQ_F6IApL7U';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdqc2hkZm5wem1pdHJlcnpyeGtiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc3ODExMDEsImV4cCI6MjEwMzM1NzEwMX0.G_6VWzeppHv1RtQrKsomywqLPd21J_l6A1LqKCVQu5o';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-const PASTA_ESQUEMAS = path.join(__dirname, '..', 'images', 'esquemas');
+// 🔥 CORRIGIR O CAMINHO DA PASTA
+const PASTA_ESQUEMAS = 'C:/SISTEMA/public/images/esquemas';
+const ARQUIVO_CONTROLE = path.join(__dirname, '.sync_controle.json');
 
 const CONFIG = {
     COLUNAS: 6,
@@ -34,6 +36,41 @@ const CONFIG = {
         { name: 'Negate', grayscale: true, negate: true, linear: [2.0, -50] }
     ]
 };
+
+// ============================================
+// CONTROLE DE PROCESSAMENTO
+// ============================================
+function carregarControle() {
+    if (fs.existsSync(ARQUIVO_CONTROLE)) {
+        try {
+            return JSON.parse(fs.readFileSync(ARQUIVO_CONTROLE, 'utf8'));
+        } catch (e) {
+            return { processados: {} };
+        }
+    }
+    return { processados: {} };
+}
+
+function salvarControle(controle) {
+    fs.writeFileSync(ARQUIVO_CONTROLE, JSON.stringify(controle, null, 2));
+}
+
+function deveProcessar(nomeBase, controle) {
+    if (!controle.processados[nomeBase]) return true;
+    const caminhoExcel = path.join(PASTA_ESQUEMAS, `${nomeBase}.xlsx`);
+    const caminhoImagem = path.join(PASTA_ESQUEMAS, `${nomeBase}.jpg`);
+    if (fs.existsSync(caminhoExcel) && fs.existsSync(caminhoImagem)) {
+        const statExcel = fs.statSync(caminhoExcel);
+        const statImagem = fs.statSync(caminhoImagem);
+        const ultimaModificacao = Math.max(statExcel.mtimeMs, statImagem.mtimeMs);
+        const ultimoProcessamento = controle.processados[nomeBase].timestamp;
+        if (ultimaModificacao > ultimoProcessamento) {
+            console.log(`    🔄 Arquivo modificado, reprocessando: ${nomeBase}`);
+            return true;
+        }
+    }
+    return false;
+}
 
 function agruparHotspotsProximos(resultados, distanciaMaxima = 1.5) {
     if (resultados.length === 0) return resultados;
@@ -312,92 +349,265 @@ async function processarBloco(imagemBuffer, bloco, imgW, imgH, resizeFactor, cod
     }
 }
 
+// ============================================
+// 🔥 GRAVAR NO SUPABASE - CORRIGIDO
+// ============================================
 async function gravarSupabase(nomeBase, pecas, hotspots) {
-    let manual = null;
-    const { data: buscaManual } = await supabase
-        .from('manuais')
-        .select('id')
-        .eq('nome_base', nomeBase)
-        .single();
-    manual = buscaManual;
-    if (!manual) {
-        const { data: novoManual } = await supabase
+    console.log(`    💾 Gravando ${nomeBase} no Supabase...`);
+    
+    try {
+        // 1. BUSCAR O MANUAL
+        let { data: manual, error: buscaError } = await supabase
             .from('manuais')
-            .upsert({ nome_base: nomeBase }, { onConflict: 'nome_base' })
-            .select()
-            .single();
-        manual = novoManual;
+            .select('id, nome_base')
+            .eq('nome_base', nomeBase)
+            .maybeSingle();
+        
+        if (buscaError) {
+            console.error(`    ❌ Erro ao buscar manual:`, buscaError.message);
+            return false;
+        }
+        
+        // 2. SE NÃO EXISTIR, CRIAR
+        if (!manual) {
+            console.log(`    📝 Criando novo manual: ${nomeBase}`);
+            
+            const { data: novoManual, error: createError } = await supabase
+                .from('manuais')
+                .insert({ nome_base: nomeBase })
+                .select()
+                .single();
+            
+            if (createError) {
+                console.error(`    ❌ Erro ao criar manual:`, createError.message);
+                return false;
+            }
+            
+            manual = novoManual;
+            console.log(`    ✅ Manual criado: ${nomeBase} (ID: ${manual.id})`);
+        } else {
+            console.log(`    ✅ Manual encontrado: ${nomeBase} (ID: ${manual.id})`);
+        }
+        
+        // VERIFICAÇÃO DE SEGURANÇA
+        if (!manual || !manual.id) {
+            console.error(`    ❌ ID do manual é nulo!`);
+            return false;
+        }
+        
+        const manualId = manual.id;
+        
+        // 3. DELETAR DADOS ANTIGOS
+        console.log(`    🗑️ Deletando dados antigos (manual_id: ${manualId})...`);
+        await supabase.from('pecas_catalogo').delete().eq('manual_id', manualId);
+        await supabase.from('hotspots').delete().eq('manual_id', manualId);
+        
+        // 4. INSERIR PEÇAS
+        if (pecas.length > 0) {
+            console.log(`    📋 Inserindo ${pecas.length} peças...`);
+            const pecasParaInserir = pecas.map(p => ({
+                manual_id: manualId,
+                numero: String(p.numero),
+                nome: String(p.nome)
+            }));
+            
+            const { error: pecasError } = await supabase
+                .from('pecas_catalogo')
+                .insert(pecasParaInserir);
+            
+            if (pecasError) {
+                console.error(`    ❌ Erro ao inserir peças:`, pecasError.message);
+                return false;
+            }
+        }
+        
+        // 5. INSERIR HOTSPOTS
+        if (hotspots.length > 0) {
+            console.log(`    📍 Inserindo ${hotspots.length} hotspots...`);
+            const hotspotsParaInserir = hotspots.map(h => ({
+                manual_id: manualId,
+                numero: String(h.numero),
+                x_percent: parseFloat(h.x) || 50,
+                y_percent: parseFloat(h.y) || 50
+            }));
+            
+            const { error: hotspotsError } = await supabase
+                .from('hotspots')
+                .insert(hotspotsParaInserir);
+            
+            if (hotspotsError) {
+                console.error(`    ❌ Erro ao inserir hotspots:`, hotspotsError.message);
+                return false;
+            }
+        }
+        
+        // 6. UPLOAD DA IMAGEM
+        try {
+            const caminhoImagem = path.join(PASTA_ESQUEMAS, `${nomeBase}.jpg`);
+            if (fs.existsSync(caminhoImagem)) {
+                const imagemBuffer = fs.readFileSync(caminhoImagem);
+                const nomeLimpo = nomeBase.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9]/g, '_');
+                
+                const { error: uploadError } = await supabase.storage
+                    .from('esquemas')
+                    .upload(`${nomeLimpo}.jpg`, imagemBuffer, { 
+                        contentType: 'image/jpeg',
+                        upsert: true 
+                    });
+                
+                if (uploadError) {
+                    console.error(`    ⚠️ Erro ao enviar imagem:`, uploadError.message);
+                } else {
+                    console.log(`    📸 Imagem enviada: ${nomeLimpo}.jpg`);
+                }
+            } else {
+                console.log(`    ⚠️ Imagem não encontrada: ${caminhoImagem}`);
+            }
+        } catch (error) {
+            console.error(`    ⚠️ Erro ao enviar imagem:`, error.message);
+        }
+        
+        console.log(`    ✅ ${nomeBase} gravado com sucesso!`);
+        return true;
+        
+    } catch (error) {
+        console.error(`    ❌ Erro crítico ao gravar ${nomeBase}:`, error.message);
+        console.error(`    📋 Stack:`, error.stack);
+        return false;
     }
-    await supabase.from('pecas_catalogo').delete().eq('manual_id', manual.id);
-    await supabase.from('hotspots').delete().eq('manual_id', manual.id);
-    if (pecas.length > 0) {
-        const pecasParaInserir = pecas.map(p => ({
-            manual_id: manual.id,
-            numero: p.numero,
-            nome: p.nome
-        }));
-        await supabase.from('pecas_catalogo').insert(pecasParaInserir);
-    }
-    if (hotspots.length > 0) {
-        const hotspotsParaInserir = hotspots.map(h => ({
-            manual_id: manual.id,
-            numero: h.numero,
-            x_percent: parseFloat(h.x),
-            y_percent: parseFloat(h.y)
-        }));
-        await supabase.from('hotspots').insert(hotspotsParaInserir);
-    }
-    const imagemBuffer = fs.readFileSync(path.join(PASTA_ESQUEMAS, `${nomeBase}.jpg`));
-    const nomeLimpo = nomeBase.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9]/g, '_');
-    await supabase.storage.from('esquemas').upload(`${nomeLimpo}.jpg`, imagemBuffer, { upsert: true });
-    console.log(`    ✅ ${nomeBase} gravado no Supabase!`);
 }
 
-async function processarPar(nomeBase) {
+// ============================================
+// PROCESSAR UM MANUAL
+// ============================================
+async function processarPar(nomeBase, forcar = false) {
     console.log(`  📦 Processando: ${nomeBase}`);
     const caminhoExcel = path.join(PASTA_ESQUEMAS, `${nomeBase}.xlsx`);
     const caminhoImagem = path.join(PASTA_ESQUEMAS, `${nomeBase}.jpg`);
+    
     if (!fs.existsSync(caminhoExcel)) {
-        console.log(`    ⚠️ Excel não encontrado`);
+        console.log(`    ⚠️ Excel não encontrado: ${caminhoExcel}`);
         return false;
     }
     if (!fs.existsSync(caminhoImagem)) {
-        console.log(`    ⚠️ Imagem não encontrada`);
+        console.log(`    ⚠️ Imagem não encontrada: ${caminhoImagem}`);
         return false;
     }
+    
+    const controle = carregarControle();
+    if (!forcar && !deveProcessar(nomeBase, controle)) {
+        console.log(`    ⏭️ Já processado e sem alterações. Pulando.`);
+        return true;
+    }
+    
     try {
         const pecas = await importarExcel(caminhoExcel);
         console.log(`    📋 ${pecas.length} peças encontradas no Excel`);
+        
+        if (pecas.length === 0) {
+            console.log(`    ⚠️ Nenhuma peça encontrada no Excel`);
+            return false;
+        }
+        
         const hotspots = await processarImagem(caminhoImagem, pecas);
         console.log(`    📍 ${hotspots.length} hotspots encontrados`);
-        await gravarSupabase(nomeBase, pecas, hotspots);
-        return true;
+        
+        const sucesso = await gravarSupabase(nomeBase, pecas, hotspots);
+        
+        if (sucesso) {
+            controle.processados[nomeBase] = {
+                timestamp: Date.now(),
+                pecas: pecas.length,
+                hotspots: hotspots.length
+            };
+            salvarControle(controle);
+            console.log(`    ✅ ${nomeBase} finalizado com sucesso!`);
+        }
+        
+        return sucesso;
     } catch (error) {
         console.error(`    ❌ Erro ao processar ${nomeBase}:`, error.message);
         return false;
     }
 }
 
+// ============================================
+// PROCESSAR TODOS
+// ============================================
+async function processarTodos(forcar = false) {
+    console.log('\n📂 Processando todos os manuais...');
+    console.log('════════════════════════════════════════════════════════════');
+    
+    const arquivos = fs.readdirSync(PASTA_ESQUEMAS);
+    const excels = arquivos.filter(f => f.endsWith('.xlsx') && !f.startsWith('~$'));
+    
+    if (excels.length === 0) {
+        console.log('📭 Nenhum Excel encontrado na pasta.');
+        return;
+    }
+    
+    console.log(`📂 ${excels.length} Excel(s) encontrado(s)`);
+    console.log('');
+    
+    let processados = 0;
+    let erros = 0;
+    
+    for (const excel of excels) {
+        const nomeBase = path.basename(excel, '.xlsx');
+        const sucesso = await processarPar(nomeBase, forcar);
+        if (sucesso) {
+            processados++;
+        } else {
+            erros++;
+        }
+        console.log('');
+    }
+    
+    console.log('════════════════════════════════════════════════════════════');
+    console.log(`📊 Resumo: ${processados} processados, ${erros} erros`);
+}
+
+// ============================================
+// MONITOR
+// ============================================
 let watcher = null;
 let processando = false;
 const filaProcessamento = new Set();
+let controle = carregarControle();
 
 async function iniciarMonitor() {
     console.log('\n🚀 Iniciando Monitor Automático de Manuais');
     console.log('════════════════════════════════════════════════════════════');
     console.log(`📁 Monitorando: ${PASTA_ESQUEMAS}`);
     console.log(`📌 Padrão: nome.xlsx + nome.(jpg|JPG|png|PNG)`);
-    console.log('\n');
+    console.log(`📋 Controle: ${ARQUIVO_CONTROLE}`);
+    console.log('');
+    
     const arquivos = fs.readdirSync(PASTA_ESQUEMAS);
     const excels = arquivos.filter(f => f.endsWith('.xlsx') && !f.startsWith('~$'));
-    if (excels.length > 0) {
-        console.log(`📂 ${excels.length} Excel(s) encontrado(s)`);
-        for (const excel of excels) {
-            const nomeBase = path.basename(excel, '.xlsx');
-            console.log(`  📄 Novo manual: ${nomeBase}`);
-            await processarPar(nomeBase);
+    
+    let novos = 0;
+    for (const excel of excels) {
+        const nomeBase = path.basename(excel, '.xlsx');
+        if (deveProcessar(nomeBase, controle)) {
+            novos++;
+            console.log(`  📄 Novo ou alterado: ${nomeBase}`);
         }
     }
+    
+    if (novos > 0) {
+        console.log(`\n📂 ${novos} manual(ais) para processar...\n`);
+        for (const excel of excels) {
+            const nomeBase = path.basename(excel, '.xlsx');
+            if (deveProcessar(nomeBase, controle)) {
+                await processarPar(nomeBase);
+                console.log('');
+            }
+        }
+    } else {
+        console.log('✅ Todos os manuais já estão processados.');
+    }
+    
     watcher = chokidar.watch(PASTA_ESQUEMAS, {
         persistent: true,
         ignoreInitial: true,
@@ -405,11 +615,13 @@ async function iniciarMonitor() {
         interval: 2000,
         awaitWriteFinish: { stabilityThreshold: 3000, pollInterval: 500 }
     });
+    
     watcher.on('add', async (filePath) => {
         const fileName = path.basename(filePath);
         const ext = path.extname(fileName).toLowerCase();
         if (ext !== '.xlsx' && !['.jpg', '.jpeg', '.png', '.gif'].includes(ext)) return;
         const nomeBase = path.basename(fileName, path.extname(fileName));
+        console.log(`\n📄 Novo arquivo detectado: ${fileName}`);
         filaProcessamento.add(nomeBase);
         setTimeout(async () => {
             if (filaProcessamento.has(nomeBase) && !processando) {
@@ -424,6 +636,7 @@ async function iniciarMonitor() {
             }
         }, 3000);
     });
+    
     watcher.on('change', async (filePath) => {
         const fileName = path.basename(filePath);
         const ext = path.extname(fileName).toLowerCase();
@@ -437,17 +650,36 @@ async function iniciarMonitor() {
             }
         }
     });
+    
     watcher.on('error', (error) => {
         console.error('⚠️ Erro no watcher:', error.message);
     });
+    
     console.log('\n✅ Monitor ativo! Aguardando novos manuais...');
     console.log('📌 Coloque na pasta:');
     console.log(`   - nome.xlsx (Excel com peças)`);
     console.log(`   - nome.jpg ou nome.JPG (Imagem do esquema)`);
 }
 
+// ============================================
+// MAIN
+// ============================================
 async function main() {
-    await iniciarMonitor();
+    const args = process.argv.slice(2);
+    const forcar = args.includes('--force') || args.includes('-f');
+    
+    console.log('🔄 SYNC MANUAIS - MARINE');
+    console.log('════════════════════════════════════════════════════════════');
+    console.log(`📁 Pasta: ${PASTA_ESQUEMAS}`);
+    console.log(`📋 Controle: ${ARQUIVO_CONTROLE}`);
+    console.log('');
+    
+    if (forcar) {
+        console.log('🔄 Forçando reprocessamento de todos os manuais...\n');
+        await processarTodos(true);
+    } else {
+        await iniciarMonitor();
+    }
 }
 
 process.on('SIGINT', () => {
