@@ -4,64 +4,173 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Marine Fishing - Produtos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background: #f0f2f5;
-            color: #333;
-            padding: 20px;
+            font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+            background: #f0f4f8;
+            color: #1a2a3a;
+            min-height: 100vh;
         }
 
         .container {
             max-width: 1400px;
             margin: 0 auto;
+            padding: 0 24px 40px;
         }
 
-        .header-top {
-            display: flex;
-            justify-content: space-between;
+        /* ===== TOP BAR ===== */
+        .top-bar {
+            background: #0a2a4a;
+            color: rgba(255, 255, 255, 0.8);
+            padding: 8px 0;
+            font-size: 0.78rem;
+            text-align: center;
+            border-bottom: 2px solid #f8b81f;
+        }
+
+        .top-bar span {
+            display: inline-flex;
             align-items: center;
+            gap: 6px;
+            margin: 0 12px;
+        }
+
+        .top-bar i {
+            color: #f8b81f;
+        }
+
+        .top-bar .divider {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: #f8b81f;
+            display: inline-block;
+            opacity: 0.5;
+            margin: 0 6px;
+        }
+
+        /* ===== HEADER ===== */
+        .main-header {
+            background: #ffffff;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid #e8edf3;
+        }
+
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 20px;
+            gap: 16px;
         }
 
-        .header-top h1 {
-            color: #002B49;
-            font-size: 24px;
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 16px;
         }
 
-        .btn-voltar {
-            background: #e0e0e0;
-            padding: 8px 20px;
+        .logo-img {
+            height: 45px;
+            width: auto;
+            object-fit: contain;
             border-radius: 8px;
-            text-decoration: none;
-            color: #1a1a2e;
+        }
+
+        .logo-text {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #0a2a4a;
+            letter-spacing: 0.5px;
+        }
+
+        .logo-text span {
+            color: #f8b81f;
+        }
+
+        .logo-sub {
+            font-size: 0.7rem;
+            font-weight: 400;
+            color: #6b7a8a;
+            display: block;
+            letter-spacing: 0.3px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn-header {
+            padding: 8px 20px;
+            border-radius: 30px;
             font-weight: 600;
-            transition: 0.3s;
+            font-size: 0.82rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
 
-        .btn-voltar:hover {
-            background: #ccc;
+        .btn-header-primary {
+            background: #f8b81f;
+            color: #0a2a4a;
         }
 
-        .btn-carrinho {
+        .btn-header-primary:hover {
+            background: #e0a312;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(248, 184, 31, 0.3);
+        }
+
+        .btn-header-outline {
+            background: transparent;
+            color: #0a2a4a;
+            border: 1.5px solid #dce1e8;
+        }
+
+        .btn-header-outline:hover {
+            border-color: #0a2a4a;
+            background: #f5f7fa;
+        }
+
+        .btn-header-carrinho {
             background: #1a237e;
             color: white;
-            padding: 8px 20px;
-            border-radius: 8px;
+            padding: 8px 18px;
+            border-radius: 30px;
             text-decoration: none;
             font-weight: 600;
-            transition: 0.3s;
+            font-size: 0.82rem;
+            transition: all 0.3s;
             display: inline-flex;
             align-items: center;
             gap: 8px;
+            border: none;
+            cursor: pointer;
         }
 
-        .btn-carrinho:hover {
+        .btn-header-carrinho:hover {
             background: #0d1555;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(26, 35, 126, 0.3);
         }
 
         .badge-carrinho {
@@ -69,72 +178,144 @@
             color: white;
             border-radius: 50%;
             padding: 2px 8px;
-            font-size: 12px;
-            font-weight: bold;
+            font-size: 11px;
+            font-weight: 700;
         }
 
-        .info-carrinho {
+        /* ===== BREADCRUMB ===== */
+        .breadcrumb {
+            padding: 16px 0 8px;
+            font-size: 0.85rem;
+            color: #6b7a8a;
+        }
+
+        .breadcrumb a {
+            color: #0a2a4a;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .breadcrumb a:hover {
+            color: #f8b81f;
+        }
+
+        .breadcrumb .current {
             color: #1a237e;
-            font-size: 14px;
             font-weight: 600;
-            display: none;
         }
 
-        /* GRUPOS */
+        /* ===== TÍTULO ===== */
+        .page-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            padding: 8px 0 20px;
+        }
+
+        .page-title h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #0a2a4a;
+        }
+
+        .page-title h1 span {
+            color: #f8b81f;
+        }
+
+        .page-title .subtitle {
+            font-size: 0.95rem;
+            color: #6b7a8a;
+        }
+
+        /* ===== FILTROS ===== */
+        .filtros-section {
+            background: white;
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+            border: 1px solid #e8edf3;
+        }
+
+        .filtros-section .filtros-label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #0a2a4a;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filtros-section .filtros-label i {
+            color: #f8b81f;
+        }
+
         .grupos-container {
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
-            margin-bottom: 25px;
-            padding: 10px 0;
         }
 
         .grupo-btn {
-            padding: 12px 28px;
+            padding: 8px 22px;
             border-radius: 30px;
-            border: 2px solid #e0e0e0;
+            border: 2px solid #e8edf3;
             background: white;
             cursor: pointer;
             font-weight: 600;
-            font-size: 15px;
+            font-size: 0.85rem;
             transition: all 0.3s;
-            color: #666;
+            color: #6b7a8a;
+            font-family: inherit;
         }
 
         .grupo-btn:hover {
             border-color: #1a237e;
             color: #1a237e;
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(26, 35, 126, 0.1);
+            box-shadow: 0 4px 15px rgba(26, 35, 126, 0.08);
         }
 
         .grupo-btn.ativo {
             background: #1a237e;
             color: white;
             border-color: #1a237e;
-            box-shadow: 0 4px 15px rgba(26, 35, 126, 0.3);
+            box-shadow: 0 4px 15px rgba(26, 35, 126, 0.25);
         }
 
-        /* SUBGRUPOS */
+        .grupo-btn .icone-grupo {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+            vertical-align: middle;
+            margin-right: 6px;
+            border-radius: 4px;
+        }
+
+        /* ===== SUBGRUPOS ===== */
         .subgrupos-container {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             flex-wrap: wrap;
-            margin-bottom: 20px;
-            padding: 10px 0;
-            border-bottom: 2px solid #e8eaf6;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #e8edf3;
         }
 
         .subgrupo-btn {
-            padding: 8px 20px;
+            padding: 6px 16px;
             border-radius: 20px;
-            border: 1px solid #ddd;
-            background: #f8f9fa;
+            border: 1.5px solid #e8edf3;
+            background: #f8fafc;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 0.8rem;
             font-weight: 500;
             transition: all 0.3s;
-            color: #555;
+            color: #6b7a8a;
+            font-family: inherit;
         }
 
         .subgrupo-btn:hover {
@@ -149,53 +330,75 @@
             border-color: #1a237e;
         }
 
-        /* PRODUTOS */
+        /* ===== PRODUTOS ===== */
         .produtos-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 20px;
-            margin-top: 10px;
+            gap: 24px;
+            margin-top: 4px;
         }
 
         .produto-card {
             background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            padding: 24px 20px 20px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
             border: 2px solid transparent;
+            position: relative;
+        }
+
+        .produto-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 20%;
+            right: 20%;
+            height: 3px;
+            background: #f8b81f;
+            transform: scaleX(0);
+            transition: transform 0.35s ease;
+            border-radius: 0 0 4px 4px;
         }
 
         .produto-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-            border-color: #1a237e;
+            transform: translateY(-6px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+            border-color: rgba(248, 184, 31, 0.2);
+        }
+
+        .produto-card:hover::after {
+            transform: scaleX(1);
         }
 
         .produto-card img {
-            width: 140px;
-            height: 140px;
+            width: 130px;
+            height: 130px;
             object-fit: contain;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            background: #f8fafc;
+            padding: 4px;
         }
 
         .produto-card h3 {
-            color: #002B49;
-            font-size: 16px;
-            margin-bottom: 3px;
+            color: #0a2a4a;
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 2px;
         }
 
         .produto-card .subgrupo-nome {
-            color: #888;
-            font-size: 13px;
+            color: #8a9aa8;
+            font-size: 0.75rem;
         }
 
         .produto-card .variacoes-container {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
+            gap: 6px;
             justify-content: center;
             margin-top: 12px;
         }
@@ -204,12 +407,13 @@
             background: #1a237e;
             color: white;
             border: none;
-            padding: 6px 16px;
+            padding: 5px 14px;
             border-radius: 20px;
-            font-size: 13px;
+            font-size: 0.75rem;
             font-weight: 600;
             cursor: pointer;
             transition: 0.3s;
+            font-family: inherit;
         }
 
         .btn-variacao:hover {
@@ -217,20 +421,33 @@
             transform: scale(1.05);
         }
 
+        .badge-variacoes {
+            display: inline-block;
+            background: #e8eaf6;
+            color: #1a237e;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-top: 6px;
+        }
+
+        /* ===== LOADING ===== */
         .loading-spinner {
             text-align: center;
-            padding: 60px;
-            color: #888;
+            padding: 60px 20px;
+            color: #8a9aa8;
+            grid-column: 1 / -1;
         }
 
         .loading-spinner .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #1a237e;
+            border: 4px solid #e8edf3;
+            border-top: 4px solid #f8b81f;
             border-radius: 50%;
-            width: 50px;
-            height: 50px;
+            width: 40px;
+            height: 40px;
             animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
+            margin: 0 auto 16px;
         }
 
         @keyframes spin {
@@ -238,60 +455,182 @@
             100% { transform: rotate(360deg); }
         }
 
+        /* ===== EMPTY STATE ===== */
         .empty-state {
             text-align: center;
-            padding: 60px;
-            color: #888;
+            padding: 60px 20px;
+            color: #8a9aa8;
             grid-column: 1 / -1;
         }
 
         .empty-state .icone {
-            font-size: 60px;
-            margin-bottom: 20px;
+            font-size: 48px;
+            margin-bottom: 16px;
         }
 
-        .loading-overlay {
+        .empty-state h3 {
+            color: #0a2a4a;
+            margin-bottom: 8px;
+        }
+
+        /* ===== CARRINHO FLUTUANTE ===== */
+        .carrinho-flutuante {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #1a237e;
+            color: white;
+            padding: 14px 20px;
+            border-radius: 50px;
+            box-shadow: 0 6px 24px rgba(26, 35, 126, 0.35);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: none;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s;
+            z-index: 50;
+            border: none;
+            cursor: pointer;
+        }
+
+        .carrinho-flutuante:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 32px rgba(26, 35, 126, 0.45);
+        }
+
+        .carrinho-flutuante .badge {
+            background: #e94560;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 10px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            background: #0a2a4a;
+            color: rgba(255, 255, 255, 0.8);
             text-align: center;
-            padding: 40px;
-            grid-column: 1 / -1;
+            padding: 20px 24px;
+            border-top: 2px solid rgba(248, 184, 31, 0.2);
+            margin-top: 40px;
         }
 
+        footer p {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
-            .container { padding: 0; }
-            .header-top { flex-direction: column; align-items: stretch; }
-            .produtos-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
-            .grupo-btn { padding: 8px 16px; font-size: 13px; }
-            .subgrupo-btn { padding: 6px 14px; font-size: 12px; }
+            .container { padding: 0 16px 30px; }
+            .header-container { padding: 10px 16px; }
+            .logo-img { height: 36px; }
+            .logo-text { font-size: 0.85rem; }
+            .btn-header { padding: 6px 14px; font-size: 0.7rem; }
+            .page-title h1 { font-size: 1.4rem; }
+            .produtos-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px; }
+            .filtros-section { padding: 16px; }
+            .grupo-btn { padding: 6px 14px; font-size: 0.75rem; }
+            .subgrupo-btn { padding: 4px 12px; font-size: 0.7rem; }
+            .produto-card img { width: 100px; height: 100px; }
+            .carrinho-flutuante { padding: 10px 16px; font-size: 0.8rem; bottom: 16px; right: 16px; }
+            .top-bar span { margin: 0 6px; font-size: 0.7rem; }
+        }
+
+        @media (max-width: 480px) {
+            .produtos-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+            .produto-card { padding: 16px 12px; }
+            .produto-card img { width: 80px; height: 80px; }
+            .produto-card h3 { font-size: 0.8rem; }
+            .grupos-container { gap: 6px; }
+            .grupo-btn { padding: 4px 10px; font-size: 0.7rem; }
+            .subgrupos-container { gap: 4px; }
+            .subgrupo-btn { padding: 3px 8px; font-size: 0.65rem; }
+            .page-title h1 { font-size: 1.2rem; }
+            .header-actions .btn-header-outline { display: none; }
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <!-- HEADER -->
-        <div class="header-top">
-            <h1>🎣 <span id="titulo-categoria">Produtos</span></h1>
-            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                <span id="info-carrinho" class="info-carrinho">
-                    🛒 <span id="carrinho-count">0</span> itens
-                </span>
-                <a href="pecas.html" class="btn-carrinho" id="btn-ir-carrinho" style="display:none;">
-                    🛒 Ver Carrinho
+    <!-- ===== TOP BAR ===== -->
+    <div class="top-bar">
+        <span><i class="fas fa-headset"></i> Suporte Técnico Marine</span>
+        <span class="divider"></span>
+        <span><i class="fab fa-whatsapp"></i> (45) 98831-5455</span>
+        <span class="divider"></span>
+        <span><i class="fas fa-envelope"></i> atendimento@marinefishing.com.br</span>
+    </div>
+
+    <!-- ===== HEADER ===== -->
+    <header class="main-header">
+        <div class="header-container">
+            <div class="logo-area">
+                <img class="logo-img" src="https://gjshdfnpzmitrerzrxkb.supabase.co/storage/v1/object/public/icones/marine.JPG" 
+                     alt="Marine Fishing" 
+                     onerror="this.src='https://via.placeholder.com/200x60?text=MARINE+FISHING'">
+                <div>
+                    <div class="logo-text">Marine <span>Fishing</span></div>
+                    <span class="logo-sub"><i class="fas fa-wrench"></i> Manuais Técnicos</span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <a href="/" class="btn-header btn-header-outline">
+                    <i class="fas fa-home"></i> Início
+                </a>
+                <a href="https://www.marinefishing.com.br" target="_blank" class="btn-header btn-header-outline">
+                    <i class="fas fa-external-link-alt"></i> Site Oficial
+                </a>
+                <a href="pecas.html" class="btn-header-carrinho" id="btn-ir-carrinho" style="display:none;">
+                    <i class="fas fa-shopping-cart"></i> Carrinho
                     <span class="badge-carrinho" id="carrinho-badge">0</span>
                 </a>
-                <a href="/" class="btn-voltar">← Início</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- ===== BREADCRUMB ===== -->
+        <div class="breadcrumb">
+            <a href="/"><i class="fas fa-home"></i> Início</a>
+            <span> / </span>
+            <span class="current" id="breadcrumb-categoria">Produtos</span>
+        </div>
+
+        <!-- ===== TÍTULO ===== -->
+        <div class="page-title">
+            <div>
+                <h1>📦 <span id="titulo-categoria">Produtos</span></h1>
+                <div class="subtitle" id="subtitulo-categoria">Selecione uma categoria para ver os modelos</div>
+            </div>
+            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                <span id="info-carrinho" style="color:#6b7a8a; font-size:0.85rem; display:none;">
+                    🛒 <span id="carrinho-count">0</span> itens
+                </span>
             </div>
         </div>
 
-        <!-- GRUPOS (ex: Molinetes, Carretilhas, etc) -->
-        <div class="grupos-container" id="grupos-container">
-            <button class="grupo-btn ativo" data-grupo="" onclick="selecionarGrupo('')">📦 Todos</button>
+        <!-- ===== FILTROS ===== -->
+        <div class="filtros-section">
+            <div class="filtros-label">
+                <i class="fas fa-filter"></i> Filtrar por categoria
+            </div>
+
+            <!-- GRUPOS -->
+            <div class="grupos-container" id="grupos-container">
+                <button class="grupo-btn ativo" data-grupo="" onclick="selecionarGrupo('')">📦 Todos</button>
+            </div>
+
+            <!-- SUBGRUPOS -->
+            <div class="subgrupos-container" id="subgrupos-container"></div>
         </div>
 
-        <!-- SUBGRUPOS (ex: Molinete 1000, Molinete 2000, etc) -->
-        <div class="subgrupos-container" id="subgrupos-container"></div>
-
-        <!-- PRODUTOS -->
+        <!-- ===== PRODUTOS ===== -->
         <div class="produtos-grid" id="produtos-container">
             <div class="loading-spinner">
                 <div class="spinner"></div>
@@ -299,6 +638,18 @@
             </div>
         </div>
     </div>
+
+    <!-- ===== CARRINHO FLUTUANTE ===== -->
+    <button class="carrinho-flutuante" id="carrinho-flutuante" onclick="window.location.href='pecas.html'">
+        <i class="fas fa-shopping-cart"></i>
+        <span>Ver Carrinho</span>
+        <span class="badge" id="flutuante-badge">0</span>
+    </button>
+
+    <!-- ===== FOOTER ===== -->
+    <footer>
+        <p>© 2026 Marine Fishing - Todos os direitos reservados</p>
+    </footer>
 
     <script>
         let grupos = [];
@@ -308,7 +659,7 @@
         let subgrupoSelecionado = '';
 
         // ============================================
-        // FUNÇÃO PARA ATUALIZAR BADGE DO CARRINHO
+        // ATUALIZAR BADGE DO CARRINHO
         // ============================================
         function atualizarBadgeCarrinho() {
             try {
@@ -325,15 +676,20 @@
                 const count = document.getElementById('carrinho-count');
                 const btnCarrinho = document.getElementById('btn-ir-carrinho');
                 const infoCarrinho = document.getElementById('info-carrinho');
+                const flutuante = document.getElementById('carrinho-flutuante');
+                const flutuanteBadge = document.getElementById('flutuante-badge');
                 
                 if (total > 0) {
                     badge.textContent = total;
                     count.textContent = total;
                     btnCarrinho.style.display = 'inline-flex';
                     infoCarrinho.style.display = 'inline';
+                    flutuante.style.display = 'flex';
+                    flutuanteBadge.textContent = total;
                 } else {
                     btnCarrinho.style.display = 'none';
                     infoCarrinho.style.display = 'none';
+                    flutuante.style.display = 'none';
                 }
             } catch (e) {}
         }
@@ -343,7 +699,6 @@
         // ============================================
         async function carregarDados() {
             try {
-                // 1. Carrega grupos
                 const resGrupos = await fetch('/api/grupos');
                 const dataGrupos = await resGrupos.json();
                 if (dataGrupos.success) {
@@ -351,21 +706,18 @@
                     renderizarGrupos();
                 }
 
-                // 2. Carrega subgrupos
                 const resSubgrupos = await fetch('/api/subgrupos');
                 const dataSubgrupos = await resSubgrupos.json();
                 if (dataSubgrupos.success) {
                     subgrupos = dataSubgrupos.subgrupos || [];
                 }
 
-                // 3. Carrega produtos
                 const resProdutos = await fetch('/api/produtos');
                 const dataProdutos = await resProdutos.json();
                 if (dataProdutos.success) {
                     produtos = dataProdutos.produtos || [];
                 }
 
-                // 4. Renderiza tudo
                 renderizarSubgrupos();
                 renderizarProdutos();
 
@@ -374,8 +726,11 @@
                 document.getElementById('produtos-container').innerHTML = `
                     <div class="empty-state">
                         <div class="icone">❌</div>
-                        <p>Erro ao carregar produtos. Tente novamente.</p>
-                        <button onclick="carregarDados()" style="margin-top:15px; padding:10px 30px; background:#1a237e; color:white; border:none; border-radius:8px; cursor:pointer;">🔄 Tentar novamente</button>
+                        <h3>Erro ao carregar produtos</h3>
+                        <p>${error.message}</p>
+                        <button onclick="carregarDados()" style="margin-top:16px; padding:10px 30px; background:#f8b81f; color:#0a2a4a; border:none; border-radius:30px; cursor:pointer; font-weight:600; font-family:inherit;">
+                            🔄 Tentar novamente
+                        </button>
                     </div>
                 `;
             }
@@ -391,7 +746,7 @@
             grupos.forEach(g => {
                 html += `
                     <button class="grupo-btn" data-grupo="${g.id}" onclick="selecionarGrupo('${g.id}')">
-                        ${g.icone_url ? `<img src="${g.icone_url}" style="width:20px;height:20px;vertical-align:middle;margin-right:5px;">` : ''}
+                        ${g.icone_url ? `<img src="${g.icone_url}" class="icone-grupo" alt="">` : ''}
                         ${g.nome}
                     </button>
                 `;
@@ -427,7 +782,6 @@
             });
             
             container.innerHTML = html;
-            container.style.display = 'flex';
         }
 
         // ============================================
@@ -438,13 +792,11 @@
             
             let produtosFiltrados = produtos;
             
-            // Filtra por grupo
             if (grupoSelecionado) {
                 const subgruposDoGrupo = subgrupos.filter(s => s.grupo_id == grupoSelecionado).map(s => s.id);
                 produtosFiltrados = produtosFiltrados.filter(p => subgruposDoGrupo.includes(p.subgrupo_id));
             }
             
-            // Filtra por subgrupo
             if (subgrupoSelecionado) {
                 produtosFiltrados = produtosFiltrados.filter(p => p.subgrupo_id == subgrupoSelecionado);
             }
@@ -453,7 +805,8 @@
                 container.innerHTML = `
                     <div class="empty-state">
                         <div class="icone">📭</div>
-                        <p>Nenhum produto encontrado.</p>
+                        <h3>Nenhum produto encontrado</h3>
+                        <p>Tente selecionar outra categoria ou subcategoria.</p>
                     </div>
                 `;
                 return;
@@ -469,7 +822,6 @@
                 const subgrupo = subgrupos.find(s => s.id == produto.subgrupo_id);
                 const nomeSubgrupo = subgrupo ? subgrupo.nome : '';
                 
-                // Monta a URL base do manual
                 const manualUrl = produto.manual_url || `/pecas.html?manual=${encodeURIComponent(produto.nome)}`;
                 
                 let variacoesHtml = '';
@@ -485,17 +837,18 @@
                             }).join('')}
                         </div>
                     `;
+                } else {
+                    variacoesHtml = `<span class="badge-variacoes">Modelo Único</span>`;
                 }
                 
                 card.innerHTML = `
-                    <img src="${produto.icone_url || 'https://via.placeholder.com/140'}" alt="${produto.nome}" 
-                         onerror="this.src='https://via.placeholder.com/140'">
+                    <img src="${produto.icone_url || 'https://via.placeholder.com/130'}" alt="${produto.nome}" 
+                         onerror="this.src='https://via.placeholder.com/130'">
                     <h3>${produto.nome}</h3>
                     <p class="subgrupo-nome">${nomeSubgrupo}${temVariacoes ? ' 🔁' : ''}</p>
                     ${variacoesHtml}
                 `;
                 
-                // Se não tem variações, clicar vai direto
                 if (!temVariacoes) {
                     card.onclick = () => {
                         window.location.href = manualUrl;
@@ -513,16 +866,13 @@
             grupoSelecionado = grupoId;
             subgrupoSelecionado = '';
             
-            // Atualiza tabs de grupo
             document.querySelectorAll('.grupo-btn').forEach(btn => {
                 btn.classList.toggle('ativo', btn.dataset.grupo == grupoId);
             });
             
-            // Atualiza subgrupos
             renderizarSubgrupos();
-            
-            // Atualiza produtos
             renderizarProdutos();
+            atualizarTitulo();
         }
 
         // ============================================
@@ -531,13 +881,38 @@
         function selecionarSubgrupo(subgrupoId) {
             subgrupoSelecionado = subgrupoId;
             
-            // Atualiza tabs de subgrupo
             document.querySelectorAll('.subgrupo-btn').forEach(btn => {
                 btn.classList.toggle('ativo', btn.dataset.subgrupo == subgrupoId);
             });
             
-            // Atualiza produtos
             renderizarProdutos();
+            atualizarTitulo();
+        }
+
+        // ============================================
+        // ATUALIZAR TÍTULO
+        // ============================================
+        function atualizarTitulo() {
+            const titulo = document.getElementById('titulo-categoria');
+            const subtitulo = document.getElementById('subtitulo-categoria');
+            const breadcrumb = document.getElementById('breadcrumb-categoria');
+            
+            const grupo = grupos.find(g => g.id == grupoSelecionado);
+            const subgrupo = subgrupos.find(s => s.id == subgrupoSelecionado);
+            
+            if (subgrupo) {
+                titulo.textContent = subgrupo.nome;
+                subtitulo.textContent = `${grupo ? grupo.nome : 'Categoria'} › ${subgrupo.nome}`;
+                breadcrumb.textContent = subgrupo.nome;
+            } else if (grupo) {
+                titulo.textContent = grupo.nome;
+                subtitulo.textContent = `Explorando ${grupo.nome}`;
+                breadcrumb.textContent = grupo.nome;
+            } else {
+                titulo.textContent = 'Produtos';
+                subtitulo.textContent = 'Selecione uma categoria para ver os modelos';
+                breadcrumb.textContent = 'Produtos';
+            }
         }
 
         // ============================================
