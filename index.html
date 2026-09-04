@@ -290,6 +290,90 @@
             opacity: 0.7;
         }
 
+        /* ===== RESULTADOS DA BUSCA ===== */
+        .resultado-busca {
+            display: none;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px 24px;
+        }
+
+        .resultado-busca.ativo {
+            display: block;
+        }
+
+        .resultado-busca .titulo-busca {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #0a2a4a;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .resultado-busca .titulo-busca span {
+            color: #f8b81f;
+        }
+
+        .resultado-busca .grid-resultados {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .resultado-busca .card-manual {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid transparent;
+            position: relative;
+        }
+
+        .resultado-busca .card-manual:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+            border-color: rgba(248, 184, 31, 0.3);
+        }
+
+        .resultado-busca .card-manual img {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            background: #f8fafc;
+            padding: 4px;
+        }
+
+        .resultado-busca .card-manual .nome-manual {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #0a2a4a;
+        }
+
+        .resultado-busca .card-manual .info-manual {
+            font-size: 0.7rem;
+            color: #8a9aa8;
+            margin-top: 4px;
+        }
+
+        .resultado-busca .sem-resultados {
+            grid-column: 1/-1;
+            text-align: center;
+            padding: 40px;
+            color: #8a9aa8;
+        }
+
+        .resultado-busca .sem-resultados .icone {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
         /* ===== CATEGORIAS ===== */
         .section-title {
             text-align: center;
@@ -417,6 +501,7 @@
             text-align: center;
             padding: 30px 20px;
             border-top: 2px solid rgba(248, 184, 31, 0.2);
+            margin-top: 20px;
         }
 
         footer .footer-logo {
@@ -453,47 +538,27 @@
             transform: translateY(-2px);
         }
 
-        /* ===== ADMIN BUTTON ===== */
-        .admin-fab {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            background: #e94560;
-            color: white;
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            display: flex;
+        /* ===== BOTÃO VOLTAR ===== */
+        .btn-voltar-busca {
+            display: inline-flex;
             align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            box-shadow: 0 4px 16px rgba(233, 69, 96, 0.3);
-            text-decoration: none;
+            gap: 8px;
+            padding: 8px 20px;
+            border-radius: 30px;
+            border: 1.5px solid #dce1e8;
+            background: transparent;
+            color: #0a2a4a;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
             transition: all 0.3s;
-            z-index: 50;
+            font-family: inherit;
+            margin-bottom: 16px;
         }
 
-        .admin-fab:hover {
-            transform: scale(1.1) rotate(-10deg);
-            box-shadow: 0 6px 24px rgba(233, 69, 96, 0.4);
-        }
-
-        .admin-fab .tooltip {
-            position: absolute;
-            right: 60px;
-            background: #1a2a3a;
-            color: white;
-            padding: 4px 12px;
-            border-radius: 6px;
-            font-size: 0.7rem;
-            white-space: nowrap;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s;
-        }
-
-        .admin-fab:hover .tooltip {
-            opacity: 1;
+        .btn-voltar-busca:hover {
+            border-color: #0a2a4a;
+            background: #f5f7fa;
         }
 
         /* ===== RESPONSIVE ===== */
@@ -557,12 +622,8 @@
                 font-size: 1.4rem;
             }
 
-            .admin-fab {
-                width: 42px;
-                height: 42px;
-                font-size: 1rem;
-                bottom: 16px;
-                right: 16px;
+            .resultado-busca .grid-resultados {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
             }
         }
 
@@ -592,6 +653,10 @@
 
             .hero h1 {
                 font-size: 1.5rem;
+            }
+
+            .resultado-busca .grid-resultados {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
     </style>
@@ -623,9 +688,6 @@
                 <a href="https://www.marinefishing.com.br" target="_blank" class="btn-header btn-header-outline">
                     <i class="fas fa-external-link-alt"></i> Site Oficial
                 </a>
-                <a href="/admin_catalogo.html" class="btn-header btn-header-primary">
-                    <i class="fas fa-cog"></i> Admin
-                </a>
             </div>
         </div>
     </header>
@@ -640,7 +702,7 @@
             <p>Encontre o manual técnico do seu equipamento Marine Fishing e consulte todas as peças com facilidade.</p>
 
             <div class="hero-search" id="hero-search">
-                <input type="text" id="search-input" placeholder="🔍 Buscar produto ou categoria..." 
+                <input type="text" id="search-input" placeholder="🔍 Buscar produto (ex: Titan, Prisma, Thunnus...)" 
                        onkeydown="if(event.key==='Enter') buscarProduto()">
                 <button onclick="buscarProduto()"><i class="fas fa-search"></i> Buscar</button>
             </div>
@@ -662,9 +724,22 @@
         </div>
     </section>
 
+    <!-- ===== RESULTADOS DA BUSCA ===== -->
+    <div class="resultado-busca" id="resultado-busca">
+        <div class="titulo-busca">
+            <button class="btn-voltar-busca" onclick="limparBusca()">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </button>
+            <span>Resultados para: <span id="termo-buscado"></span></span>
+        </div>
+        <div class="grid-resultados" id="grid-resultados"></div>
+    </div>
+
     <!-- ===== CATEGORIAS ===== -->
-    <h2 class="section-title">Explore as <span>Categorias</span></h2>
-    <p class="section-subtitle">Selecione uma categoria para visualizar os manuais disponíveis</p>
+    <div id="categorias-section">
+        <h2 class="section-title">Explore as <span>Categorias</span></h2>
+        <p class="section-subtitle">Selecione uma categoria para visualizar os manuais disponíveis</p>
+    </div>
 
     <div class="categorias" id="categorias-container">
         <div class="loading-spinner">
@@ -672,12 +747,6 @@
             <p>Carregando categorias...</p>
         </div>
     </div>
-
-    <!-- ===== ADMIN FAB ===== -->
-    <a href="/admin_catalogo.html" class="admin-fab" title="Painel Admin">
-        <i class="fas fa-cog"></i>
-        <span class="tooltip">Admin</span>
-    </a>
 
     <!-- ===== FOOTER ===== -->
     <footer>
@@ -703,6 +772,8 @@
     </footer>
 
     <script>
+        let todosManuais = [];
+
         // ============================================
         // CARREGAR CATEGORIAS
         // ============================================
@@ -718,9 +789,6 @@
                         <div style="grid-column:1/-1; text-align:center; color:#8a9aa8; padding:40px;">
                             <div style="font-size:48px; margin-bottom:16px;">📭</div>
                             <p>Nenhuma categoria cadastrada ainda.</p>
-                            <p style="font-size:0.85rem; margin-top:8px;">
-                                <a href="/admin_catalogo.html" style="color:#f8b81f; font-weight:600;">Cadastre uma categoria</a>
-                            </p>
                         </div>
                     `;
                     return;
@@ -755,14 +823,92 @@
         }
 
         // ============================================
+        // CARREGAR MANUAIS PARA BUSCA
+        // ============================================
+        async function carregarManuais() {
+            try {
+                const res = await fetch('/api/manuais');
+                const data = await res.json();
+                if (data.success) {
+                    todosManuais = data.manuais || [];
+                }
+            } catch (error) {
+                console.log('⚠️ Erro ao carregar manuais:', error.message);
+            }
+        }
+
+        // ============================================
         // BUSCAR PRODUTO
         // ============================================
         function buscarProduto() {
             const termo = document.getElementById('search-input').value.trim();
-            if (!termo) return;
-            
-            // Tenta encontrar o produto no catálogo
-            window.location.href = `/categoria.html?busca=${encodeURIComponent(termo)}`;
+            if (!termo) {
+                alert('Digite o nome de um produto para buscar.');
+                return;
+            }
+
+            // Filtra os manuais que contêm o termo (case insensitive)
+            const resultados = todosManuais.filter(manual => 
+                manual.nome_base.toLowerCase().includes(termo.toLowerCase()) ||
+                (manual.nome_exibicao && manual.nome_exibicao.toLowerCase().includes(termo.toLowerCase()))
+            );
+
+            // Mostra os resultados
+            const container = document.getElementById('resultado-busca');
+            const grid = document.getElementById('grid-resultados');
+            const termoEl = document.getElementById('termo-buscado');
+
+            container.classList.add('ativo');
+            document.getElementById('categorias-section').style.display = 'none';
+            document.querySelector('.categorias').style.display = 'none';
+            document.querySelector('.hero .hero-stats').style.display = 'none';
+
+            termoEl.textContent = termo;
+
+            if (resultados.length === 0) {
+                grid.innerHTML = `
+                    <div class="sem-resultados">
+                        <div class="icone">🔍</div>
+                        <p>Nenhum manual encontrado para "<strong>${termo}</strong>"</p>
+                        <p style="font-size:0.85rem; margin-top:8px;">Tente buscar por "Titan", "Prisma", "Thunnus" ou outro modelo</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = '';
+            resultados.forEach(manual => {
+                const card = document.createElement('div');
+                card.className = 'card-manual';
+                
+                const nomeLimpo = manual.nome_base.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9]/g, '_');
+                const imgUrl = `https://gjshdfnpzmitrerzrxkb.supabase.co/storage/v1/object/public/esquemas/${nomeLimpo}.jpg`;
+                
+                card.onclick = () => {
+                    window.location.href = `/pecas.html?manual=${encodeURIComponent(manual.nome_base)}`;
+                };
+                
+                card.innerHTML = `
+                    <img src="${imgUrl}" alt="${manual.nome_base}" 
+                         onerror="this.src='https://via.placeholder.com/80?text=Manual'">
+                    <div class="nome-manual">${manual.nome_base}</div>
+                    <div class="info-manual">${manual.nome_exibicao || 'Clique para abrir'}</div>
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+
+        // ============================================
+        // LIMPAR BUSCA
+        // ============================================
+        function limparBusca() {
+            document.getElementById('resultado-busca').classList.remove('ativo');
+            document.getElementById('categorias-section').style.display = 'block';
+            document.querySelector('.categorias').style.display = 'grid';
+            document.querySelector('.hero .hero-stats').style.display = 'flex';
+            document.getElementById('search-input').value = '';
+            document.getElementById('grid-resultados').innerHTML = '';
         }
 
         // ============================================
@@ -770,28 +916,32 @@
         // ============================================
         async function carregarEstatisticas() {
             try {
-                // Busca manuais
                 const resManuais = await fetch('/api/manuais');
                 const dataManuais = await resManuais.json();
                 if (dataManuais.success) {
                     document.getElementById('stat-manuais').textContent = dataManuais.manuais.length;
+                    todosManuais = dataManuais.manuais || [];
                 }
 
-                // Busca peças
-                const resPecas = await fetch('/api/pecas?limit=1');
-                const dataPecas = await resPecas.json();
-                if (dataPecas.success && dataPecas.total !== undefined) {
-                    document.getElementById('stat-pecas').textContent = dataPecas.total;
-                }
+                // Tenta buscar peças
+                try {
+                    const resPecas = await fetch('/api/pecas?limit=1');
+                    const dataPecas = await resPecas.json();
+                    if (dataPecas.success && dataPecas.total !== undefined) {
+                        document.getElementById('stat-pecas').textContent = dataPecas.total;
+                    }
+                } catch (e) {}
 
-                // Busca hotspots
-                const resHotspots = await fetch('/api/hotspots?limit=1');
-                const dataHotspots = await resHotspots.json();
-                if (dataHotspots.success && dataHotspots.total !== undefined) {
-                    document.getElementById('stat-hotspots').textContent = dataHotspots.total;
-                }
+                // Tenta buscar hotspots
+                try {
+                    const resHotspots = await fetch('/api/hotspots?limit=1');
+                    const dataHotspots = await resHotspots.json();
+                    if (dataHotspots.success && dataHotspots.total !== undefined) {
+                        document.getElementById('stat-hotspots').textContent = dataHotspots.total;
+                    }
+                } catch (e) {}
             } catch (error) {
-                console.log('⚠️ Não foi possível carregar estatísticas:', error.message);
+                console.log('⚠️ Erro ao carregar estatísticas:', error.message);
             }
         }
 
