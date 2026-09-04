@@ -1442,8 +1442,8 @@ app.post('/api/config-tecnico', async (req, res) => {
 // ============================================
 // SERVIDOR DE IMAGENS LOCAL
 // ============================================
-app.get('/images/*', (req, res) => {
-    const imageName = decodeURIComponent(req.params[0] || req.params.splat || '');
+app.get('/images/:splat(.*)', (req, res) => {
+    const imageName = decodeURIComponent(req.params.splat || '');
     const imagePath = path.join(__dirname, 'esquemas', imageName);
 
     if (fs.existsSync(imagePath)) {
@@ -1452,7 +1452,6 @@ app.get('/images/*', (req, res) => {
         res.status(404).send('Imagem não encontrada');
     }
 });
-
 // ============================================
 // INICIALIZAÇÃO DO SERVIDOR
 // ============================================
