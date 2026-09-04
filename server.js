@@ -1443,7 +1443,7 @@ app.post('/api/config-tecnico', async (req, res) => {
 // SERVIDOR DE IMAGENS LOCAL
 // ============================================
 app.get('/images/*', (req, res) => {
-    const imageName = decodeURIComponent(req.params[0]);
+    const imageName = decodeURIComponent(req.params[0] || req.params.splat || '');
     const imagePath = path.join(__dirname, 'esquemas', imageName);
 
     if (fs.existsSync(imagePath)) {
