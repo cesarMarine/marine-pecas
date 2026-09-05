@@ -676,6 +676,18 @@
         let subgrupoSelecionado = '';
 
         // ============================================
+        // LER PARÂMETROS DA URL
+        // ============================================
+        function getParamsFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                grupo: params.get('grupo'),
+                nome: params.get('nome'),
+                subgrupo: params.get('subgrupo')
+            };
+        }
+
+        // ============================================
         // ATUALIZAR BADGE DO CARRINHO
         // ============================================
         function atualizarBadgeCarrinho() {
@@ -738,6 +750,18 @@
                 renderizarSubgrupos();
                 renderizarProdutos();
 
+                // 🔥 VERIFICA SE TEM PARÂMETRO NA URL
+                const params = getParamsFromURL();
+                if (params.grupo) {
+                    const grupo = grupos.find(g => g.id == params.grupo);
+                    if (grupo) {
+                        selecionarGrupo(params.grupo);
+                        document.getElementById('titulo-categoria').textContent = grupo.nome;
+                        document.getElementById('subtitulo-categoria').textContent = `Explorando ${grupo.nome}`;
+                        document.getElementById('breadcrumb-categoria').textContent = grupo.nome;
+                    }
+                }
+
             } catch (error) {
                 console.error('❌ Erro ao carregar dados:', error);
                 document.getElementById('produtos-container').innerHTML = `
@@ -795,7 +819,6 @@
             let html = `<button class="subgrupo-btn ativo" data-subgrupo="" onclick="selecionarSubgrupo('')">📋 Todos</button>`;
             
             subgruposFiltrados.forEach(s => {
-                // Conta quantos produtos tem neste subgrupo
                 const count = produtos.filter(p => p.subgrupo_id == s.id).length;
                 html += `
                     <button class="subgrupo-btn" data-subgrupo="${s.id}" onclick="selecionarSubgrupo('${s.id}')">
@@ -816,13 +839,11 @@
             
             let produtosFiltrados = produtos;
             
-            // Filtra por grupo (através dos subgrupos)
             if (grupoSelecionado) {
                 const subgruposDoGrupo = subgrupos.filter(s => s.grupo_id == grupoSelecionado).map(s => s.id);
                 produtosFiltrados = produtosFiltrados.filter(p => subgruposDoGrupo.includes(p.subgrupo_id));
             }
             
-            // Filtra por subgrupo
             if (subgrupoSelecionado) {
                 produtosFiltrados = produtosFiltrados.filter(p => p.subgrupo_id == subgrupoSelecionado);
             }
