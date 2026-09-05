@@ -303,6 +303,7 @@
             margin-top: 12px;
             padding-top: 12px;
             border-top: 1px solid #e8edf3;
+            min-height: 40px;
         }
 
         .subgrupo-btn {
@@ -328,6 +329,18 @@
             background: #1a237e;
             color: white;
             border-color: #1a237e;
+        }
+
+        .subgrupo-btn .sub-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 1px 8px;
+            border-radius: 10px;
+            font-size: 0.6rem;
+            margin-left: 4px;
+        }
+
+        .subgrupo-btn.ativo .sub-badge {
+            background: rgba(255,255,255,0.2);
         }
 
         /* ===== PRODUTOS ===== */
@@ -627,7 +640,11 @@
             </div>
 
             <!-- SUBGRUPOS -->
-            <div class="subgrupos-container" id="subgrupos-container"></div>
+            <div class="subgrupos-container" id="subgrupos-container">
+                <span style="color:#8a9aa8; font-size:0.85rem; padding:8px 0;">
+                    <i class="fas fa-info-circle"></i> Selecione um grupo para ver as subcategorias
+                </span>
+            </div>
         </div>
 
         <!-- ===== PRODUTOS ===== -->
@@ -766,17 +783,24 @@
                 subgruposFiltrados = subgrupos.filter(s => s.grupo_id == grupoSelecionado);
             }
 
-            if (subgruposFiltrados.length === 0) {
-                container.innerHTML = '';
+            if (!grupoSelecionado || subgruposFiltrados.length === 0) {
+                container.innerHTML = `
+                    <span style="color:#8a9aa8; font-size:0.85rem; padding:8px 0;">
+                        <i class="fas fa-info-circle"></i> Selecione um grupo para ver as subcategorias
+                    </span>
+                `;
                 return;
             }
 
             let html = `<button class="subgrupo-btn ativo" data-subgrupo="" onclick="selecionarSubgrupo('')">📋 Todos</button>`;
             
             subgruposFiltrados.forEach(s => {
+                // Conta quantos produtos tem neste subgrupo
+                const count = produtos.filter(p => p.subgrupo_id == s.id).length;
                 html += `
                     <button class="subgrupo-btn" data-subgrupo="${s.id}" onclick="selecionarSubgrupo('${s.id}')">
                         ${s.nome}
+                        <span class="sub-badge">${count}</span>
                     </button>
                 `;
             });
@@ -792,20 +816,30 @@
             
             let produtosFiltrados = produtos;
             
+            // Filtra por grupo (através dos subgrupos)
             if (grupoSelecionado) {
                 const subgruposDoGrupo = subgrupos.filter(s => s.grupo_id == grupoSelecionado).map(s => s.id);
                 produtosFiltrados = produtosFiltrados.filter(p => subgruposDoGrupo.includes(p.subgrupo_id));
             }
             
+            // Filtra por subgrupo
             if (subgrupoSelecionado) {
                 produtosFiltrados = produtosFiltrados.filter(p => p.subgrupo_id == subgrupoSelecionado);
             }
 
             if (produtosFiltrados.length === 0) {
+                let mensagem = 'Nenhum produto encontrado.';
+                if (grupoSelecionado && !subgrupoSelecionado) {
+                    const grupo = grupos.find(g => g.id == grupoSelecionado);
+                    mensagem = `Nenhum produto encontrado em "${grupo ? grupo.nome : 'esta categoria'}".`;
+                } else if (subgrupoSelecionado) {
+                    const sub = subgrupos.find(s => s.id == subgrupoSelecionado);
+                    mensagem = `Nenhum produto encontrado em "${sub ? sub.nome : 'esta subcategoria'}".`;
+                }
                 container.innerHTML = `
                     <div class="empty-state">
                         <div class="icone">📭</div>
-                        <h3>Nenhum produto encontrado</h3>
+                        <h3>${mensagem}</h3>
                         <p>Tente selecionar outra categoria ou subcategoria.</p>
                     </div>
                 `;
