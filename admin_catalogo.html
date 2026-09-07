@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Catálogo</title>
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
             background: #f0f4f8;
@@ -64,7 +68,8 @@
             flex: 1;
         }
 
-        input, select {
+        input,
+        select {
             width: 100%;
             padding: 10px;
             border: 2px solid #ddd;
@@ -73,7 +78,8 @@
             transition: all 0.2s;
         }
 
-        input:focus, select:focus {
+        input:focus,
+        select:focus {
             border-color: #0984e3;
             outline: none;
         }
@@ -101,8 +107,9 @@
             padding: 6px 15px;
             font-size: 12px;
             width: auto;
-            margin-top: 5px;
+            margin-top: 0;
             white-space: nowrap;
+            display: inline-block;
         }
 
         .btn-small:hover {
@@ -181,6 +188,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            flex: 1;
         }
 
         .list-item .info .sub-info {
@@ -192,7 +200,13 @@
             font-weight: bold;
         }
 
-        .list-item button {
+        .list-item .actions {
+            display: flex;
+            gap: 5px;
+            flex-shrink: 0;
+        }
+
+        .list-item .actions button {
             background: #e94560;
             color: white;
             border: none;
@@ -203,8 +217,16 @@
             width: auto;
         }
 
-        .list-item button:hover {
+        .list-item .actions button:hover {
             background: #c62828;
+        }
+
+        .list-item .actions .btn-edit {
+            background: #0984e3;
+        }
+
+        .list-item .actions .btn-edit:hover {
+            background: #0652DD;
         }
 
         .preview-imagem {
@@ -317,8 +339,14 @@
         }
 
         @keyframes modalIn {
-            from { transform: scale(0.9); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
+            from {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
 
         .modal h2 {
@@ -433,8 +461,12 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         .modal .btn-selecionar {
@@ -558,6 +590,45 @@
             margin-bottom: 10px;
         }
 
+        /* Estilos para os botões de ação na lista */
+        .list-item .actions {
+            display: flex;
+            gap: 5px;
+            flex-shrink: 0;
+        }
+
+        .list-item .actions .btn-edit {
+            background: #0984e3;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            width: auto;
+        }
+
+        .list-item .actions .btn-edit:hover {
+            background: #0652DD;
+            transform: none;
+        }
+
+        .list-item .actions .btn-delete {
+            background: #e94560;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            width: auto;
+        }
+
+        .list-item .actions .btn-delete:hover {
+            background: #c62828;
+            transform: none;
+        }
+
         @media (max-width: 768px) {
             .modal .imagens-grid {
                 grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
@@ -574,6 +645,14 @@
             .tab {
                 padding: 6px 14px;
                 font-size: 13px;
+            }
+            .list-item {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            .list-item .actions {
+                width: 100%;
+                justify-content: flex-end;
             }
         }
     </style>
@@ -703,24 +782,24 @@
         <!-- LISTAGEM COM ABAS -->
         <div class="list-group">
             <h3>📋 Lista de Itens</h3>
-            
+
             <div class="tabs">
                 <button class="tab ativo" data-tab="grupos" onclick="trocarAba('grupos')">📂 Grupos</button>
                 <button class="tab" data-tab="subgrupos" onclick="trocarAba('subgrupos')">📁 Subgrupos</button>
                 <button class="tab" data-tab="produtos" onclick="trocarAba('produtos')">🏷️ Produtos</button>
             </div>
 
-            <!-- ABRA GRUPOS -->
+            <!-- ABA GRUPOS -->
             <div class="tab-content ativo" id="tab-grupos">
                 <div id="lista-grupos"></div>
             </div>
 
-            <!-- ABRA SUBGRUPOS -->
+            <!-- ABA SUBGRUPOS -->
             <div class="tab-content" id="tab-subgrupos">
                 <div id="lista-subgrupos"></div>
             </div>
 
-            <!-- ABRA PRODUTOS -->
+            <!-- ABA PRODUTOS -->
             <div class="tab-content" id="tab-produtos">
                 <div id="lista-produtos"></div>
             </div>
@@ -734,7 +813,7 @@
                 📂 Selecionar Imagem
                 <button class="close-btn" onclick="fecharModalImagens()">✕</button>
             </h2>
-            
+
             <div class="upload-area">
                 <label for="upload-imagem">
                     📤 Clique para enviar uma nova imagem
@@ -756,6 +835,79 @@
         </div>
     </div>
 
+    <!-- MODAL EDITAR GRUPO -->
+    <div class="modal-overlay" id="modal-editar-grupo">
+        <div class="modal">
+            <h2>
+                ✏️ Editar Grupo
+                <button class="close-btn" onclick="fecharModal('modal-editar-grupo')">✕</button>
+            </h2>
+            <input type="hidden" id="edit-grupo-id">
+
+            <div class="form-group">
+                <label>Nome do Grupo</label>
+                <input type="text" id="edit-grupo-nome" placeholder="Digite o nome do grupo">
+            </div>
+
+            <div class="form-group">
+                <label>Imagem do Grupo</label>
+                <div class="input-wrapper">
+                    <input type="text" id="edit-grupo-icone" placeholder="URL da imagem" readonly style="background:#f5f5f5;">
+                    <button class="btn-small" onclick="abrirSeletorImagens('edit-grupo-icone')">📂 Selecionar</button>
+                </div>
+                <div id="preview-edit-grupo" class="campo-com-preview" style="display:none; margin-top:10px;">
+                    <img class="preview" id="preview-edit-grupo-img" src="" alt="Preview">
+                    <div class="info">
+                        <div class="nome" id="preview-edit-grupo-nome">-</div>
+                        <div class="url" id="preview-edit-grupo-url">-</div>
+                    </div>
+                    <button class="btn-limpar" onclick="limparPreview('edit-grupo-icone', 'preview-edit-grupo', 'preview-edit-grupo-img', 'preview-edit-grupo-nome', 'preview-edit-grupo-url')">✕</button>
+                </div>
+            </div>
+
+            <button onclick="salvarEdicaoGrupo()">💾 Salvar Alterações</button>
+        </div>
+    </div>
+
+    <!-- MODAL EDITAR SUBGRUPO -->
+    <div class="modal-overlay" id="modal-editar-subgrupo">
+        <div class="modal">
+            <h2>
+                ✏️ Editar Subgrupo
+                <button class="close-btn" onclick="fecharModal('modal-editar-subgrupo')">✕</button>
+            </h2>
+            <input type="hidden" id="edit-sub-id">
+
+            <div class="form-group">
+                <label>Grupo Pai</label>
+                <select id="edit-sub-grupo"></select>
+            </div>
+
+            <div class="form-group">
+                <label>Nome do Subgrupo</label>
+                <input type="text" id="edit-sub-nome" placeholder="Digite o nome do subgrupo">
+            </div>
+
+            <div class="form-group">
+                <label>Imagem do Subgrupo</label>
+                <div class="input-wrapper">
+                    <input type="text" id="edit-sub-icone" placeholder="URL da imagem" readonly style="background:#f5f5f5;">
+                    <button class="btn-small" onclick="abrirSeletorImagens('edit-sub-icone')">📂 Selecionar</button>
+                </div>
+                <div id="preview-edit-sub" class="campo-com-preview" style="display:none; margin-top:10px;">
+                    <img class="preview" id="preview-edit-sub-img" src="" alt="Preview">
+                    <div class="info">
+                        <div class="nome" id="preview-edit-sub-nome">-</div>
+                        <div class="url" id="preview-edit-sub-url">-</div>
+                    </div>
+                    <button class="btn-limpar" onclick="limparPreview('edit-sub-icone', 'preview-edit-sub', 'preview-edit-sub-img', 'preview-edit-sub-nome', 'preview-edit-sub-url')">✕</button>
+                </div>
+            </div>
+
+            <button onclick="salvarEdicaoSubgrupo()">💾 Salvar Alterações</button>
+        </div>
+    </div>
+
     <script>
         // ============================================
         // VARIÁVEIS
@@ -771,12 +923,23 @@
         let manualNomeSelecionado = '';
 
         // ============================================
+        // FUNÇÕES DE MODAL
+        // ============================================
+        function fecharModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        function abrirModal(id) {
+            document.getElementById(id).classList.add('active');
+        }
+
+        // ============================================
         // TROCAR ABA
         // ============================================
         function trocarAba(aba) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('ativo'));
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('ativo'));
-            
+
             document.querySelector(`.tab[data-tab="${aba}"]`).classList.add('ativo');
             document.getElementById(`tab-${aba}`).classList.add('ativo');
         }
@@ -798,7 +961,7 @@
             const valor = input.value.trim();
             if (!valor) return alert('⚠️ Digite uma variação!');
             if (variacoes.includes(valor)) return alert('⚠️ Esta variação já foi adicionada!');
-            
+
             variacoes.push(valor);
             input.value = '';
             renderizarVariacoes();
@@ -819,11 +982,11 @@
             let html = '';
             variacoes.forEach((v, i) => {
                 html += `
-                    <div class="variacao-item">
-                        <span>📌 ${v}</span>
-                        <button onclick="removerVariacao(${i})">✕ Remover</button>
-                    </div>
-                `;
+                        <div class="variacao-item">
+                            <span>📌 ${v}</span>
+                            <button onclick="removerVariacao(${i})">✕ Remover</button>
+                        </div>
+                    `;
             });
             container.innerHTML = html;
         }
@@ -860,7 +1023,7 @@
         }
 
         // ============================================
-        // SELETOR DE IMAGENS (VIA SERVIDOR)
+        // SELETOR DE IMAGENS
         // ============================================
         function abrirSeletorImagens(inputId) {
             inputAlvo = inputId;
@@ -888,11 +1051,11 @@
         async function carregarImagensBucket() {
             const container = document.getElementById('lista-imagens-modal');
             container.innerHTML = `
-                <div class="loading-spinner">
-                    <div class="spinner"></div>
-                    <p>Carregando imagens...</p>
-                </div>
-            `;
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <p>Carregando imagens...</p>
+                    </div>
+                `;
 
             try {
                 const response = await fetch('/api/imagens');
@@ -906,22 +1069,22 @@
 
                 if (imagensBucket.length === 0) {
                     container.innerHTML = `
-                        <div style="text-align:center; padding:30px; color:#888;">
-                            <p>📭 Nenhuma imagem encontrada.</p>
-                            <p style="font-size:13px;">Faça upload de uma imagem acima.</p>
-                        </div>
-                    `;
+                            <div style="text-align:center; padding:30px; color:#888;">
+                                <p>📭 Nenhuma imagem encontrada.</p>
+                                <p style="font-size:13px;">Faça upload de uma imagem acima.</p>
+                            </div>
+                        `;
                     return;
                 }
 
                 let html = '<div class="imagens-grid">';
                 imagensBucket.forEach((img, index) => {
                     html += `
-                        <div class="imagem-item" data-index="${index}" onclick="selecionarItemImagem(${index})">
-                            <img src="${img.url}" alt="${img.name}" onerror="this.src='https://via.placeholder.com/100?text=Erro'">
-                            <div class="nome-arquivo">${img.name}</div>
-                        </div>
-                    `;
+                            <div class="imagem-item" data-index="${index}" onclick="selecionarItemImagem(${index})">
+                                <img src="${img.url}" alt="${img.name}" onerror="this.src='https://via.placeholder.com/100?text=Erro'">
+                                <div class="nome-arquivo">${img.name}</div>
+                            </div>
+                        `;
                 });
                 html += '</div>';
                 container.innerHTML = html;
@@ -931,11 +1094,11 @@
             } catch (error) {
                 console.error('❌ Erro ao carregar imagens:', error);
                 container.innerHTML = `
-                    <div style="text-align:center; padding:30px; color:#e94560;">
-                        <p>❌ Erro ao carregar imagens: ${error.message}</p>
-                        <button onclick="carregarImagensBucket()" style="margin-top:15px; padding:8px 20px; background:#1a237e; color:white; border:none; border-radius:6px; cursor:pointer;">🔄 Tentar novamente</button>
-                    </div>
-                `;
+                        <div style="text-align:center; padding:30px; color:#e94560;">
+                            <p>❌ Erro ao carregar imagens: ${error.message}</p>
+                            <button onclick="carregarImagensBucket()" style="margin-top:15px; padding:8px 20px; background:#1a237e; color:white; border:none; border-radius:6px; cursor:pointer;">🔄 Tentar novamente</button>
+                        </div>
+                    `;
             }
         }
 
@@ -945,11 +1108,11 @@
         async function carregarManuaisBucket() {
             const container = document.getElementById('lista-imagens-modal');
             container.innerHTML = `
-                <div class="loading-spinner">
-                    <div class="spinner"></div>
-                    <p>Carregando manuais...</p>
-                </div>
-            `;
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <p>Carregando manuais...</p>
+                    </div>
+                `;
 
             try {
                 const response = await fetch('/api/manuais-lista');
@@ -963,11 +1126,11 @@
 
                 if (manuais.length === 0) {
                     container.innerHTML = `
-                        <div style="text-align:center; padding:30px; color:#888;">
-                            <p>📭 Nenhum manual encontrado.</p>
-                            <p style="font-size:13px;">Envie os manuais para a pasta "esquemas".</p>
-                        </div>
-                    `;
+                            <div style="text-align:center; padding:30px; color:#888;">
+                                <p>📭 Nenhum manual encontrado.</p>
+                                <p style="font-size:13px;">Envie os manuais para a pasta "esquemas".</p>
+                            </div>
+                        `;
                     return;
                 }
 
@@ -975,11 +1138,11 @@
                 html += '<div class="imagens-grid">';
                 manuais.forEach((manual, index) => {
                     html += `
-                        <div class="imagem-item" data-index="${index}" onclick="selecionarItemManual(${index}, '${manual.nomeManual}')">
-                            <img src="${manual.url}" alt="${manual.name}" onerror="this.src='https://via.placeholder.com/100?text=Manual'">
-                            <div class="nome-arquivo">${manual.nomeManual}</div>
-                        </div>
-                    `;
+                            <div class="imagem-item" data-index="${index}" onclick="selecionarItemManual(${index}, '${manual.nomeManual}')">
+                                <img src="${manual.url}" alt="${manual.name}" onerror="this.src='https://via.placeholder.com/100?text=Manual'">
+                                <div class="nome-arquivo">${manual.nomeManual}</div>
+                            </div>
+                        `;
                 });
                 html += '</div>';
                 container.innerHTML = html;
@@ -989,11 +1152,11 @@
             } catch (error) {
                 console.error('❌ Erro ao carregar manuais:', error);
                 container.innerHTML = `
-                    <div style="text-align:center; padding:30px; color:#e94560;">
-                        <p>❌ Erro ao carregar manuais: ${error.message}</p>
-                        <button onclick="carregarManuaisBucket()" style="margin-top:15px; padding:8px 20px; background:#1a237e; color:white; border:none; border-radius:6px; cursor:pointer;">🔄 Tentar novamente</button>
-                    </div>
-                `;
+                        <div style="text-align:center; padding:30px; color:#e94560;">
+                            <p>❌ Erro ao carregar manuais: ${error.message}</p>
+                            <button onclick="carregarManuaisBucket()" style="margin-top:15px; padding:8px 20px; background:#1a237e; color:white; border:none; border-radius:6px; cursor:pointer;">🔄 Tentar novamente</button>
+                        </div>
+                    `;
             }
         }
 
@@ -1004,7 +1167,7 @@
             const items = document.querySelectorAll('.imagem-item');
             items.forEach(item => item.classList.remove('selecionada'));
             items[index].classList.add('selecionada');
-            
+
             imagemSelecionada = imagensBucket[index];
             document.getElementById('btn-selecionar-imagem').disabled = false;
             document.getElementById('btn-selecionar-imagem').textContent = `✅ Selecionar: ${imagemSelecionada.name}`;
@@ -1014,7 +1177,7 @@
             const items = document.querySelectorAll('.imagem-item');
             items.forEach(item => item.classList.remove('selecionada'));
             items[index].classList.add('selecionada');
-            
+
             manualNomeSelecionado = nomeManual;
             document.getElementById('btn-selecionar-imagem').disabled = false;
             document.getElementById('btn-selecionar-imagem').textContent = `✅ Selecionar: ${nomeManual}`;
@@ -1024,33 +1187,37 @@
             if (modoSeletor === 'imagem') {
                 if (!imagemSelecionada) return;
                 const url = imagemSelecionada.url;
-                
+
                 if (inputAlvo) {
                     const input = document.getElementById(inputAlvo);
                     input.value = url;
-                    
+
                     if (inputAlvo === 'input-icone-grupo') {
                         mostrarPreview('input-icone-grupo', 'preview-icone-grupo', 'preview-img-grupo', 'preview-nome-grupo', 'preview-url-grupo', url);
                     } else if (inputAlvo === 'input-icone-sub') {
                         mostrarPreview('input-icone-sub', 'preview-icone-sub', 'preview-img-sub', 'preview-nome-sub', 'preview-url-sub', url);
                     } else if (inputAlvo === 'input-icone-prod') {
                         mostrarPreview('input-icone-prod', 'preview-icone-prod', 'preview-img-prod', 'preview-nome-prod', 'preview-url-prod', url);
+                    } else if (inputAlvo === 'edit-grupo-icone') {
+                        mostrarPreview('edit-grupo-icone', 'preview-edit-grupo', 'preview-edit-grupo-img', 'preview-edit-grupo-nome', 'preview-edit-grupo-url', url);
+                    } else if (inputAlvo === 'edit-sub-icone') {
+                        mostrarPreview('edit-sub-icone', 'preview-edit-sub', 'preview-edit-sub-img', 'preview-edit-sub-nome', 'preview-edit-sub-url', url);
                     }
                 }
             } else if (modoSeletor === 'manual') {
                 if (!manualNomeSelecionado) return;
-                
+
                 const urlManual = `pecas.html?manual=${encodeURIComponent(manualNomeSelecionado)}`;
-                
+
                 const input = document.getElementById('input-manual-prod');
                 input.value = urlManual;
-                
+
                 const preview = document.getElementById('preview-manual');
                 const nomeEl = document.getElementById('preview-manual-nome');
                 preview.style.display = 'block';
                 nomeEl.textContent = `${manualNomeSelecionado}`;
             }
-            
+
             fecharModalImagens();
         }
 
@@ -1080,7 +1247,7 @@
                     statusEl.textContent = '✅ Imagem enviada com sucesso!';
                     statusEl.style.color = '#155724';
                     document.getElementById('upload-imagem').value = '';
-                    
+
                     setTimeout(() => {
                         carregarImagensBucket();
                     }, 1000);
@@ -1125,12 +1292,15 @@
                 item.className = 'list-item';
                 const icone = grupo.icone_url ? `<img src="${grupo.icone_url}" class="preview-imagem">` : '📂';
                 item.innerHTML = `
-                    <div class="info">
-                        ${icone}
-                        <span>${grupo.nome}</span>
-                    </div>
-                    <button onclick="deletarGrupo(${grupo.id})">🗑️ Deletar</button>
-                `;
+                        <div class="info">
+                            ${icone}
+                            <span>${grupo.nome}</span>
+                        </div>
+                        <div class="actions">
+                            <button class="btn-edit" onclick="abrirEditarGrupo(${grupo.id})">✏️ Editar</button>
+                            <button class="btn-delete" onclick="deletarGrupo(${grupo.id})">🗑️ Deletar</button>
+                        </div>
+                    `;
                 lista.appendChild(item);
             });
         }
@@ -1167,15 +1337,18 @@
                 item.className = 'list-item';
                 const icone = sub.icone_url ? `<img src="${sub.icone_url}" class="preview-imagem">` : '📁';
                 item.innerHTML = `
-                    <div class="info">
-                        ${icone}
-                        <div>
-                            <span>${sub.nome}</span>
-                            <span class="sub-info">(${grupo ? grupo.nome : 'Sem grupo'})</span>
+                        <div class="info">
+                            ${icone}
+                            <div>
+                                <span>${sub.nome}</span>
+                                <span class="sub-info">(${grupo ? grupo.nome : 'Sem grupo'})</span>
+                            </div>
                         </div>
-                    </div>
-                    <button onclick="deletarSubgrupo(${sub.id})">🗑️ Deletar</button>
-                `;
+                        <div class="actions">
+                            <button class="btn-edit" onclick="abrirEditarSubgrupo(${sub.id})">✏️ Editar</button>
+                            <button class="btn-delete" onclick="deletarSubgrupo(${sub.id})">🗑️ Deletar</button>
+                        </div>
+                    `;
                 lista.appendChild(item);
             });
         }
@@ -1203,20 +1376,170 @@
                 const icone = prod.icone_url ? `<img src="${prod.icone_url}" class="preview-imagem">` : '🏷️';
                 const temVariacao = prod.possui_variacoes ? '🔁' : '';
                 const variacoesText = prod.variacoes ? prod.variacoes.map(v => v.variacao || v).join(', ') : '';
-                
+
                 item.innerHTML = `
-                    <div class="info">
-                        ${icone}
-                        <div>
-                            <span>${prod.nome} ${temVariacao}</span>
-                            <span class="sub-info">${sub ? sub.nome : 'Sem subgrupo'} ${grupo ? `(${grupo.nome})` : ''}</span>
-                            ${variacoesText ? `<span class="sub-info">| Variações: ${variacoesText}</span>` : ''}
+                        <div class="info">
+                            ${icone}
+                            <div>
+                                <span>${prod.nome} ${temVariacao}</span>
+                                <span class="sub-info">${sub ? sub.nome : 'Sem subgrupo'} ${grupo ? `(${grupo.nome})` : ''}</span>
+                                ${variacoesText ? `<span class="sub-info">| Variações: ${variacoesText}</span>` : ''}
+                            </div>
                         </div>
-                    </div>
-                    <button onclick="deletarProduto(${prod.id})">🗑️ Deletar</button>
-                `;
+                        <div class="actions">
+                            <button class="btn-delete" onclick="deletarProduto(${prod.id})">🗑️ Deletar</button>
+                        </div>
+                    `;
                 lista.appendChild(item);
             });
+        }
+
+        // ============================================
+        // EDITAR GRUPO
+        // ============================================
+        async function abrirEditarGrupo(id) {
+            try {
+                const res = await fetch(`/api/grupos/${id}`);
+                const data = await res.json();
+
+                if (!data.success) {
+                    alert('❌ ' + data.error);
+                    return;
+                }
+
+                const grupo = data.grupo;
+                document.getElementById('edit-grupo-id').value = id;
+                document.getElementById('edit-grupo-nome').value = grupo.nome || '';
+
+                if (grupo.icone_url) {
+                    const input = document.getElementById('edit-grupo-icone');
+                    input.value = grupo.icone_url;
+                    mostrarPreview('edit-grupo-icone', 'preview-edit-grupo', 'preview-edit-grupo-img', 'preview-edit-grupo-nome', 'preview-edit-grupo-url', grupo.icone_url);
+                } else {
+                    document.getElementById('edit-grupo-icone').value = '';
+                    document.getElementById('preview-edit-grupo').style.display = 'none';
+                }
+
+                abrirModal('modal-editar-grupo');
+            } catch (error) {
+                alert('❌ Erro ao carregar grupo: ' + error.message);
+            }
+        }
+
+        async function salvarEdicaoGrupo() {
+            const id = document.getElementById('edit-grupo-id').value;
+            const nome = document.getElementById('edit-grupo-nome').value.trim();
+            const icone_url = document.getElementById('edit-grupo-icone').value.trim();
+
+            if (!nome) {
+                alert('⚠️ Digite o nome do grupo!');
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/grupos/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nome, icone_url })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    alert('✅ Grupo atualizado com sucesso!');
+                    fecharModal('modal-editar-grupo');
+                    await carregarTodos();
+                } else {
+                    alert('❌ ' + data.error);
+                }
+            } catch (error) {
+                alert('❌ Erro ao salvar: ' + error.message);
+            }
+        }
+
+        // ============================================
+        // EDITAR SUBGRUPO
+        // ============================================
+        async function abrirEditarSubgrupo(id) {
+            try {
+                // Carrega grupos para o select
+                const gruposRes = await fetch('/api/grupos');
+                const gruposData = await gruposRes.json();
+                const gruposList = gruposData.grupos || [];
+
+                const select = document.getElementById('edit-sub-grupo');
+                select.innerHTML = '<option value="">Selecione um grupo</option>';
+                gruposList.forEach(g => {
+                    const option = document.createElement('option');
+                    option.value = g.id;
+                    option.textContent = g.nome;
+                    select.appendChild(option);
+                });
+
+                // Carrega dados do subgrupo
+                const res = await fetch(`/api/subgrupos/${id}`);
+                const data = await res.json();
+
+                if (!data.success) {
+                    alert('❌ ' + data.error);
+                    return;
+                }
+
+                const sub = data.subgrupo;
+                document.getElementById('edit-sub-id').value = id;
+                document.getElementById('edit-sub-nome').value = sub.nome || '';
+                document.getElementById('edit-sub-grupo').value = sub.grupo_id || '';
+
+                if (sub.icone_url) {
+                    const input = document.getElementById('edit-sub-icone');
+                    input.value = sub.icone_url;
+                    mostrarPreview('edit-sub-icone', 'preview-edit-sub', 'preview-edit-sub-img', 'preview-edit-sub-nome', 'preview-edit-sub-url', sub.icone_url);
+                } else {
+                    document.getElementById('edit-sub-icone').value = '';
+                    document.getElementById('preview-edit-sub').style.display = 'none';
+                }
+
+                abrirModal('modal-editar-subgrupo');
+            } catch (error) {
+                alert('❌ Erro ao carregar subgrupo: ' + error.message);
+            }
+        }
+
+        async function salvarEdicaoSubgrupo() {
+            const id = document.getElementById('edit-sub-id').value;
+            const grupo_id = document.getElementById('edit-sub-grupo').value;
+            const nome = document.getElementById('edit-sub-nome').value.trim();
+            const icone_url = document.getElementById('edit-sub-icone').value.trim();
+
+            if (!grupo_id) {
+                alert('⚠️ Selecione um grupo!');
+                return;
+            }
+
+            if (!nome) {
+                alert('⚠️ Digite o nome do subgrupo!');
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/subgrupos/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ grupo_id, nome, icone_url })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    alert('✅ Subgrupo atualizado com sucesso!');
+                    fecharModal('modal-editar-subgrupo');
+                    await carregarTodos();
+                } else {
+                    alert('❌ ' + data.error);
+                }
+            } catch (error) {
+                alert('❌ Erro ao salvar: ' + error.message);
+            }
         }
 
         // ============================================
@@ -1225,10 +1548,10 @@
         async function deletarGrupo(id) {
             const grupo = grupos.find(g => g.id === id);
             if (!confirm(`Deletar o grupo "${grupo ? grupo.nome : id}"? Isso também deletará todos os subgrupos e produtos vinculados.`)) return;
-            
+
             const res = await fetch(`/api/grupos/${id}`, { method: 'DELETE' });
             const data = await res.json();
-            
+
             if (data.success) {
                 alert('✅ Grupo deletado!');
                 await carregarTodos();
@@ -1254,7 +1577,7 @@
                 // Depois deleta o subgrupo
                 const res = await fetch(`/api/subgrupos/${id}`, { method: 'DELETE' });
                 const data = await res.json();
-                
+
                 if (data.success) {
                     alert('✅ Subgrupo deletado!');
                     await carregarTodos();
@@ -1272,39 +1595,16 @@
         async function deletarProduto(id) {
             const prod = produtos.find(p => p.id === id);
             if (!confirm(`Deletar o produto "${prod ? prod.nome : id}"?`)) return;
-            
+
             const res = await fetch(`/api/produtos/${id}`, { method: 'DELETE' });
             const data = await res.json();
-            
+
             if (data.success) {
                 alert('✅ Produto deletado!');
                 await carregarTodos();
             } else {
                 alert('❌ ' + data.error);
             }
-        }
-
-        // ============================================
-        // DELETAR SUBGRUPO (VIA API)
-        // ============================================
-        // Adicione esta rota no server.js
-        // app.delete('/api/subgrupos/:id', async (req, res) => {
-        //     try {
-        //         const { error } = await supabase.from('subgrupos').delete().eq('id', req.params.id);
-        //         if (error) throw error;
-        //         res.json({ success: true });
-        //     } catch (error) {
-        //         res.status(500).json({ success: false, error: error.message });
-        //     }
-        // });
-
-        // ============================================
-        // CARREGAR TUDO
-        // ============================================
-        async function carregarTodos() {
-            await carregarGrupos();
-            await carregarSubgrupos();
-            await carregarProdutos();
         }
 
         // ============================================
@@ -1409,14 +1709,28 @@
         }
 
         // ============================================
+        // CARREGAR TUDO
+        // ============================================
+        async function carregarTodos() {
+            await carregarGrupos();
+            await carregarSubgrupos();
+            await carregarProdutos();
+        }
+
+        // ============================================
         // INICIALIZAÇÃO
         // ============================================
         document.addEventListener('DOMContentLoaded', async () => {
             await carregarTodos();
-        });
 
-        document.getElementById('modal-imagens').addEventListener('click', (e) => {
-            if (e.target === e.currentTarget) fecharModalImagens();
+            // Fechar modais ao clicar fora
+            document.querySelectorAll('.modal-overlay').forEach(modal => {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === e.currentTarget) {
+                        modal.classList.remove('active');
+                    }
+                });
+            });
         });
     </script>
 </body>
