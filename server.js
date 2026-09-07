@@ -545,7 +545,7 @@ app.delete('/api/grupos/:id', async (req, res) => {
         res.status(500).json({ success: false, error: error.message });
     }
 });
-
+/*
 app.get('/api/subgrupos', async (req, res) => {
     try {
         const { data, error } = await supabase.from('subgrupos').select('*').order('ordem', { ascending: true });
@@ -588,7 +588,7 @@ app.delete('/api/subgrupos/:id', async (req, res) => {
         res.status(500).json({ success: false, error: error.message });
     }
 });
-
+*/
 app.get('/api/produtos', async (req, res) => {
     try {
         const { data: produtos, error } = await supabase
@@ -1449,7 +1449,7 @@ app.put('/api/grupos/:id', async (req, res) => {
         res.status(500).json({ success: false, error: error.message });
     }
 });
-
+/*
 // 🔹 BUSCAR SUBGRUPO POR ID
 app.get('/api/subgrupos/:id', async (req, res) => {
     try {
@@ -1500,7 +1500,147 @@ app.put('/api/subgrupos/:id', async (req, res) => {
         res.status(500).json({ success: false, error: error.message });
     }
 });
+*/
 
+// ============================================
+// ROTAS DE SUBGRUPOS - VERSÃO CORRIGIDA
+// ============================================
+
+// 1️⃣ Buscar subgrupo por ID (mais específico - PRIMEIRO)
+app.get('/api/subgrupos/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        console.log(`🔍 Buscando subgrupo ID: ${id}`);
+        
+        const numId = parseInt(id);
+        if (isNaN(numId)) {
+            return res.status(400).json({ success: false, error: 'ID inválido' });
+        }
+        
+        const { data, error } = await supabase
+            .from('subgrupos')
+            .select('*')
+            .eq('id', numId)
+            .single();
+            
+        if (error || !data) {
+            return res.status(404).json({ success: false, error: 'Subgrupo não encontrado' });
+        }
+        
+        console.log('✅ Subgrupo encontrado:', data);
+        res.json({ success: true, subgrupo: data });
+    } catch (error) {
+        console.error('❌ Erro ao buscar subgrupo:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// 2️⃣ Buscar subgrupos por grupo_id
+app.get('/api/subgrupos/:grupoId', async (req, res) => {
+    try {
+        const grupoId = parseInt(req.params.grupoId);
+        if (isNaN(grupoId)) {
+            return res.status(400).json({ success: false, error: 'ID do grupo inválido' });
+        }
+        
+        const { data, error } = await supabase
+            .from('subgrupos')
+            .select('*')
+            .eq('grupo_id', grupoId)
+            .order('ordem', { ascending: true });
+            
+        if (error) throw error;
+        res.json({ success: true, subgrupos: data });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// 3️⃣ Listar todos os subgrupos
+app.get('/api/subgrupos', async (req, res) => {
+    try {
+        const { data, error } = await supabase
+            .from('subgrupos')
+            .select('*')
+            .order('ordem', { ascending: true });
+            
+        if (error) throw error;
+        res.json({ success: true, subgrupos: data });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// 4️⃣ Criar subgrupo
+app.post('/api/subgrupos', async (req, res) => {
+    try {
+        const { grupo_id, nome, icone_url } = req.body;
+        if (!grupo_id || !nome) {
+            return res.status(400).json({ success: false, error: 'Grupo e nome são obrigatórios' });
+        }
+        
+        const { data, error } = await supabase
+            .from('subgrupos')
+            .insert({ grupo_id, nome, icone_url: icone_url || '' })
+            .select();
+            
+        if (error) throw error;
+        res.json({ success: true, subgrupo: data[0] });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// 5️⃣ Atualizar subgrupo (PUT)
+app.put('/api/subgrupos/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { grupo_id, nome, icone_url } = req.body;
+        
+        if (!grupo_id || !nome) {
+            return res.status(400).json({ success: false, error: 'Grupo e nome são obrigatórios' });
+        }
+        
+        const numId = parseInt(id);
+        if (isNaN(numId)) {
+            return res.status(400).json({ success: false, error: 'ID inválido' });
+        }
+        
+        const { data, error } = await supabase
+            .from('subgrupos')
+            .update({ grupo_id, nome, icone_url: icone_url || '' })
+            .eq('id', numId)
+            .select()
+            .single();
+            
+        if (error) throw error;
+        res.json({ success: true, subgrupo: data });
+    } catch (error) {
+        console.error('❌ Erro ao atualizar subgrupo:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// 6️⃣ Deletar subgrupo
+app.delete('/api/subgrupos/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const numId = parseInt(id);
+        if (isNaN(numId)) {
+            return res.status(400).json({ success: false, error: 'ID inválido' });
+        }
+        
+        const { error } = await supabase
+            .from('subgrupos')
+            .delete()
+            .eq('id', numId);
+            
+        if (error) throw error;
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
 // 🔹 DELETAR GRUPO (JÁ EXISTE, MAS VAMOS GARANTIR)
 app.delete('/api/grupos/:id', async (req, res) => {
     try {
