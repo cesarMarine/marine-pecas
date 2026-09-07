@@ -2,13 +2,14 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>Marine Fishing - Peças</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
+        /* ===== RESET E BASE ===== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
@@ -16,6 +17,7 @@
             background: #f0f4f8;
             color: #1a2a3a;
             min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
         }
 
         .container {
@@ -32,6 +34,8 @@
             font-size: 0.78rem;
             text-align: center;
             border-bottom: 2px solid #f8b81f;
+            overflow-x: auto;
+            white-space: nowrap;
         }
 
         .top-bar span {
@@ -41,10 +45,7 @@
             margin: 0 12px;
         }
 
-        .top-bar i {
-            color: #f8b81f;
-        }
-
+        .top-bar i { color: #f8b81f; }
         .top-bar .divider {
             width: 4px;
             height: 4px;
@@ -95,11 +96,7 @@
             color: #0a2a4a;
             letter-spacing: 0.5px;
         }
-
-        .logo-text span {
-            color: #f8b81f;
-        }
-
+        .logo-text span { color: #f8b81f; }
         .logo-sub {
             font-size: 0.7rem;
             font-weight: 400;
@@ -129,23 +126,19 @@
             gap: 6px;
             font-family: inherit;
         }
-
         .btn-header-outline {
             background: transparent;
             color: #0a2a4a;
             border: 1.5px solid #dce1e8;
         }
-
         .btn-header-outline:hover {
             border-color: #0a2a4a;
             background: #f5f7fa;
         }
-
         .btn-header-primary {
             background: #f8b81f;
             color: #0a2a4a;
         }
-
         .btn-header-primary:hover {
             background: #e0a312;
             transform: translateY(-2px);
@@ -157,18 +150,15 @@
             padding: 16px 0 8px;
             font-size: 0.85rem;
             color: #6b7a8a;
+            overflow-x: auto;
+            white-space: nowrap;
         }
-
         .breadcrumb a {
             color: #0a2a4a;
             text-decoration: none;
             font-weight: 500;
         }
-
-        .breadcrumb a:hover {
-            color: #f8b81f;
-        }
-
+        .breadcrumb a:hover { color: #f8b81f; }
         .breadcrumb .current {
             color: #1a237e;
             font-weight: 600;
@@ -188,13 +178,13 @@
             flex-wrap: wrap;
             gap: 16px;
         }
-
         .produto-atual .info {
             display: flex;
             align-items: center;
             gap: 16px;
+            flex: 1;
+            min-width: 200px;
         }
-
         .produto-atual .info .icone {
             width: 48px;
             height: 48px;
@@ -205,19 +195,18 @@
             justify-content: center;
             font-size: 1.4rem;
             color: #1a237e;
+            flex-shrink: 0;
         }
-
         .produto-atual .info .nome {
             font-weight: 700;
             font-size: 1.1rem;
             color: #0a2a4a;
+            word-break: break-word;
         }
-
         .produto-atual .info .detalhes {
             font-size: 0.85rem;
             color: #6b7a8a;
         }
-
         .produto-atual .info .detalhes .variacao-tag {
             background: #e8eaf6;
             color: #1a237e;
@@ -225,6 +214,7 @@
             border-radius: 12px;
             font-size: 0.75rem;
             font-weight: 600;
+            display: inline-block;
         }
 
         .produto-atual .acoes {
@@ -246,53 +236,46 @@
             gap: 6px;
             font-family: inherit;
             text-decoration: none;
+            touch-action: manipulation;
         }
-
         .btn-acao.azul {
             background: #0984e3;
             color: white;
         }
-
         .btn-acao.azul:hover {
             background: #0652DD;
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(9, 132, 227, 0.3);
         }
-
         .btn-acao.verde {
             background: #00b894;
             color: white;
         }
-
         .btn-acao.verde:hover {
             background: #00a381;
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0, 184, 148, 0.3);
         }
-
         .btn-acao.vermelho {
             background: #e94560;
             color: white;
         }
-
         .btn-acao.vermelho:hover {
             background: #c62828;
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(233, 69, 96, 0.3);
         }
-
         .btn-acao.roxo {
             background: #6c5ce7;
             color: white;
         }
-
         .btn-acao.roxo:hover {
             background: #5a4bd1;
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
         }
 
-        /* ===== MANUAL ===== */
+        /* ===== CARD MANUAL ===== */
         .card-manual {
             background: white;
             border-radius: 16px;
@@ -301,7 +284,6 @@
             border: 1px solid #e8edf3;
             margin-bottom: 20px;
         }
-
         .card-manual .header-manual {
             display: flex;
             justify-content: space-between;
@@ -310,19 +292,16 @@
             gap: 12px;
             margin-bottom: 16px;
         }
-
         .card-manual .header-manual h2 {
             font-size: 1.2rem;
             font-weight: 700;
             color: #0a2a4a;
         }
-
         .card-manual .header-manual h2 small {
             font-weight: 400;
             color: #6b7a8a;
             font-size: 0.85rem;
         }
-
         .card-manual .header-manual .total {
             font-size: 0.85rem;
             color: #6b7a8a;
@@ -338,8 +317,9 @@
             gap: 4px;
             margin-bottom: 20px;
             border-bottom: 2px solid #e8edf3;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
-
         .aba {
             padding: 10px 24px;
             cursor: pointer;
@@ -349,26 +329,21 @@
             font-size: 0.9rem;
             color: #6b7a8a;
             border-bottom: 3px solid transparent;
+            white-space: nowrap;
+            touch-action: manipulation;
         }
-
         .aba:hover {
             color: #0a2a4a;
             background: #f8fafc;
         }
-
         .aba.ativo {
             color: #1a237e;
             border-bottom-color: #1a237e;
             font-weight: 600;
         }
 
-        .aba-conteudo {
-            display: none;
-        }
-
-        .aba-conteudo.ativo {
-            display: block;
-        }
+        .aba-conteudo { display: none; }
+        .aba-conteudo.ativo { display: block; }
 
         /* ===== DIAGRAMA ===== */
         .diagrama-wrapper {
@@ -379,6 +354,7 @@
             border-radius: 12px;
             overflow: hidden;
             min-height: 400px;
+            touch-action: pan-x pan-y;
         }
 
         .zoom-container {
@@ -386,6 +362,8 @@
             width: 100%;
             overflow: auto;
             max-height: 70vh;
+            -webkit-overflow-scrolling: touch;
+            touch-action: pan-x pan-y;
         }
 
         .imagem-wrapper {
@@ -401,11 +379,15 @@
             height: auto;
             display: block;
             pointer-events: none;
+            image-rendering: auto;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
         }
 
         .imagem-wrapper.zoom-150 { transform: scale(1.5); }
         .imagem-wrapper.zoom-200 { transform: scale(2); }
 
+        /* ===== ZOOM CONTROLS ===== */
         .zoom-controls {
             position: absolute;
             bottom: 16px;
@@ -419,8 +401,9 @@
             box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
             border: 1px solid #e8edf3;
             align-items: center;
+            flex-wrap: wrap;
+            touch-action: manipulation;
         }
-
         .zoom-controls button {
             background: #ffffff;
             border: 1px solid #e8edf3;
@@ -432,14 +415,15 @@
             color: #2d3436;
             transition: 0.2s;
             font-family: inherit;
+            touch-action: manipulation;
+            min-height: 32px;
+            min-width: 32px;
         }
-
         .zoom-controls button:hover {
             background: #1a237e;
             color: white;
             border-color: #1a237e;
         }
-
         .zoom-controls .zoom-level {
             font-size: 0.75rem;
             font-weight: 600;
@@ -456,14 +440,14 @@
             cursor: pointer;
             font-size: 14px;
             transition: 0.2s;
+            touch-action: manipulation;
+            min-height: 32px;
         }
-
         .btn-olho:hover {
             background: #1a237e;
             color: white;
             border-color: #1a237e;
         }
-
         .btn-olho.ativo {
             background: #1a237e;
             color: white;
@@ -492,6 +476,8 @@
             font-size: 12px;
             pointer-events: auto;
             transform: translate(-50%, -50%);
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .pin-peca.oculto {
@@ -499,27 +485,25 @@
             pointer-events: none !important;
             transition: opacity 0.3s ease;
         }
-
         .pin-peca.visivel {
             opacity: 1 !important;
             pointer-events: auto !important;
             transition: opacity 0.3s ease;
         }
 
+        /* Estilos dos pins */
         .pin-peca.estilo-1 {
             background: linear-gradient(135deg, #e94560, #c62828) !important;
             border-radius: 50% !important;
             color: white !important;
             text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
         }
-
         .pin-peca.estilo-2 {
             background: linear-gradient(135deg, #0984e3, #0652DD) !important;
             border-radius: 4px !important;
             color: white !important;
             text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
         }
-
         .pin-peca.estilo-3 {
             background: transparent !important;
             border: none !important;
@@ -530,7 +514,6 @@
             min-width: auto !important;
             min-height: auto !important;
         }
-
         .pin-peca.estilo-4 {
             background: transparent !important;
             border: 2px solid rgba(255, 255, 255, 0.9) !important;
@@ -539,7 +522,6 @@
             color: #2d3436 !important;
             padding: 0 6px !important;
         }
-
         .pin-peca.estilo-5 {
             background: rgba(255, 255, 255, 0.6) !important;
             backdrop-filter: blur(2px) !important;
@@ -549,7 +531,6 @@
             color: #2d3436 !important;
             padding: 0 6px !important;
         }
-
         .pin-peca.estilo-6 {
             background: #e94560 !important;
             border-radius: 4px !important;
@@ -564,7 +545,6 @@
             min-width: auto !important;
             min-height: auto !important;
         }
-
         .pin-peca.estilo-7 {
             background: #ffffff !important;
             border: 2px solid #2d3436 !important;
@@ -579,7 +559,6 @@
             min-width: auto !important;
             min-height: auto !important;
         }
-
         .pin-peca.estilo-8 {
             background: transparent !important;
             border: 2px dashed rgba(44, 62, 80, 0.6) !important;
@@ -618,7 +597,6 @@
             pointer-events: none;
             z-index: 200;
         }
-
         .pin-peca .tooltip::after {
             content: '';
             position: absolute;
@@ -628,8 +606,137 @@
             border: 6px solid transparent;
             border-top-color: rgba(0, 0, 0, 0.9);
         }
-
         .pin-peca:hover .tooltip { display: block; }
+
+        /* ===== RESPONSIVE: CELULAR ===== */
+        @media (max-width: 768px) {
+            .pin-peca {
+                min-width: 38px !important;
+                min-height: 38px !important;
+                font-size: 14px !important;
+                padding: 6px 10px !important;
+                border-width: 2.5px !important;
+                box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4) !important;
+            }
+            .pin-peca.estilo-3,
+            .pin-peca.estilo-4,
+            .pin-peca.estilo-5,
+            .pin-peca.estilo-8 {
+                min-width: 34px !important;
+                min-height: 34px !important;
+                font-size: 13px !important;
+                padding: 2px 8px !important;
+            }
+            .pin-peca.estilo-6,
+            .pin-peca.estilo-7 {
+                min-width: auto !important;
+                min-height: auto !important;
+                font-size: 14px !important;
+                padding: 4px 10px !important;
+            }
+            /* Área de toque ampliada */
+            .pin-peca::after {
+                content: '';
+                position: absolute;
+                top: -14px;
+                left: -14px;
+                right: -14px;
+                bottom: -14px;
+                border-radius: 50%;
+                background: transparent;
+            }
+            .zoom-container {
+                max-height: 55vh;
+                min-height: 300px;
+            }
+            .diagrama-wrapper {
+                min-height: 300px;
+                border-radius: 10px;
+            }
+            .zoom-controls {
+                bottom: 12px;
+                right: 12px;
+                padding: 4px 8px;
+                gap: 4px;
+            }
+            .zoom-controls button {
+                padding: 6px 14px !important;
+                font-size: 16px !important;
+                min-width: 40px;
+                min-height: 40px;
+            }
+            .zoom-controls .zoom-level {
+                font-size: 0.7rem;
+                min-width: 30px;
+            }
+            .btn-olho {
+                min-width: 40px;
+                min-height: 40px;
+                font-size: 16px;
+            }
+            .card-manual { padding: 16px; }
+            .produto-atual { padding: 12px 16px; }
+            .produto-atual .info .icone {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+            }
+            .produto-atual .info .nome { font-size: 1rem; }
+        }
+
+        @media (max-width: 480px) {
+            .pin-peca {
+                min-width: 44px !important;
+                min-height: 44px !important;
+                font-size: 16px !important;
+                padding: 6px 12px !important;
+                border-width: 3px !important;
+            }
+            .pin-peca.estilo-3,
+            .pin-peca.estilo-4,
+            .pin-peca.estilo-5,
+            .pin-peca.estilo-8 {
+                min-width: 38px !important;
+                min-height: 38px !important;
+                font-size: 14px !important;
+                padding: 2px 8px !important;
+            }
+            .zoom-container {
+                max-height: 50vh;
+                min-height: 250px;
+            }
+            .diagrama-wrapper {
+                min-height: 250px;
+                border-radius: 8px;
+            }
+            .zoom-controls {
+                bottom: 8px;
+                right: 8px;
+                padding: 4px 6px;
+                gap: 3px;
+            }
+            .zoom-controls button {
+                padding: 4px 10px !important;
+                font-size: 14px !important;
+                min-width: 34px;
+                min-height: 34px;
+            }
+            .btn-olho {
+                min-width: 34px;
+                min-height: 34px;
+                font-size: 14px;
+                padding: 2px 8px;
+            }
+            .container { padding: 0 12px 30px; }
+            .header-container { padding: 10px 12px; }
+            .logo-img { height: 32px; }
+            .logo-text { font-size: 0.8rem; }
+            .top-bar span { font-size: 0.65rem; margin: 0 4px; }
+            .btn-header { padding: 4px 12px; font-size: 0.7rem; }
+            .produto-atual .info .nome { font-size: 0.9rem; }
+            .aba { padding: 6px 12px; font-size: 0.8rem; }
+            .btn-acao { padding: 6px 12px; font-size: 0.7rem; }
+        }
 
         /* ===== LISTA DE PEÇAS ===== */
         .grid-pecas {
@@ -639,6 +746,10 @@
             max-height: 400px;
             overflow-y: auto;
             padding: 4px;
+            -webkit-overflow-scrolling: touch;
+        }
+        @media (max-width: 480px) {
+            .grid-pecas { grid-template-columns: repeat(2, 1fr); }
         }
 
         .btn-peca {
@@ -653,22 +764,21 @@
             transition: all 0.2s;
             font-size: 0.8rem;
             font-family: inherit;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
         }
-
         .btn-peca:hover {
             border-color: #1a237e;
             background: #e8eaf6;
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
         }
-
         .btn-peca .numero-peca {
             font-weight: 700;
             color: #1a237e;
             min-width: 40px;
             font-size: 0.85rem;
         }
-
         .btn-peca .nome-peca {
             color: #555;
             font-size: 0.75rem;
@@ -685,7 +795,6 @@
             border: 1px solid #e8edf3;
             margin-bottom: 20px;
         }
-
         .card-carrinho .header-carrinho {
             display: flex;
             justify-content: space-between;
@@ -694,13 +803,11 @@
             gap: 12px;
             margin-bottom: 16px;
         }
-
         .card-carrinho .header-carrinho h3 {
             font-size: 1.1rem;
             font-weight: 700;
             color: #0a2a4a;
         }
-
         .card-carrinho .header-carrinho .badge {
             background: #e94560;
             color: white;
@@ -715,11 +822,7 @@
             padding: 40px 20px;
             color: #8a9aa8;
         }
-
-        .carrinho-vazio .icone {
-            font-size: 48px;
-            margin-bottom: 16px;
-        }
+        .carrinho-vazio .icone { font-size: 48px; margin-bottom: 16px; }
 
         .grupo-produto {
             background: #f8fafc;
@@ -728,7 +831,6 @@
             overflow: hidden;
             border: 1px solid #e8edf3;
         }
-
         .grupo-produto .grupo-header {
             background: #e8eaf6;
             padding: 10px 16px;
@@ -739,29 +841,23 @@
             align-items: center;
             font-size: 0.85rem;
         }
-
-        .grupo-produto .grupo-itens {
-            padding: 8px 16px;
-        }
+        .grupo-produto .grupo-itens { padding: 8px 16px; }
 
         table {
             width: 100%;
             border-collapse: collapse;
         }
-
         th, td {
             padding: 10px 8px;
             text-align: left;
             border-bottom: 1px solid #e8edf3;
             font-size: 0.85rem;
         }
-
         th {
             background: #f5f7fa;
             font-weight: 600;
             color: #0a2a4a;
         }
-
         input[type="number"] {
             width: 55px;
             padding: 6px;
@@ -770,8 +866,13 @@
             border-radius: 6px;
             font-size: 0.85rem;
             font-family: inherit;
+            -moz-appearance: textfield;
         }
-
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
         input[type="number"]:focus {
             border-color: #1a237e;
             outline: none;
@@ -788,11 +889,9 @@
             font-weight: 600;
             transition: 0.2s;
             font-family: inherit;
+            touch-action: manipulation;
         }
-
-        .btn-remover:hover {
-            background: #c62828;
-        }
+        .btn-remover:hover { background: #c62828; }
 
         .variacao-tag {
             background: #e8eaf6;
@@ -804,7 +903,6 @@
             display: inline-block;
         }
 
-        /* ===== BOTÕES DO CARRINHO ===== */
         .acoes-carrinho {
             display: flex;
             gap: 12px;
@@ -825,13 +923,12 @@
             font-family: inherit;
             flex: 1;
             min-width: 150px;
+            touch-action: manipulation;
         }
-
         .btn-finalizar:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(26, 35, 126, 0.35);
         }
-
         .btn-finalizar:disabled {
             background: #ccc;
             cursor: not-allowed;
@@ -851,8 +948,8 @@
             z-index: 1000;
             align-items: center;
             justify-content: center;
+            padding: 20px;
         }
-
         .modal-overlay.active { display: flex; }
 
         .modal {
@@ -860,16 +957,15 @@
             padding: 32px;
             border-radius: 16px;
             max-width: 450px;
-            width: 95%;
+            width: 100%;
             max-height: 90vh;
             overflow-y: auto;
             animation: modalIn 0.3s ease;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
-
         @keyframes modalIn {
-            from { transform: scale(0.95); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
+            from { transform: scale(0.95) translateY(20px); opacity: 0; }
+            to { transform: scale(1) translateY(0); opacity: 1; }
         }
 
         .modal h3 {
@@ -878,20 +974,17 @@
             color: #0a2a4a;
             margin-bottom: 8px;
         }
-
         .modal .numero-peca {
             font-size: 2.5rem;
             font-weight: 800;
             color: #1a237e;
             margin: 8px 0;
         }
-
         .modal .descricao {
             color: #6b7a8a;
             font-size: 0.95rem;
             margin-bottom: 16px;
         }
-
         .modal .produto-info {
             color: #1a237e;
             font-weight: 600;
@@ -901,7 +994,6 @@
             background: #e8eaf6;
             border-radius: 8px;
         }
-
         .modal label {
             font-weight: 600;
             display: block;
@@ -909,7 +1001,6 @@
             font-size: 0.85rem;
             color: #0a2a4a;
         }
-
         .modal input[type="number"] {
             width: 80px;
             padding: 10px;
@@ -918,20 +1009,23 @@
             border: 2px solid #e8edf3;
             border-radius: 8px;
             font-family: inherit;
+            -moz-appearance: textfield;
         }
-
+        .modal input[type="number"]::-webkit-outer-spin-button,
+        .modal input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
         .modal input[type="number"]:focus {
             border-color: #1a237e;
             outline: none;
         }
-
         .modal .modal-actions {
             display: flex;
             gap: 10px;
             justify-content: flex-end;
             margin-top: 20px;
         }
-
         .modal .btn-modal {
             padding: 10px 24px;
             border: none;
@@ -941,28 +1035,21 @@
             cursor: pointer;
             transition: 0.2s;
             font-family: inherit;
+            touch-action: manipulation;
         }
-
         .modal .btn-adicionar {
             background: #2e7d32;
             color: white;
         }
-
-        .modal .btn-adicionar:hover {
-            background: #1b5e20;
-        }
-
+        .modal .btn-adicionar:hover { background: #1b5e20; }
         .modal .btn-cancelar {
             background: #e8edf3;
             color: #333;
         }
-
-        .modal .btn-cancelar:hover {
-            background: #d5dce4;
-        }
+        .modal .btn-cancelar:hover { background: #d5dce4; }
 
         /* ===== CLIENTE FORM ===== */
-        #card-cliente {
+        .card-cliente {
             display: none;
             border: 2px solid #1a237e;
             background: white;
@@ -971,15 +1058,13 @@
             margin-bottom: 20px;
             box-shadow: 0 4px 20px rgba(26, 35, 126, 0.08);
         }
-
-        #card-cliente h3 {
+        .card-cliente h3 {
             font-size: 1.1rem;
             font-weight: 700;
             color: #0a2a4a;
             margin-bottom: 4px;
         }
-
-        #card-cliente .sub {
+        .card-cliente .sub {
             color: #6b7a8a;
             font-size: 0.85rem;
             margin-bottom: 16px;
@@ -990,10 +1075,8 @@
             grid-template-columns: 1fr 1fr 1fr;
             gap: 16px;
         }
-
         .cliente-grid .full { grid-column: 1 / -1; }
         .cliente-grid .double { grid-column: span 2; }
-
         .cliente-grid label {
             font-weight: 600;
             display: block;
@@ -1001,7 +1084,6 @@
             font-size: 0.8rem;
             color: #0a2a4a;
         }
-
         .cliente-grid input,
         .cliente-grid select,
         .cliente-grid textarea {
@@ -1013,8 +1095,8 @@
             font-family: inherit;
             transition: border-color 0.3s;
             background: #fafbfc;
+            -webkit-appearance: none;
         }
-
         .cliente-grid input:focus,
         .cliente-grid select:focus,
         .cliente-grid textarea:focus {
@@ -1023,42 +1105,14 @@
             box-shadow: 0 0 0 3px rgba(26, 35, 126, 0.1);
             background: white;
         }
-
         .cliente-grid textarea {
             resize: vertical;
             min-height: 80px;
         }
 
-        .cliente-grid .cnpj-status {
-            font-size: 0.8rem;
-            margin-top: 4px;
-            padding: 4px 12px;
-            border-radius: 6px;
-            display: none;
-        }
-
-        .cliente-grid .cnpj-status.loading {
-            display: block;
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .cliente-grid .cnpj-status.success {
-            display: block;
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .cliente-grid .cnpj-status.error {
-            display: block;
-            background: #f8d7da;
-            color: #721c24;
-        }
-
         .input-group {
             position: relative;
         }
-
         .input-group .input-icon {
             position: absolute;
             right: 12px;
@@ -1067,14 +1121,8 @@
             font-size: 1.1rem;
             color: #8a9aa8;
         }
-
         .input-group .input-icon.loading {
             animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: translateY(-50%) rotate(0deg); }
-            100% { transform: translateY(-50%) rotate(360deg); }
         }
 
         .acoes-cliente {
@@ -1093,12 +1141,8 @@
             margin-top: 16px;
             display: none;
         }
-
         .msg-sucesso.show { display: block; }
-
-        .msg-sucesso strong {
-            font-size: 1rem;
-        }
+        .msg-sucesso strong { font-size: 1rem; }
 
         /* ===== LOADING ===== */
         .loading {
@@ -1106,7 +1150,6 @@
             padding: 40px 20px;
             color: #8a9aa8;
         }
-
         .loading .spinner {
             border: 4px solid #e8edf3;
             border-top: 4px solid #f8b81f;
@@ -1116,6 +1159,10 @@
             animation: spin 1s linear infinite;
             margin: 0 auto 16px;
         }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
 
         .erro-msg {
             color: #e94560;
@@ -1123,6 +1170,29 @@
             padding: 40px;
             text-align: center;
             font-size: 1.1rem;
+        }
+
+        .cnpj-status {
+            font-size: 0.8rem;
+            margin-top: 4px;
+            padding: 4px 12px;
+            border-radius: 6px;
+            display: none;
+        }
+        .cnpj-status.loading {
+            display: block;
+            background: #fff3cd;
+            color: #856404;
+        }
+        .cnpj-status.success {
+            display: block;
+            background: #d4edda;
+            color: #155724;
+        }
+        .cnpj-status.error {
+            display: block;
+            background: #f8d7da;
+            color: #721c24;
         }
 
         /* ===== FOOTER ===== */
@@ -1134,42 +1204,39 @@
             border-top: 2px solid rgba(248, 184, 31, 0.2);
             margin-top: 20px;
         }
-
         footer p {
             font-size: 0.8rem;
             opacity: 0.7;
         }
 
-        /* ===== RESPONSIVE ===== */
+        /* ===== RESPONSIVE GERAL ===== */
         @media (max-width: 768px) {
-            .container { padding: 0 16px 30px; }
-            .header-container { padding: 10px 16px; }
-            .logo-img { height: 36px; }
-            .logo-text { font-size: 0.85rem; }
-            .btn-header { padding: 6px 14px; font-size: 0.7rem; }
-            .produto-atual { padding: 12px 16px; flex-direction: column; align-items: stretch; }
-            .produto-atual .info { flex-wrap: wrap; }
-            .produto-atual .acoes { justify-content: center; }
-            .cliente-grid { grid-template-columns: 1fr; }
+            .cliente-grid {
+                grid-template-columns: 1fr;
+            }
             .cliente-grid .double { grid-column: span 1; }
-            .grid-pecas { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
-            .card-manual { padding: 16px; }
             .card-carrinho { padding: 16px; }
-            .top-bar span { margin: 0 6px; font-size: 0.7rem; }
-            .modal { padding: 24px; }
+            .modal { padding: 24px; margin: 16px; }
             .acoes-carrinho { flex-direction: column; }
             .btn-finalizar { width: 100%; }
+            .produto-atual { flex-direction: column; align-items: stretch; }
+            .produto-atual .acoes { justify-content: center; }
         }
 
         @media (max-width: 480px) {
-            .produto-atual .info .nome { font-size: 0.95rem; }
-            .produto-atual .info .icone { width: 36px; height: 36px; font-size: 1rem; }
-            .aba { padding: 8px 14px; font-size: 0.8rem; }
-            .btn-acao { padding: 6px 12px; font-size: 0.7rem; }
-            .grid-pecas { grid-template-columns: repeat(2, 1fr); }
+            .card-cliente { padding: 16px; }
+            .cliente-grid input,
+            .cliente-grid select,
+            .cliente-grid textarea {
+                font-size: 16px; /* Previne zoom no iOS */
+                padding: 12px 14px;
+            }
+            .modal .numero-peca { font-size: 2rem; }
             table { font-size: 0.75rem; }
             th, td { padding: 6px 4px; }
             .grupo-produto .grupo-header { font-size: 0.75rem; }
+            .grupo-produto .grupo-itens { padding: 4px 8px; }
+            .grid-pecas { grid-template-columns: repeat(2, 1fr); }
         }
     </style>
 </head>
@@ -1252,7 +1319,7 @@
 
             <div class="aba-conteudo ativo" id="aba-vista">
                 <p style="color: #6b7a8a; margin-bottom: 16px; font-size: 0.85rem;">
-                    💡 <strong>Clique nos números</strong> sobre a imagem para adicionar peças ao carrinho.
+                    💡 <strong>Toque nos números</strong> sobre a imagem para adicionar peças ao carrinho.
                 </p>
                 <div class="diagrama-wrapper" id="diagrama-wrapper">
                     <div class="loading" id="loading">
@@ -1265,18 +1332,20 @@
                         </div>
                     </div>
                     <div class="zoom-controls">
-                        <button onclick="zoomOut()">−</button>
+                        <button onclick="zoomOut()" aria-label="Diminuir zoom">−</button>
                         <span class="zoom-level" id="zoom-level">100%</span>
-                        <button onclick="zoomIn()">+</button>
-                        <button onclick="zoomReset()" style="font-size:12px;">⟲</button>
-                        <button class="btn-olho ativo" id="btn-olho" onclick="toggleOlho()" title="Mostrar/Esconder Hotspots">👁️</button>
+                        <button onclick="zoomIn()" aria-label="Aumentar zoom">+</button>
+                        <button onclick="zoomReset()" style="font-size:12px;" aria-label="Resetar zoom">⟲</button>
+                        <button class="btn-olho ativo" id="btn-olho" onclick="toggleOlho()" aria-label="Mostrar/Esconder números">
+                            👁️
+                        </button>
                     </div>
                 </div>
             </div>
 
             <div class="aba-conteudo" id="aba-lista">
                 <p style="color: #6b7a8a; margin-bottom: 16px; font-size: 0.85rem;">
-                    💡 <strong>Clique em uma peça</strong> para adicionar ao carrinho.
+                    💡 <strong>Toque em uma peça</strong> para adicionar ao carrinho.
                 </p>
                 <div class="grid-pecas" id="grid-pecas">
                     <div class="loading">
@@ -1400,9 +1469,10 @@
         <p>© 2026 Marine Fishing - Todos os direitos reservados</p>
     </footer>
 
+    <!-- ===== SCRIPT ===== -->
     <script>
         // ============================================
-        // CARRINHO GLOBAL
+        // VARIÁVEIS GLOBAIS
         // ============================================
         let carrinho = [];
         let hotspotAtual = null;
@@ -1418,17 +1488,8 @@
         let timeoutCNPJ = null;
 
         // ============================================
-        // PEGAR PARÂMETROS DA URL
+        // UTILITÁRIOS
         // ============================================
-        function getParamsFromURL() {
-            const params = new URLSearchParams(window.location.search);
-            return {
-                manual: params.get('manual'),
-                variacao: params.get('variacao'),
-                id: params.get('id')
-            };
-        }
-
         function getManualFromURL() {
             const params = new URLSearchParams(window.location.search);
             return params.get('manual');
@@ -1444,51 +1505,6 @@
             return manual ? decodeURIComponent(manual) : 'Produto não identificado';
         }
 
-        function atualizarTituloComVariacao(nome, variacao) {
-            const titulo = document.getElementById('titulo-manual');
-            if (titulo && variacao) {
-                titulo.textContent = `🔧 ${nome} - Tamanho: ${variacao}`;
-            }
-            const info = document.getElementById('info-manual');
-            if (info && variacao) {
-                info.textContent = `Tamanho: ${variacao}`;
-            }
-            document.getElementById('produto-atual-display').textContent = `${nome}${variacao ? ` (📏 ${variacao})` : ''}`;
-            document.getElementById('breadcrumb-manual').textContent = nome;
-        }
-
-        function mostrarVariacaoNoManual(variacao) {
-            if (!variacao) return;
-            
-            const titulo = document.querySelector('.manual-titulo');
-            if (titulo) {
-                const badgeAntiga = titulo.querySelector('.variacao-badge');
-                if (badgeAntiga) badgeAntiga.remove();
-                
-                const badge = document.createElement('span');
-                badge.className = 'variacao-tag';
-                badge.textContent = `📏 ${variacao}`;
-                badge.style.marginLeft = '8px';
-                titulo.appendChild(badge);
-            }
-        }
-
-        // ============================================
-        // FORMULÁRIO DO CLIENTE
-        // ============================================
-        function abrirFormularioCliente() {
-            if (carrinho.length === 0) {
-                alert('⚠️ Adicione pelo menos uma peça ao carrinho!');
-                return;
-            }
-            document.getElementById('card-cliente').style.display = 'block';
-            document.getElementById('card-cliente').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        function fecharFormularioCliente() {
-            document.getElementById('card-cliente').style.display = 'none';
-        }
-
         // ============================================
         // CARREGAR CONFIGURAÇÕES
         // ============================================
@@ -1498,13 +1514,15 @@
                 const data = await res.json();
                 if (data.success && data.config) {
                     configAtual = {
-                        tamanhoFonte: data.config.tamanho_fonte,
-                        corPin: data.config.cor_pin,
-                        corFonte: data.config.cor_fonte,
-                        estilo: String(data.config.estilo)
+                        tamanhoFonte: data.config.tamanho_fonte || 12,
+                        corPin: data.config.cor_pin || '#e94560',
+                        corFonte: data.config.cor_fonte || '#ffffff',
+                        estilo: String(data.config.estilo || '1')
                     };
                 }
-            } catch (e) {}
+            } catch (e) {
+                console.warn('Erro ao carregar configurações, usando padrão');
+            }
         }
 
         function aplicarEstilosPinos() {
@@ -1532,13 +1550,33 @@
         }
 
         // ============================================
+        // CONFIGURAR TOQUE DOS PINS (CELULAR)
+        // ============================================
+        function setupPinTouch() {
+            document.querySelectorAll('.pin-peca').forEach(pin => {
+                pin.removeEventListener('touchstart', pin._touchHandler);
+                
+                pin._touchHandler = function(e) {
+                    e.preventDefault();
+                    const clickEvent = new MouseEvent('click', {
+                        view: window,
+                        bubbles: true,
+                        cancelable: true
+                    });
+                    this.dispatchEvent(clickEvent);
+                };
+                
+                pin.addEventListener('touchstart', pin._touchHandler, { passive: false });
+            });
+        }
+
+        // ============================================
         // CARREGAR VENDEDORES
         // ============================================
         async function carregarVendedores() {
             try {
                 const res = await fetch('/api/vendedores');
                 const data = await res.json();
-
                 const select = document.getElementById('cliente-vendedor');
                 if (!select) return;
 
@@ -1560,7 +1598,7 @@
         }
 
         // ============================================
-        // FORMATAR CNPJ
+        // CNPJ
         // ============================================
         function formatarCNPJ(input) {
             let valor = input.value.replace(/\D/g, '');
@@ -1574,9 +1612,6 @@
             return valor.replace(/\D/g, '');
         }
 
-        // ============================================
-        // BUSCAR CNPJ
-        // ============================================
         function buscarCNPJAutomatico(input) {
             const cnpj = formatarCNPJ(input);
             const statusDiv = document.getElementById('cnpj-status');
@@ -1632,11 +1667,9 @@
                     icon.textContent = '✅';
                     icon.className = 'input-icon';
 
-                    document.getElementById('cliente-nome').readOnly = false;
-                    document.getElementById('cliente-telefone').readOnly = false;
-                    document.getElementById('cliente-email').readOnly = false;
-                    document.getElementById('cliente-endereco').readOnly = false;
-
+                    ['cliente-nome', 'cliente-telefone', 'cliente-email', 'cliente-endereco'].forEach(id => {
+                        document.getElementById(id).readOnly = false;
+                    });
                 } else {
                     statusDiv.className = 'cnpj-status error';
                     statusDiv.style.display = 'block';
@@ -1644,10 +1677,9 @@
                     icon.textContent = '❌';
                     icon.className = 'input-icon';
 
-                    document.getElementById('cliente-nome').readOnly = false;
-                    document.getElementById('cliente-telefone').readOnly = false;
-                    document.getElementById('cliente-email').readOnly = false;
-                    document.getElementById('cliente-endereco').readOnly = false;
+                    ['cliente-nome', 'cliente-telefone', 'cliente-email', 'cliente-endereco'].forEach(id => {
+                        document.getElementById(id).readOnly = false;
+                    });
                     document.getElementById('cliente-nome').focus();
                 }
             } catch (error) {
@@ -1658,178 +1690,14 @@
                 icon.textContent = '❌';
                 icon.className = 'input-icon';
 
-                document.getElementById('cliente-nome').readOnly = false;
-                document.getElementById('cliente-telefone').readOnly = false;
-                document.getElementById('cliente-email').readOnly = false;
-                document.getElementById('cliente-endereco').readOnly = false;
+                ['cliente-nome', 'cliente-telefone', 'cliente-email', 'cliente-endereco'].forEach(id => {
+                    document.getElementById(id).readOnly = false;
+                });
             }
         }
 
         // ============================================
-        // CARREGAR MANUAL
-        // ============================================
-        async function carregarManual(nome) {
-            const params = getParamsFromURL();
-            const variacao = params.variacao;
-
-            const container = document.getElementById('diagrama-wrapper');
-            const img = document.getElementById('img-esquema');
-            const loading = document.getElementById('loading');
-            const card = document.getElementById('card-manual');
-            const titulo = document.getElementById('nome-manual');
-            const info = document.getElementById('info-manual2');
-            const contador = document.getElementById('contador-hotspots');
-            const gridPecas = document.getElementById('grid-pecas');
-            const wrapper = document.getElementById('imagem-wrapper');
-            const tituloHeader = document.getElementById('titulo-manual');
-            const infoHeader = document.getElementById('info-manual');
-
-            document.querySelectorAll('.pin-peca').forEach(p => p.remove());
-
-            card.style.display = 'block';
-            loading.style.display = 'block';
-            img.style.display = 'none';
-            titulo.textContent = nome;
-            
-            const produtoNome = getProdutoNome();
-            document.getElementById('produto-atual-display').textContent = `${produtoNome}${variacao ? ` (📏 ${variacao})` : ''}`;
-            document.getElementById('breadcrumb-manual').textContent = produtoNome;
-            
-            if (variacao) {
-                atualizarTituloComVariacao(nome, variacao);
-            }
-            
-            info.textContent = 'carregando...';
-            infoHeader.textContent = 'Carregando...';
-            contador.textContent = 'Carregando...';
-            gridPecas.innerHTML = `
-                <div class="loading" style="grid-column:1/-1;">
-                    <div class="spinner"></div>
-                    <p>Carregando peças...</p>
-                </div>
-            `;
-
-            zoomLevel = 1;
-            wrapper.classList.remove('zoom-150', 'zoom-200');
-            document.getElementById('zoom-level').textContent = '100%';
-
-            try {
-                const res = await fetch(`/api/esquemas/${encodeURIComponent(nome)}`);
-                const data = await res.json();
-
-                if (!data.success) {
-                    container.innerHTML = `<div class="erro-msg">❌ ${data.error}</div>`;
-                    info.textContent = '⚠️ erro';
-                    infoHeader.textContent = '⚠️ erro';
-                    gridPecas.innerHTML = `
-                        <div class="erro-msg" style="grid-column:1/-1;">❌ ${data.error}</div>
-                    `;
-                    return;
-                }
-
-                manualAtual = data;
-                info.textContent = `${data.totalHotspots || 0} peças mapeadas`;
-                infoHeader.textContent = `${data.totalHotspots || 0} peças mapeadas`;
-
-                img.src = data.imagemUrl;
-                img.style.display = 'block';
-                loading.style.display = 'none';
-                contador.textContent = `${data.totalHotspots || 0} peças mapeadas`;
-
-                if (variacao) {
-                    mostrarVariacaoNoManual(variacao);
-                }
-
-                await new Promise((resolve) => {
-                    if (img.complete) {
-                        resolve();
-                    } else {
-                        img.onload = resolve;
-                    }
-                });
-
-                const hotspots = data.hotspots || [];
-                const pecasLista = data.pecas || [];
-
-                olhoAberto = true;
-                document.getElementById('btn-olho').textContent = '👁️';
-                document.getElementById('btn-olho').classList.add('ativo');
-
-                hotspots.sort((a, b) => parseInt(a.numero) - parseInt(b.numero));
-
-                hotspots.forEach((item) => {
-                    const pin = document.createElement('div');
-                    pin.className = 'pin-peca visivel';
-                    pin.innerText = item.numero;
-                    pin.style.left = `${item.x_percent}%`;
-                    pin.style.top = `${item.y_percent}%`;
-
-                    const peca = pecasLista.find(p => p.numero === item.numero);
-                    const nomePeca = peca ? peca.nome : 'Peça';
-
-                    const tooltip = document.createElement('span');
-                    tooltip.className = 'tooltip';
-                    tooltip.textContent = `#${item.numero} - ${nomePeca}`;
-                    pin.appendChild(tooltip);
-
-                    pin.onclick = () => {
-                        hotspotAtual = {
-                            numero: item.numero,
-                            nome: nomePeca
-                        };
-                        abrirModal(hotspotAtual);
-                    };
-
-                    wrapper.appendChild(pin);
-                });
-
-                aplicarEstilosPinos();
-
-                gridPecas.innerHTML = '';
-                if (pecasLista.length > 0) {
-                    pecasLista.forEach(peca => {
-                        const btn = document.createElement('div');
-                        btn.className = 'btn-peca';
-                        btn.dataset.numero = peca.numero;
-
-                        btn.innerHTML = `
-                            <span class="numero-peca">#${peca.numero}</span>
-                            <span class="nome-peca">${peca.nome || 'Peça'}</span>
-                        `;
-
-                        btn.onclick = () => {
-                            hotspotAtual = {
-                                numero: peca.numero,
-                                nome: peca.nome || 'Peça'
-                            };
-                            abrirModal(hotspotAtual);
-                        };
-
-                        gridPecas.appendChild(btn);
-                    });
-                } else {
-                    gridPecas.innerHTML = `
-                        <div style="grid-column:1/-1; text-align:center; color:#8a9aa8; padding:20px;">
-                            📭 Nenhuma peça encontrada
-                        </div>
-                    `;
-                }
-
-                renderizarCarrinho();
-
-            } catch (error) {
-                console.error('Erro:', error);
-                container.innerHTML = `<div class="erro-msg">❌ ${error.message}</div>`;
-                info.textContent = '⚠️ erro';
-                infoHeader.textContent = '⚠️ erro';
-                gridPecas.innerHTML = `
-                    <div class="erro-msg" style="grid-column:1/-1;">❌ ${error.message}</div>
-                `;
-            }
-        }
-
-        // ============================================
-        // TROCAR ABA
+        // ABA
         // ============================================
         function trocarAba(aba) {
             document.querySelectorAll('.aba').forEach(a => a.classList.remove('ativo'));
@@ -1837,6 +1705,10 @@
 
             document.querySelector(`.aba[data-aba="${aba}"]`).classList.add('ativo');
             document.getElementById(`aba-${aba}`).classList.add('ativo');
+
+            if (aba === 'lista') {
+                // Re-renderiza a lista se necessário
+            }
         }
 
         // ============================================
@@ -1874,6 +1746,9 @@
             document.getElementById('zoom-level').textContent = Math.round(zoomLevel * 100) + '%';
         }
 
+        // ============================================
+        // OLHO (MOSTRAR/ESCONDER HOTSPOTS)
+        // ============================================
         function toggleOlho() {
             olhoAberto = !olhoAberto;
             const btn = document.getElementById('btn-olho');
@@ -1896,23 +1771,183 @@
         }
 
         // ============================================
-        // MODAL ADICIONAR PEÇA
+        // CARREGAR MANUAL
+        // ============================================
+        async function carregarManual(nome) {
+            const variacao = getVariacaoFromURL();
+
+            const container = document.getElementById('diagrama-wrapper');
+            const img = document.getElementById('img-esquema');
+            const loading = document.getElementById('loading');
+            const card = document.getElementById('card-manual');
+            const titulo = document.getElementById('nome-manual');
+            const info = document.getElementById('info-manual2');
+            const contador = document.getElementById('contador-hotspots');
+            const gridPecas = document.getElementById('grid-pecas');
+            const wrapper = document.getElementById('imagem-wrapper');
+
+            document.querySelectorAll('.pin-peca').forEach(p => p.remove());
+
+            card.style.display = 'block';
+            loading.style.display = 'block';
+            img.style.display = 'none';
+            titulo.textContent = nome;
+
+            const produtoNome = getProdutoNome();
+            document.getElementById('produto-atual-display').textContent = `${produtoNome}${variacao ? ` (📏 ${variacao})` : ''}`;
+            document.getElementById('breadcrumb-manual').textContent = produtoNome;
+
+            info.textContent = 'carregando...';
+            document.getElementById('info-manual').textContent = 'Carregando...';
+            contador.textContent = 'Carregando...';
+            gridPecas.innerHTML = `
+                <div class="loading" style="grid-column:1/-1;">
+                    <div class="spinner"></div>
+                    <p>Carregando peças...</p>
+                </div>
+            `;
+
+            zoomLevel = 1;
+            wrapper.classList.remove('zoom-150', 'zoom-200');
+            document.getElementById('zoom-level').textContent = '100%';
+
+            try {
+                const res = await fetch(`/api/esquemas/${encodeURIComponent(nome)}`);
+                const data = await res.json();
+
+                if (!data.success) {
+                    container.innerHTML = `<div class="erro-msg">❌ ${data.error}</div>`;
+                    info.textContent = '⚠️ erro';
+                    document.getElementById('info-manual').textContent = '⚠️ erro';
+                    gridPecas.innerHTML = `
+                        <div class="erro-msg" style="grid-column:1/-1;">❌ ${data.error}</div>
+                    `;
+                    return;
+                }
+
+                manualAtual = data;
+                info.textContent = `${data.totalHotspots || 0} peças mapeadas`;
+                document.getElementById('info-manual').textContent = `${data.totalHotspots || 0} peças mapeadas`;
+
+                img.src = data.imagemUrl;
+                img.style.display = 'block';
+                loading.style.display = 'none';
+                contador.textContent = `${data.totalHotspots || 0} peças mapeadas`;
+
+                // Aguarda a imagem carregar
+                await new Promise((resolve) => {
+                    if (img.complete) {
+                        resolve();
+                    } else {
+                        img.onload = resolve;
+                    }
+                });
+
+                const hotspots = data.hotspots || [];
+                const pecasLista = data.pecas || [];
+
+                olhoAberto = true;
+                document.getElementById('btn-olho').textContent = '👁️';
+                document.getElementById('btn-olho').classList.add('ativo');
+
+                hotspots.sort((a, b) => parseInt(a.numero) - parseInt(b.numero));
+
+                hotspots.forEach((item) => {
+                    const pin = document.createElement('div');
+                    pin.className = 'pin-peca visivel';
+                    pin.innerText = item.numero;
+                    pin.style.left = `${item.x_percent}%`;
+                    pin.style.top = `${item.y_percent}%`;
+
+                    const peca = pecasLista.find(p => p.numero === item.numero);
+                    const nomePeca = peca ? peca.nome : 'Peça';
+
+                    const tooltip = document.createElement('span');
+                    tooltip.className = 'tooltip';
+                    tooltip.textContent = `#${item.numero} - ${nomePeca}`;
+                    pin.appendChild(tooltip);
+
+                    pin.onclick = () => {
+                        hotspotAtual = { numero: item.numero, nome: nomePeca };
+                        abrirModal(hotspotAtual);
+                    };
+
+                    wrapper.appendChild(pin);
+                });
+
+                aplicarEstilosPinos();
+
+                // Configurar toque para os pins
+                setTimeout(() => {
+                    setupPinTouch();
+                }, 100);
+
+                // Lista de peças
+                gridPecas.innerHTML = '';
+                if (pecasLista.length > 0) {
+                    pecasLista.forEach(peca => {
+                        const btn = document.createElement('div');
+                        btn.className = 'btn-peca';
+                        btn.dataset.numero = peca.numero;
+
+                        btn.innerHTML = `
+                            <span class="numero-peca">#${peca.numero}</span>
+                            <span class="nome-peca">${peca.nome || 'Peça'}</span>
+                        `;
+
+                        btn.onclick = () => {
+                            hotspotAtual = { numero: peca.numero, nome: peca.nome || 'Peça' };
+                            abrirModal(hotspotAtual);
+                        };
+
+                        gridPecas.appendChild(btn);
+                    });
+                } else {
+                    gridPecas.innerHTML = `
+                        <div style="grid-column:1/-1; text-align:center; color:#8a9aa8; padding:20px;">
+                            📭 Nenhuma peça encontrada
+                        </div>
+                    `;
+                }
+
+                renderizarCarrinho();
+
+            } catch (error) {
+                console.error('Erro:', error);
+                container.innerHTML = `<div class="erro-msg">❌ ${error.message}</div>`;
+                info.textContent = '⚠️ erro';
+                document.getElementById('info-manual').textContent = '⚠️ erro';
+                gridPecas.innerHTML = `
+                    <div class="erro-msg" style="grid-column:1/-1;">❌ ${error.message}</div>
+                `;
+            }
+        }
+
+        // ============================================
+        // MODAL
         // ============================================
         function abrirModal(hotspot) {
             hotspotAtual = hotspot;
             document.getElementById('modal-numero').textContent = `#${hotspot.numero}`;
             document.getElementById('modal-descricao').textContent = hotspot.nome || 'Peça';
-            
+
             const produtoNome = getProdutoNome();
             const variacao = getVariacaoFromURL() || 'N/A';
             document.getElementById('modal-produto').textContent = `📦 ${produtoNome}${variacao ? ` (📏 ${variacao})` : ''}`;
-            
+
             document.getElementById('modal-qtd').value = 1;
             document.getElementById('modal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+
+            setTimeout(() => {
+                document.getElementById('modal-qtd').focus();
+                document.getElementById('modal-qtd').select();
+            }, 300);
         }
 
         function fecharModal() {
             document.getElementById('modal').classList.remove('active');
+            document.body.style.overflow = '';
             hotspotAtual = null;
         }
 
@@ -1937,21 +1972,21 @@
         function adicionarItem(numero, nome, qtd = 1) {
             const variacao = getVariacaoFromURL() || 'N/A';
             const manualNome = getProdutoNome();
-            
-            const existe = carrinho.find(i => 
-                i.numero === numero && 
-                i.variacao === variacao && 
+
+            const existe = carrinho.find(i =>
+                i.numero === numero &&
+                i.variacao === variacao &&
                 i.manual_nome === manualNome
             );
-            
+
             if (existe) {
                 existe.qtd += qtd;
             } else {
-                carrinho.push({ 
-                    numero, 
-                    nome: nome || `Peça #${numero}`, 
+                carrinho.push({
+                    numero,
+                    nome: nome || `Peça #${numero}`,
                     qtd,
-                    variacao: variacao,
+                    variacao,
                     manual_nome: manualNome
                 });
             }
@@ -1993,9 +2028,6 @@
             document.getElementById('btn-limpar').style.display = carrinho.length > 0 ? 'inline-block' : 'none';
         }
 
-        // ============================================
-        // RENDERIZAR CARRINHO
-        // ============================================
         function renderizarCarrinho() {
             const container = document.getElementById('carrinho-grupos');
             const vazio = document.getElementById('carrinho-vazio');
@@ -2072,13 +2104,29 @@
         }
 
         // ============================================
+        // FORMULÁRIO CLIENTE
+        // ============================================
+        function abrirFormularioCliente() {
+            if (carrinho.length === 0) {
+                alert('⚠️ Adicione pelo menos uma peça ao carrinho!');
+                return;
+            }
+            document.getElementById('card-cliente').style.display = 'block';
+            document.getElementById('card-cliente').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function fecharFormularioCliente() {
+            document.getElementById('card-cliente').style.display = 'none';
+        }
+
+        // ============================================
         // ENVIAR PEDIDO
         // ============================================
         async function enviarPedido() {
             const nomeCliente = document.getElementById('cliente-nome').value.trim();
             const cnpj = document.getElementById('cliente-cnpj').value.replace(/\D/g, '');
-            const vendedorId = document.getElementById('cliente-vendedor').value;
             const vendedorSelect = document.getElementById('cliente-vendedor');
+            const vendedorId = vendedorSelect.value;
             const vendedorNome = vendedorSelect.options[vendedorSelect.selectedIndex]?.text || '';
             const telefone = document.getElementById('cliente-telefone').value.trim();
             const email = document.getElementById('cliente-email').value.trim();
@@ -2110,7 +2158,7 @@
 
             const totalItens = carrinho.reduce((sum, i) => sum + i.qtd, 0);
             const produtos = [...new Set(carrinho.map(i => `${i.manual_nome} (${i.variacao})`))];
-            
+
             const confirmMsg = `📋 Confirmar pedido?\n\n` +
                 `Cliente: ${nomeCliente}\n` +
                 `CNPJ: ${cnpj}\n` +
@@ -2152,15 +2200,15 @@
                 if (data.success) {
                     document.getElementById('numero-chamado-gerado').textContent = data.numero_chamado;
                     document.getElementById('msg-sucesso').classList.add('show');
-                    
+
                     carrinho = [];
                     renderizarCarrinho();
                     atualizarBadge();
                     document.getElementById('cliente-obs').value = '';
                     sessionStorage.removeItem('carrinho_pecas');
-                    
+
                     document.getElementById('msg-sucesso').scrollIntoView({ behavior: 'smooth' });
-                    
+
                     setTimeout(() => {
                         document.getElementById('card-cliente').style.display = 'none';
                     }, 5000);
@@ -2181,7 +2229,6 @@
             await carregarVendedores();
 
             const manual = getManualFromURL();
-            const variacao = getVariacaoFromURL();
 
             // Recupera carrinho do sessionStorage
             try {
@@ -2198,14 +2245,10 @@
             } catch (e) {}
 
             if (manual) {
-                if (variacao) {
-                    atualizarTituloComVariacao(decodeURIComponent(manual), variacao);
-                }
                 carregarManual(decodeURIComponent(manual));
             } else {
-                document.getElementById('titulo-manual').textContent = '⚠️ Nenhum produto selecionado';
-                document.getElementById('info-manual').textContent = 'Selecione um produto na página anterior';
                 document.getElementById('produto-atual-display').textContent = 'Nenhum produto selecionado';
+                document.getElementById('info-manual').textContent = 'Selecione um produto na página anterior';
                 document.getElementById('breadcrumb-manual').textContent = 'Peças';
                 document.getElementById('card-manual').style.display = 'none';
             }
