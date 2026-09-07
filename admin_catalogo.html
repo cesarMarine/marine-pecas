@@ -1460,57 +1460,7 @@
         // ============================================
         // EDITAR SUBGRUPO
         // ============================================
-        async function abrirEditarSubgrupo(id) {
-    try {
-        // Carrega grupos para o select
-        const gruposRes = await fetch('/api/grupos');
-        const gruposData = await gruposRes.json();
-        const gruposList = gruposData.grupos || [];
-
-        const select = document.getElementById('edit-sub-grupo');
-        select.innerHTML = '<option value="">Selecione um grupo</option>';
-        gruposList.forEach(g => {
-            const option = document.createElement('option');
-            option.value = g.id;
-            option.textContent = g.nome;
-            select.appendChild(option);
-        });
-
-        // Carrega dados do subgrupo
-        const res = await fetch(`/api/subgrupos/${id}`);
-        const data = await res.json();
-
-        // ✅ ADICIONE ESTA VALIDAÇÃO
-        if (!data.success) {
-            alert('❌ ' + (data.error || 'Erro ao carregar subgrupo'));
-            return;
-        }
-
-        if (!data.subgrupo) {
-            alert('❌ Subgrupo não encontrado');
-            return;
-        }
-
-        const sub = data.subgrupo;
-        document.getElementById('edit-sub-id').value = id;
-        document.getElementById('edit-sub-nome').value = sub.nome || '';
-        document.getElementById('edit-sub-grupo').value = sub.grupo_id || '';
-
-        if (sub.icone_url) {
-            const input = document.getElementById('edit-sub-icone');
-            input.value = sub.icone_url;
-            mostrarPreview('edit-sub-icone', 'preview-edit-sub', 'preview-edit-sub-img', 'preview-edit-sub-nome', 'preview-edit-sub-url', sub.icone_url);
-        } else {
-            document.getElementById('edit-sub-icone').value = '';
-            document.getElementById('preview-edit-sub').style.display = 'none';
-        }
-
-        abrirModal('modal-editar-subgrupo');
-    } catch (error) {
-        console.error('❌ Erro ao carregar subgrupo:', error);
-        alert('❌ Erro ao carregar subgrupo: ' + error.message);
-    }
-}
+        
 
         async function salvarEdicaoSubgrupo() {
             const id = document.getElementById('edit-sub-id').value;
