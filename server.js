@@ -1394,6 +1394,144 @@ app.delete('/api/precos/:codigo', async (req, res) => {
     }
 });
 
+
+
+// ============================================
+// ROTAS DE EDIÇÃO - GRUPOS E SUBGRUPOS
+// ============================================
+
+// 🔹 BUSCAR GRUPO POR ID
+app.get('/api/grupos/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { data, error } = await supabase
+            .from('grupos')
+            .select('*')
+            .eq('id', id)
+            .single();
+            
+        if (error) {
+            return res.status(404).json({ success: false, error: 'Grupo não encontrado' });
+        }
+        
+        res.json({ success: true, grupo: data });
+    } catch (error) {
+        console.error('❌ Erro ao buscar grupo:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// 🔹 ATUALIZAR GRUPO
+app.put('/api/grupos/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { nome, icone_url } = req.body;
+        
+        if (!nome) {
+            return res.status(400).json({ success: false, error: 'Nome é obrigatório' });
+        }
+        
+        const { data, error } = await supabase
+            .from('grupos')
+            .update({ 
+                nome, 
+                icone_url: icone_url || '' 
+            })
+            .eq('id', id)
+            .select()
+            .single();
+            
+        if (error) throw error;
+        
+        res.json({ success: true, grupo: data });
+    } catch (error) {
+        console.error('❌ Erro ao atualizar grupo:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// 🔹 BUSCAR SUBGRUPO POR ID
+app.get('/api/subgrupos/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { data, error } = await supabase
+            .from('subgrupos')
+            .select('*')
+            .eq('id', id)
+            .single();
+            
+        if (error) {
+            return res.status(404).json({ success: false, error: 'Subgrupo não encontrado' });
+        }
+        
+        res.json({ success: true, subgrupo: data });
+    } catch (error) {
+        console.error('❌ Erro ao buscar subgrupo:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// 🔹 ATUALIZAR SUBGRUPO
+app.put('/api/subgrupos/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { grupo_id, nome, icone_url } = req.body;
+        
+        if (!grupo_id || !nome) {
+            return res.status(400).json({ success: false, error: 'Grupo e nome são obrigatórios' });
+        }
+        
+        const { data, error } = await supabase
+            .from('subgrupos')
+            .update({ 
+                grupo_id, 
+                nome, 
+                icone_url: icone_url || '' 
+            })
+            .eq('id', id)
+            .select()
+            .single();
+            
+        if (error) throw error;
+        
+        res.json({ success: true, subgrupo: data });
+    } catch (error) {
+        console.error('❌ Erro ao atualizar subgrupo:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// 🔹 DELETAR GRUPO (JÁ EXISTE, MAS VAMOS GARANTIR)
+app.delete('/api/grupos/:id', async (req, res) => {
+    try {
+        const { error } = await supabase
+            .from('grupos')
+            .delete()
+            .eq('id', req.params.id);
+            
+        if (error) throw error;
+        res.json({ success: true });
+    } catch (error) {
+        console.error('❌ Erro ao deletar grupo:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// 🔹 DELETAR SUBGRUPO (JÁ EXISTE, MAS VAMOS GARANTIR)
+app.delete('/api/subgrupos/:id', async (req, res) => {
+    try {
+        const { error } = await supabase
+            .from('subgrupos')
+            .delete()
+            .eq('id', req.params.id);
+            
+        if (error) throw error;
+        res.json({ success: true });
+    } catch (error) {
+        console.error('❌ Erro ao deletar subgrupo:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
 // ============================================
 // CONFIGURAÇÃO GLOBAL DO TÉCNICO
 // ============================================
