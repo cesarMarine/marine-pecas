@@ -19,6 +19,11 @@
             -webkit-font-smoothing: antialiased;
         }
 
+        /* 🔥 TRAVA O SCROLL QUANDO ESTÁ EM ZOOM FULLSCREEN */
+        body.zoom-fullscreen-mode {
+            overflow: hidden;
+        }
+
         .container {
             max-width: 1400px;
             margin: 0 auto;
@@ -338,7 +343,7 @@
         .aba-conteudo { display: none; }
         .aba-conteudo.ativo { display: block; }
 
-        /* ===== DIAGRAMA ===== */
+        /* ===== DIAGRAMA (NORMAL) ===== */
         .diagrama-wrapper {
             position: relative;
             width: 100%;
@@ -350,6 +355,21 @@
             touch-action: pan-x pan-y;
         }
 
+        /* 🔥 QUANDO ENTRA EM ZOOM FULLSCREEN */
+        .diagrama-wrapper.zoom-fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 9999;
+            border-radius: 0;
+            border: none;
+            background: #ffffff;
+            touch-action: pan-x pan-y;
+            overflow: hidden;
+        }
+
         .zoom-container {
             position: relative;
             width: 100%;
@@ -357,6 +377,13 @@
             max-height: 70vh;
             -webkit-overflow-scrolling: touch;
             touch-action: pan-x pan-y;
+        }
+
+        /* 🔥 QUANDO ESTÁ EM ZOOM FULLSCREEN, O CONTAINER OCUPA TUDO */
+        .zoom-container.zoom-fullscreen-scroll {
+            max-height: 100vh;
+            height: 100vh;
+            overflow: auto;
         }
 
         .imagem-wrapper {
@@ -380,7 +407,7 @@
         .imagem-wrapper.zoom-150 { transform: scale(1.5); }
         .imagem-wrapper.zoom-200 { transform: scale(2); }
 
-        /* 🔥 INSTRUÇÃO DE TOQUE */
+        /* 🔥 INSTRUÇÃO DE TOQUE (SEMPRE VISÍVEL) */
         .instrucao-toque {
             background: #e8eaf6;
             border-radius: 8px;
@@ -394,6 +421,7 @@
             font-weight: 500;
         }
 
+        /* 🔥 CONTROLES DE ZOOM (SEMPRE VISÍVEIS) */
         .zoom-controls {
             position: absolute;
             bottom: 16px;
@@ -460,7 +488,35 @@
             border-color: #1a237e;
         }
 
-        /* 🔥 PINOS MAIORES PARA CELULAR */
+        /* 🔥 BOTÃO DE FECHAR (QUANDO ESTÁ EM ZOOM) */
+        .btn-fechar-zoom {
+            display: none;
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            z-index: 100;
+            background: #e94560;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 12px 20px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            align-items: center;
+            gap: 8px;
+            font-family: inherit;
+            transition: all 0.3s;
+            touch-action: manipulation;
+        }
+        .btn-fechar-zoom.ativo {
+            display: flex;
+        }
+        .btn-fechar-zoom:hover {
+            background: #c62828;
+        }
+
         .pin-peca {
             position: absolute;
             padding: 4px 8px;
@@ -573,7 +629,6 @@
             box-shadow: none !important;
             padding: 1px 5px !important;
         }
-
         @keyframes pinAppear {
             from { opacity: 0; transform: translate(-50%, -50%) scale(0); }
             to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
@@ -614,7 +669,6 @@
         }
         .pin-peca:hover .tooltip { display: block; }
 
-        /* 🔥 RESPONSIVO: PINOS 40% MAIORES E TOQUE MAIS FÁCIL */
         @media (max-width: 768px) {
             .pin-peca {
                 min-width: 44px !important;
@@ -640,7 +694,6 @@
                 font-size: 16px !important;
                 padding: 5px 12px !important;
             }
-            /* Área de toque ampliada para evitar erros */
             .pin-peca::after {
                 content: '';
                 position: absolute;
@@ -679,6 +732,10 @@
                 min-width: 40px;
                 min-height: 40px;
                 font-size: 16px;
+            }
+            .btn-fechar-zoom {
+                padding: 10px 18px;
+                font-size: 0.8rem;
             }
             .card-manual { padding: 16px; }
             .produto-atual { padding: 12px 16px; }
@@ -733,6 +790,10 @@
                 min-height: 34px;
                 font-size: 14px;
                 padding: 2px 8px;
+            }
+            .btn-fechar-zoom {
+                padding: 8px 14px;
+                font-size: 0.75rem;
             }
             .container { padding: 0 12px 30px; }
             .header-container { padding: 10px 12px; }
@@ -1314,10 +1375,9 @@
             </div>
 
             <div class="aba-conteudo ativo" id="aba-vista">
-                <!-- 🔥 INSTRUÇÃO PARA O USUÁRIO NO CELULAR -->
                 <div class="instrucao-toque">
                     <i class="fas fa-hand-pointer"></i> 
-                    <span><strong>Toque na imagem</strong> para dar zoom e ver os números maiores. Toque novamente para voltar.</span>
+                    <span><strong>Toque na imagem</strong> para abrir em tela cheia e dar zoom. Toque em "✕" para fechar.</span>
                 </div>
                 
                 <div class="diagrama-wrapper" id="diagrama-wrapper">
@@ -1325,6 +1385,12 @@
                         <div class="spinner"></div>
                         <p>Carregando esquema...</p>
                     </div>
+                    
+                    <!-- 🔥 BOTÃO DE FECHAR (SÓ APARECE NO ZOOM) -->
+                    <button class="btn-fechar-zoom" id="btn-fechar-zoom" onclick="sairZoomFullscreen()">
+                        <i class="fas fa-times"></i> Fechar
+                    </button>
+                    
                     <div class="zoom-container" id="zoom-container">
                         <div class="imagem-wrapper" id="imagem-wrapper">
                             <img id="img-esquema" src="" alt="Esquema" style="display: none;">
@@ -1477,18 +1543,71 @@
             estilo: '1'
         };
         let timeoutCNPJ = null;
-        let toqueTimer = null;
 
         // ============================================
-        // TOQUE INTELIGENTE (ZOOM AO TOCAR)
+        // ZOOM FULLSCREEN AUTOMÁTICO
         // ============================================
+        let isZoomFullscreen = false;
+
+        function entrarZoomFullscreen(e) {
+            if (isZoomFullscreen) return;
+
+            // Ignora se clicou em um PIN (hotspot)
+            if (e.target.classList.contains('pin-peca')) return;
+
+            const diagrama = document.getElementById('diagrama-wrapper');
+            const zoomContainer = document.getElementById('zoom-container');
+            const btnFechar = document.getElementById('btn-fechar-zoom');
+
+            // Ativa modo fullscreen
+            isZoomFullscreen = true;
+            diagrama.classList.add('zoom-fullscreen');
+            zoomContainer.classList.add('zoom-fullscreen-scroll');
+            btnFechar.classList.add('ativo');
+            document.body.classList.add('zoom-fullscreen-mode');
+
+            // Calcula posição do toque para centralizar
+            const rect = document.getElementById('imagem-wrapper').getBoundingClientRect();
+            const xRelativo = (e.clientX - rect.left) / rect.width;
+            const yRelativo = (e.clientY - rect.top) / rect.height;
+
+            // Aplica zoom 200%
+            zoomLevel = 2;
+            aplicarZoom();
+
+            // Centraliza o scroll no ponto tocado
+            setTimeout(() => {
+                const novoScrollLeft = (xRelativo * zoomContainer.scrollWidth) - (zoomContainer.clientWidth / 2);
+                const novoScrollTop = (yRelativo * zoomContainer.scrollHeight) - (zoomContainer.clientHeight / 2);
+                
+                zoomContainer.scrollTo({
+                    left: novoScrollLeft,
+                    top: novoScrollTop,
+                    behavior: 'smooth'
+                });
+            }, 300);
+        }
+
+        function sairZoomFullscreen() {
+            if (!isZoomFullscreen) return;
+
+            const diagrama = document.getElementById('diagrama-wrapper');
+            const zoomContainer = document.getElementById('zoom-container');
+            const btnFechar = document.getElementById('btn-fechar-zoom');
+
+            isZoomFullscreen = false;
+            diagrama.classList.remove('zoom-fullscreen');
+            zoomContainer.classList.remove('zoom-fullscreen-scroll');
+            btnFechar.classList.remove('ativo');
+            document.body.classList.remove('zoom-fullscreen-mode');
+
+            zoomReset();
+        }
+
         function setupToqueInteligente() {
             const diagrama = document.getElementById('diagrama-wrapper');
             
-            // Remove listeners antigos
             diagrama.removeEventListener('click', toqueHandler);
-            
-            // Adiciona novo listener
             diagrama.addEventListener('click', toqueHandler);
         }
 
@@ -1496,35 +1615,14 @@
             // Ignora se clicou em um PIN (hotspot)
             if (e.target.classList.contains('pin-peca')) return;
 
-            const diagrama = document.getElementById('diagrama-wrapper');
-            
-            // Se já estiver com zoom, volta ao normal
-            if (zoomLevel > 1) {
-                zoomReset();
+            // Se já estiver em fullscreen, sai
+            if (isZoomFullscreen) {
+                sairZoomFullscreen();
                 return;
             }
 
-            // Calcula a posição do toque relativa à imagem
-            const rect = document.getElementById('imagem-wrapper').getBoundingClientRect();
-            const xRelativo = (e.clientX - rect.left) / rect.width;
-            const yRelativo = (e.clientY - rect.top) / rect.height;
-
-            // Aplica zoom 200% e centraliza no ponto tocado
-            zoomLevel = 2;
-            aplicarZoom();
-
-            // Centraliza o scroll no ponto tocado
-            const zoomContainer = document.getElementById('zoom-container');
-            const novoScrollLeft = (xRelativo * zoomContainer.scrollWidth) - (zoomContainer.clientWidth / 2);
-            const novoScrollTop = (yRelativo * zoomContainer.scrollHeight) - (zoomContainer.clientHeight / 2);
-            
-            setTimeout(() => {
-                zoomContainer.scrollTo({
-                    left: novoScrollLeft,
-                    top: novoScrollTop,
-                    behavior: 'smooth'
-                });
-            }, 300);
+            // Entra em fullscreen com zoom
+            entrarZoomFullscreen(e);
         }
 
         function getManualFromURL() {
