@@ -20,6 +20,11 @@
             -webkit-font-smoothing: antialiased;
         }
 
+        /* 🔥 QUANDO ESTIVER EM FULLSCREEN, TRAVA O SCROLL DO BODY */
+        body.fullscreen-mode {
+            overflow: hidden;
+        }
+
         .container {
             max-width: 1400px;
             margin: 0 auto;
@@ -345,7 +350,7 @@
         .aba-conteudo { display: none; }
         .aba-conteudo.ativo { display: block; }
 
-        /* ===== DIAGRAMA ===== */
+        /* ===== DIAGRAMA (NORMAL) ===== */
         .diagrama-wrapper {
             position: relative;
             width: 100%;
@@ -357,6 +362,38 @@
             touch-action: pan-x pan-y;
         }
 
+        /* 🔥 ESTILO FULLSCREEN */
+        .diagrama-wrapper.fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 9999;
+            border-radius: 0;
+            border: none;
+            background: #ffffff;
+            touch-action: pan-x pan-y;
+        }
+
+        /* 🔥 BOTÃO FULLSCREEN */
+        .btn-fullscreen {
+            background: #1a237e;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 4px 10px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: 0.2s;
+            touch-action: manipulation;
+            min-height: 32px;
+            min-width: 32px;
+        }
+        .btn-fullscreen:hover {
+            background: #0a2a4a;
+        }
+
         .zoom-container {
             position: relative;
             width: 100%;
@@ -364,6 +401,13 @@
             max-height: 70vh;
             -webkit-overflow-scrolling: touch;
             touch-action: pan-x pan-y;
+        }
+
+        /* 🔥 AJUSTE DO ZOOM CONTAINER NO FULLSCREEN */
+        .zoom-container.fullscreen-scroll {
+            max-height: 100vh;
+            height: 100vh;
+            overflow: auto;
         }
 
         .imagem-wrapper {
@@ -492,83 +536,82 @@
         }
 
         /* Estilos dos pins */
-        /* ===== ESTILOS DOS PINS (SEM !important) ===== */
-.pin-peca.estilo-1 {
-    border-radius: 50%;
-    border: 2px solid rgba(255, 255, 255, 0.9);
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
-    padding: 2px 5px;
-}
+        .pin-peca.estilo-1 {
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.9);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+            padding: 2px 5px;
+        }
 
-.pin-peca.estilo-2 {
-    border-radius: 4px;
-    border: 2px solid rgba(255, 255, 255, 0.9);
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
-    padding: 2px 5px;
-}
+        .pin-peca.estilo-2 {
+            border-radius: 4px;
+            border: 2px solid rgba(255, 255, 255, 0.9);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+            padding: 2px 5px;
+        }
 
-.pin-peca.estilo-3 {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    text-shadow: -1px -1px 0 #ffffff, 1px -1px 0 #ffffff, -1px 1px 0 #ffffff, 1px 1px 0 #ffffff, 0 0 8px rgba(255, 255, 255, 0.8) !important;
-    padding: 0 2px !important;
-    min-width: auto !important;
-    min-height: auto !important;
-}
+        .pin-peca.estilo-3 {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            text-shadow: -1px -1px 0 #ffffff, 1px -1px 0 #ffffff, -1px 1px 0 #ffffff, 1px 1px 0 #ffffff, 0 0 8px rgba(255, 255, 255, 0.8) !important;
+            padding: 0 2px !important;
+            min-width: auto !important;
+            min-height: auto !important;
+        }
 
-.pin-peca.estilo-4 {
-    background: transparent !important;
-    border: 2px solid rgba(255, 255, 255, 0.9) !important;
-    border-radius: 4px !important;
-    box-shadow: 0 0 12px rgba(255, 255, 255, 0.5) !important;
-    padding: 1px 5px !important;
-}
+        .pin-peca.estilo-4 {
+            background: transparent !important;
+            border: 2px solid rgba(255, 255, 255, 0.9) !important;
+            border-radius: 4px !important;
+            box-shadow: 0 0 12px rgba(255, 255, 255, 0.5) !important;
+            padding: 1px 5px !important;
+        }
 
-.pin-peca.estilo-5 {
-    background: rgba(255, 255, 255, 0.6) !important;
-    backdrop-filter: blur(2px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.8) !important;
-    border-radius: 4px !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
-    padding: 1px 5px !important;
-}
+        .pin-peca.estilo-5 {
+            background: rgba(255, 255, 255, 0.6) !important;
+            backdrop-filter: blur(2px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.8) !important;
+            border-radius: 4px !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+            padding: 1px 5px !important;
+        }
 
-.pin-peca.estilo-6 {
-    border-radius: 4px;
-    border: none;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    padding: 1px 6px;
-    display: inline-block;
-    width: auto;
-    height: auto;
-    line-height: 1.2;
-    min-width: auto;
-    min-height: auto;
-}
+        .pin-peca.estilo-6 {
+            border-radius: 4px;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            padding: 1px 6px;
+            display: inline-block;
+            width: auto;
+            height: auto;
+            line-height: 1.2;
+            min-width: auto;
+            min-height: auto;
+        }
 
-.pin-peca.estilo-7 {
-    border: 2px solid #2d3436;
-    border-radius: 4px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    padding: 0px 4px;
-    display: inline-block;
-    width: auto;
-    height: auto;
-    line-height: 1.2;
-    min-width: auto;
-    min-height: auto;
-}
+        .pin-peca.estilo-7 {
+            border: 2px solid #2d3436;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            padding: 0px 4px;
+            display: inline-block;
+            width: auto;
+            height: auto;
+            line-height: 1.2;
+            min-width: auto;
+            min-height: auto;
+        }
 
-.pin-peca.estilo-8 {
-    background: transparent !important;
-    border: 2px dashed rgba(44, 62, 80, 0.6) !important;
-    border-radius: 50% !important;
-    box-shadow: none !important;
-    padding: 1px 5px !important;
-}
+        .pin-peca.estilo-8 {
+            background: transparent !important;
+            border: 2px dashed rgba(44, 62, 80, 0.6) !important;
+            border-radius: 50% !important;
+            box-shadow: none !important;
+            padding: 1px 5px !important;
+        }
         @keyframes pinAppear {
             from { opacity: 0; transform: translate(-50%, -50%) scale(0); }
             to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
@@ -675,6 +718,11 @@
                 min-height: 40px;
                 font-size: 16px;
             }
+            .btn-fullscreen {
+                min-width: 40px;
+                min-height: 40px;
+                font-size: 16px;
+            }
             .card-manual { padding: 16px; }
             .produto-atual { padding: 12px 16px; }
             .produto-atual .info .icone {
@@ -723,6 +771,12 @@
                 min-height: 34px;
             }
             .btn-olho {
+                min-width: 34px;
+                min-height: 34px;
+                font-size: 14px;
+                padding: 2px 8px;
+            }
+            .btn-fullscreen {
                 min-width: 34px;
                 min-height: 34px;
                 font-size: 14px;
@@ -1337,6 +1391,12 @@
                         <span class="zoom-level" id="zoom-level">100%</span>
                         <button onclick="zoomIn()" aria-label="Aumentar zoom">+</button>
                         <button onclick="zoomReset()" style="font-size:12px;" aria-label="Resetar zoom">⟲</button>
+                        
+                        <!-- 🔥 BOTÃO FULLSCREEN -->
+                        <button class="btn-fullscreen" id="btn-fullscreen" onclick="toggleFullscreen()" aria-label="Tela cheia">
+                            ⛶
+                        </button>
+                        
                         <button class="btn-olho ativo" id="btn-olho" onclick="toggleOlho()" aria-label="Mostrar/Esconder números">
                             👁️
                         </button>
@@ -1480,6 +1540,7 @@
         let manualAtual = null;
         let zoomLevel = 1;
         let olhoAberto = true;
+        let isFullscreen = false;
         let configAtual = {
             tamanhoFonte: 12,
             corPin: '#e94560',
@@ -1487,6 +1548,41 @@
             estilo: '1'
         };
         let timeoutCNPJ = null;
+
+        // ============================================
+        // FULLSCREEN
+        // ============================================
+        function toggleFullscreen() {
+            const diagrama = document.getElementById('diagrama-wrapper');
+            const zoomContainer = document.getElementById('zoom-container');
+            const btn = document.getElementById('btn-fullscreen');
+
+            if (!isFullscreen) {
+                // 🔥 ENTRAR EM FULLSCREEN
+                isFullscreen = true;
+                diagrama.classList.add('fullscreen');
+                zoomContainer.classList.add('fullscreen-scroll');
+                btn.textContent = '✕'; // Muda para X
+                btn.style.background = '#e94560';
+                document.body.classList.add('fullscreen-mode'); // Trava o scroll do body
+            } else {
+                // 🔥 SAIR DO FULLSCREEN
+                isFullscreen = false;
+                diagrama.classList.remove('fullscreen');
+                zoomContainer.classList.remove('fullscreen-scroll');
+                btn.textContent = '⛶'; // Volta para fullscreen
+                btn.style.background = '#1a237e';
+                document.body.classList.remove('fullscreen-mode'); // Libera o scroll
+            }
+        }
+
+        // 🔥 Permite sair do fullscreen com o botão "Voltar" do celular
+        window.addEventListener('popstate', () => {
+            if (isFullscreen) {
+                toggleFullscreen();
+                history.pushState(null, '', window.location.href); // Re-adiciona o estado para permitir voltar novamente
+            }
+        });
 
         // ============================================
         // UTILITÁRIOS
@@ -1509,70 +1605,61 @@
         // ============================================
         // CARREGAR CONFIGURAÇÕES
         // ============================================
-        // ============================================
-// CARREGAR CONFIGURAÇÕES
-// ============================================
-async function carregarConfig() {
-    try {
-        const res = await fetch('/api/config-estilos');
-        const data = await res.json();
-        
-        if (data.success && data.config) {
-            configAtual = {
-                tamanhoFonte: data.config.tamanho_fonte || 12,
-                corPin: data.config.cor_pin || '#e94560',
-                corFonte: data.config.cor_fonte || '#ffffff',
-                estilo: String(data.config.estilo || '1')
-            };
-            
-            console.log('✅ Config carregada:', configAtual);
-            
-            // Aplica imediatamente nos pins existentes
-            if (document.querySelectorAll('.pin-peca').length > 0) {
-                aplicarEstilosPinos();
+        async function carregarConfig() {
+            try {
+                const res = await fetch('/api/config-estilos');
+                const data = await res.json();
+                
+                if (data.success && data.config) {
+                    configAtual = {
+                        tamanhoFonte: data.config.tamanho_fonte || 12,
+                        corPin: data.config.cor_pin || '#e94560',
+                        corFonte: data.config.cor_fonte || '#ffffff',
+                        estilo: String(data.config.estilo || '1')
+                    };
+                    
+                    console.log('✅ Config carregada:', configAtual);
+                    
+                    if (document.querySelectorAll('.pin-peca').length > 0) {
+                        aplicarEstilosPinos();
+                    }
+                }
+            } catch (e) {
+                console.warn('⚠️ Erro ao carregar configurações, usando padrão');
             }
         }
-    } catch (e) {
-        console.warn('⚠️ Erro ao carregar configurações, usando padrão');
-    }
-}
 
         // ============================================
-// APLICAR ESTILOS NOS PINOS
-// ============================================
-function aplicarEstilosPinos() {
-    document.querySelectorAll('.pin-peca').forEach(pin => {
-        // Remove estilos anteriores
-        pin.classList.remove('estilo-1', 'estilo-2', 'estilo-3', 'estilo-4', 'estilo-5', 'estilo-6', 'estilo-7', 'estilo-8');
-        
-        // Aplica o estilo selecionado
-        pin.classList.add(`estilo-${configAtual.estilo}`);
-        pin.style.fontSize = `${configAtual.tamanhoFonte}px`;
-        
-        // 🔥 Aplica as cores DO BANCO (sem !important)
-        if (['1', '2', '6', '7'].includes(configAtual.estilo)) {
-            pin.style.background = configAtual.corPin;
-            pin.style.color = configAtual.corFonte;
-        } else {
-            pin.style.background = 'transparent';
-            pin.style.color = configAtual.corFonte;
+        // APLICAR ESTILOS NOS PINOS
+        // ============================================
+        function aplicarEstilosPinos() {
+            document.querySelectorAll('.pin-peca').forEach(pin => {
+                pin.classList.remove('estilo-1', 'estilo-2', 'estilo-3', 'estilo-4', 'estilo-5', 'estilo-6', 'estilo-7', 'estilo-8');
+                
+                pin.classList.add(`estilo-${configAtual.estilo}`);
+                pin.style.fontSize = `${configAtual.tamanhoFonte}px`;
+                
+                if (['1', '2', '6', '7'].includes(configAtual.estilo)) {
+                    pin.style.background = configAtual.corPin;
+                    pin.style.color = configAtual.corFonte;
+                } else {
+                    pin.style.background = 'transparent';
+                    pin.style.color = configAtual.corFonte;
+                }
+                
+                if (configAtual.estilo === '1' || configAtual.estilo === '2') {
+                    const size = Math.max(configAtual.tamanhoFonte + 10, 24);
+                    pin.style.minWidth = size + 'px';
+                    pin.style.minHeight = size + 'px';
+                } else {
+                    pin.style.minWidth = 'auto';
+                    pin.style.minHeight = 'auto';
+                }
+                
+                pin.style.setProperty('background', pin.style.background);
+                pin.style.setProperty('color', pin.style.color);
+            });
         }
-        
-        // Ajusta tamanho
-        if (configAtual.estilo === '1' || configAtual.estilo === '2') {
-            const size = Math.max(configAtual.tamanhoFonte + 10, 24);
-            pin.style.minWidth = size + 'px';
-            pin.style.minHeight = size + 'px';
-        } else {
-            pin.style.minWidth = 'auto';
-            pin.style.minHeight = 'auto';
-        }
-        
-        // 🔥 Força a atualização
-        pin.style.setProperty('background', pin.style.background);
-        pin.style.setProperty('color', pin.style.color);
-    });
-}
 
         // ============================================
         // CONFIGURAR TOQUE DOS PINS (CELULAR)
@@ -1859,7 +1946,6 @@ function aplicarEstilosPinos() {
                 loading.style.display = 'none';
                 contador.textContent = `${data.totalHotspots || 0} peças mapeadas`;
 
-                // Aguarda a imagem carregar
                 await new Promise((resolve) => {
                     if (img.complete) {
                         resolve();
@@ -1902,12 +1988,10 @@ function aplicarEstilosPinos() {
 
                 aplicarEstilosPinos();
 
-                // Configurar toque para os pins
                 setTimeout(() => {
                     setupPinTouch();
                 }, 100);
 
-                // Lista de peças
                 gridPecas.innerHTML = '';
                 if (pecasLista.length > 0) {
                     pecasLista.forEach(peca => {
