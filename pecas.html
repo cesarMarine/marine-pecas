@@ -492,82 +492,83 @@
         }
 
         /* Estilos dos pins */
-        .pin-peca.estilo-1 {
-            background: linear-gradient(135deg, #e94560, #c62828) !important;
-            border-radius: 50% !important;
-            color: white !important;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
-        }
-        .pin-peca.estilo-2 {
-            background: linear-gradient(135deg, #0984e3, #0652DD) !important;
-            border-radius: 4px !important;
-            color: white !important;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
-        }
-        .pin-peca.estilo-3 {
-            background: transparent !important;
-            border: none !important;
-            box-shadow: none !important;
-            color: #2d3436 !important;
-            text-shadow: -1px -1px 0 #ffffff, 1px -1px 0 #ffffff, -1px 1px 0 #ffffff, 1px 1px 0 #ffffff, 0 0 8px rgba(255, 255, 255, 0.8) !important;
-            padding: 0 2px !important;
-            min-width: auto !important;
-            min-height: auto !important;
-        }
-        .pin-peca.estilo-4 {
-            background: transparent !important;
-            border: 2px solid rgba(255, 255, 255, 0.9) !important;
-            border-radius: 4px !important;
-            box-shadow: 0 0 12px rgba(255, 255, 255, 0.5) !important;
-            color: #2d3436 !important;
-            padding: 0 6px !important;
-        }
-        .pin-peca.estilo-5 {
-            background: rgba(255, 255, 255, 0.6) !important;
-            backdrop-filter: blur(2px) !important;
-            border: 1px solid rgba(255, 255, 255, 0.8) !important;
-            border-radius: 4px !important;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
-            color: #2d3436 !important;
-            padding: 0 6px !important;
-        }
-        .pin-peca.estilo-6 {
-            background: #e94560 !important;
-            border-radius: 4px !important;
-            border: none !important;
-            box-shadow: 0 2px 8px rgba(233, 69, 96, 0.3) !important;
-            color: white !important;
-            padding: 1px 6px !important;
-            display: inline-block !important;
-            width: auto !important;
-            height: auto !important;
-            line-height: 1.2 !important;
-            min-width: auto !important;
-            min-height: auto !important;
-        }
-        .pin-peca.estilo-7 {
-            background: #ffffff !important;
-            border: 2px solid #2d3436 !important;
-            border-radius: 4px !important;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
-            color: #2d3436 !important;
-            padding: 0px 5px !important;
-            display: inline-block !important;
-            width: auto !important;
-            height: auto !important;
-            line-height: 1.2 !important;
-            min-width: auto !important;
-            min-height: auto !important;
-        }
-        .pin-peca.estilo-8 {
-            background: transparent !important;
-            border: 2px dashed rgba(44, 62, 80, 0.6) !important;
-            border-radius: 50% !important;
-            box-shadow: none !important;
-            color: #2d3436 !important;
-            padding: 0 6px !important;
-        }
+        /* ===== ESTILOS DOS PINS (SEM !important) ===== */
+.pin-peca.estilo-1 {
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.9);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+    padding: 2px 5px;
+}
 
+.pin-peca.estilo-2 {
+    border-radius: 4px;
+    border: 2px solid rgba(255, 255, 255, 0.9);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+    padding: 2px 5px;
+}
+
+.pin-peca.estilo-3 {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    text-shadow: -1px -1px 0 #ffffff, 1px -1px 0 #ffffff, -1px 1px 0 #ffffff, 1px 1px 0 #ffffff, 0 0 8px rgba(255, 255, 255, 0.8) !important;
+    padding: 0 2px !important;
+    min-width: auto !important;
+    min-height: auto !important;
+}
+
+.pin-peca.estilo-4 {
+    background: transparent !important;
+    border: 2px solid rgba(255, 255, 255, 0.9) !important;
+    border-radius: 4px !important;
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.5) !important;
+    padding: 1px 5px !important;
+}
+
+.pin-peca.estilo-5 {
+    background: rgba(255, 255, 255, 0.6) !important;
+    backdrop-filter: blur(2px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.8) !important;
+    border-radius: 4px !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+    padding: 1px 5px !important;
+}
+
+.pin-peca.estilo-6 {
+    border-radius: 4px;
+    border: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    padding: 1px 6px;
+    display: inline-block;
+    width: auto;
+    height: auto;
+    line-height: 1.2;
+    min-width: auto;
+    min-height: auto;
+}
+
+.pin-peca.estilo-7 {
+    border: 2px solid #2d3436;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 0px 4px;
+    display: inline-block;
+    width: auto;
+    height: auto;
+    line-height: 1.2;
+    min-width: auto;
+    min-height: auto;
+}
+
+.pin-peca.estilo-8 {
+    background: transparent !important;
+    border: 2px dashed rgba(44, 62, 80, 0.6) !important;
+    border-radius: 50% !important;
+    box-shadow: none !important;
+    padding: 1px 5px !important;
+}
         @keyframes pinAppear {
             from { opacity: 0; transform: translate(-50%, -50%) scale(0); }
             to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
@@ -1548,19 +1549,16 @@ function aplicarEstilosPinos() {
         pin.classList.add(`estilo-${configAtual.estilo}`);
         pin.style.fontSize = `${configAtual.tamanhoFonte}px`;
         
-        // Aplica as cores DO BANCO
+        // 🔥 Aplica as cores DO BANCO (sem !important)
         if (['1', '2', '6', '7'].includes(configAtual.estilo)) {
-            // Pins com fundo - usa a cor configurada
             pin.style.background = configAtual.corPin;
             pin.style.color = configAtual.corFonte;
         } else {
-            // Pins transparentes - usa a cor da fonte configurada
-            pin.style.color = configAtual.corFonte;
-            // Remove background para não conflitar
             pin.style.background = 'transparent';
+            pin.style.color = configAtual.corFonte;
         }
         
-        // Ajusta tamanho para círculo/quadrado
+        // Ajusta tamanho
         if (configAtual.estilo === '1' || configAtual.estilo === '2') {
             const size = Math.max(configAtual.tamanhoFonte + 10, 24);
             pin.style.minWidth = size + 'px';
@@ -1570,8 +1568,9 @@ function aplicarEstilosPinos() {
             pin.style.minHeight = 'auto';
         }
         
-        // Força a cor do texto para garantir
-        pin.style.color = configAtual.corFonte;
+        // 🔥 Força a atualização
+        pin.style.setProperty('background', pin.style.background);
+        pin.style.setProperty('color', pin.style.color);
     });
 }
 
