@@ -1508,46 +1508,72 @@
         // ============================================
         // CARREGAR CONFIGURAÇÕES
         // ============================================
-        async function carregarConfig() {
-            try {
-                const res = await fetch('/api/config-estilos');
-                const data = await res.json();
-                if (data.success && data.config) {
-                    configAtual = {
-                        tamanhoFonte: data.config.tamanho_fonte || 12,
-                        corPin: data.config.cor_pin || '#e94560',
-                        corFonte: data.config.cor_fonte || '#ffffff',
-                        estilo: String(data.config.estilo || '1')
-                    };
-                }
-            } catch (e) {
-                console.warn('Erro ao carregar configurações, usando padrão');
+        // ============================================
+// CARREGAR CONFIGURAÇÕES
+// ============================================
+async function carregarConfig() {
+    try {
+        const res = await fetch('/api/config-estilos');
+        const data = await res.json();
+        
+        if (data.success && data.config) {
+            configAtual = {
+                tamanhoFonte: data.config.tamanho_fonte || 12,
+                corPin: data.config.cor_pin || '#e94560',
+                corFonte: data.config.cor_fonte || '#ffffff',
+                estilo: String(data.config.estilo || '1')
+            };
+            
+            console.log('✅ Config carregada:', configAtual);
+            
+            // Aplica imediatamente nos pins existentes
+            if (document.querySelectorAll('.pin-peca').length > 0) {
+                aplicarEstilosPinos();
             }
         }
+    } catch (e) {
+        console.warn('⚠️ Erro ao carregar configurações, usando padrão');
+    }
+}
 
-        function aplicarEstilosPinos() {
-            document.querySelectorAll('.pin-peca').forEach(pin => {
-                pin.classList.remove('estilo-1', 'estilo-2', 'estilo-3', 'estilo-4', 'estilo-5', 'estilo-6', 'estilo-7', 'estilo-8');
-                pin.classList.add(`estilo-${configAtual.estilo}`);
-                pin.style.fontSize = `${configAtual.tamanhoFonte}px`;
-
-                if (['1', '2', '6', '7'].includes(configAtual.estilo)) {
-                    pin.style.background = configAtual.corPin;
-                    pin.style.color = configAtual.corFonte;
-                } else {
-                    pin.style.color = configAtual.corFonte;
-                }
-
-                if (configAtual.estilo === '1' || configAtual.estilo === '2') {
-                    const size = Math.max(configAtual.tamanhoFonte + 10, 24);
-                    pin.style.minWidth = size + 'px';
-                    pin.style.minHeight = size + 'px';
-                } else {
-                    pin.style.minWidth = 'auto';
-                    pin.style.minHeight = 'auto';
-                }
-            });
+        // ============================================
+// APLICAR ESTILOS NOS PINOS
+// ============================================
+function aplicarEstilosPinos() {
+    document.querySelectorAll('.pin-peca').forEach(pin => {
+        // Remove estilos anteriores
+        pin.classList.remove('estilo-1', 'estilo-2', 'estilo-3', 'estilo-4', 'estilo-5', 'estilo-6', 'estilo-7', 'estilo-8');
+        
+        // Aplica o estilo selecionado
+        pin.classList.add(`estilo-${configAtual.estilo}`);
+        pin.style.fontSize = `${configAtual.tamanhoFonte}px`;
+        
+        // Aplica as cores DO BANCO
+        if (['1', '2', '6', '7'].includes(configAtual.estilo)) {
+            // Pins com fundo - usa a cor configurada
+            pin.style.background = configAtual.corPin;
+            pin.style.color = configAtual.corFonte;
+        } else {
+            // Pins transparentes - usa a cor da fonte configurada
+            pin.style.color = configAtual.corFonte;
+            // Remove background para não conflitar
+            pin.style.background = 'transparent';
         }
+        
+        // Ajusta tamanho para círculo/quadrado
+        if (configAtual.estilo === '1' || configAtual.estilo === '2') {
+            const size = Math.max(configAtual.tamanhoFonte + 10, 24);
+            pin.style.minWidth = size + 'px';
+            pin.style.minHeight = size + 'px';
+        } else {
+            pin.style.minWidth = 'auto';
+            pin.style.minHeight = 'auto';
+        }
+        
+        // Força a cor do texto para garantir
+        pin.style.color = configAtual.corFonte;
+    });
+}
 
         // ============================================
         // CONFIGURAR TOQUE DOS PINS (CELULAR)

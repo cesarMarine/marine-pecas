@@ -1286,7 +1286,41 @@
                 statusMsg.style.color = '#e94560';
             }
         }
+        async function salvarConfiguracoes() {
+    config.tamanhoFonte = parseInt(document.getElementById('config-tamanho-fonte').value) || 12;
+    config.corPin = document.getElementById('config-cor-pin').value;
+    config.corFonte = document.getElementById('config-cor-fonte').value;
+    config.estilo = document.getElementById('config-estilo').value;
+    
+    console.log('💾 Salvando config:', config);
+    
+    try {
+        const res = await fetch('/api/config-estilos', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                tamanho_fonte: config.tamanhoFonte,
+                cor_pin: config.corPin,
+                cor_fonte: config.corFonte,
+                estilo: parseInt(config.estilo)
+            })
+        });
+        const data = await res.json();
+        console.log('📥 Resposta do servidor:', data);
         
+        if (data.success) {
+            const status = document.getElementById('status-salvo');
+            status.style.display = 'block';
+            setTimeout(() => status.style.display = 'none', 2000);
+            aplicarConfiguracoes();
+        } else {
+            alert('❌ Erro ao salvar: ' + data.error);
+        }
+    } catch (e) {
+        console.error('❌ Erro:', e);
+        alert('❌ Erro ao salvar configurações');
+    }
+}
 
         // ============================================
         // INICIALIZAÇÃO
