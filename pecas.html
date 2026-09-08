@@ -9,7 +9,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        /* ===== RESET E BASE ===== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
@@ -20,18 +19,12 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* 🔥 QUANDO ESTIVER EM FULLSCREEN, TRAVA O SCROLL DO BODY */
-        body.fullscreen-mode {
-            overflow: hidden;
-        }
-
         .container {
             max-width: 1400px;
             margin: 0 auto;
             padding: 0 24px 40px;
         }
 
-        /* ===== TOP BAR ===== */
         .top-bar {
             background: #0a2a4a;
             color: rgba(255, 255, 255, 0.8);
@@ -61,7 +54,6 @@
             margin: 0 6px;
         }
 
-        /* ===== HEADER ===== */
         .main-header {
             background: #ffffff;
             box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
@@ -150,7 +142,6 @@
             box-shadow: 0 4px 12px rgba(248, 184, 31, 0.3);
         }
 
-        /* ===== BREADCRUMB ===== */
         .breadcrumb {
             padding: 16px 0 8px;
             font-size: 0.85rem;
@@ -169,7 +160,6 @@
             font-weight: 600;
         }
 
-        /* ===== PRODUTO ATUAL ===== */
         .produto-atual {
             background: white;
             border-radius: 16px;
@@ -280,7 +270,6 @@
             box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
         }
 
-        /* ===== CARD MANUAL ===== */
         .card-manual {
             background: white;
             border-radius: 16px;
@@ -316,7 +305,6 @@
             border: 1px solid #e8edf3;
         }
 
-        /* ===== ABAS ===== */
         .aba-container {
             display: flex;
             gap: 4px;
@@ -350,7 +338,7 @@
         .aba-conteudo { display: none; }
         .aba-conteudo.ativo { display: block; }
 
-        /* ===== DIAGRAMA (NORMAL) ===== */
+        /* ===== DIAGRAMA ===== */
         .diagrama-wrapper {
             position: relative;
             width: 100%;
@@ -362,38 +350,6 @@
             touch-action: pan-x pan-y;
         }
 
-        /* 🔥 ESTILO FULLSCREEN */
-        .diagrama-wrapper.fullscreen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: 9999;
-            border-radius: 0;
-            border: none;
-            background: #ffffff;
-            touch-action: pan-x pan-y;
-        }
-
-        /* 🔥 BOTÃO FULLSCREEN */
-        .btn-fullscreen {
-            background: #1a237e;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            padding: 4px 10px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: 0.2s;
-            touch-action: manipulation;
-            min-height: 32px;
-            min-width: 32px;
-        }
-        .btn-fullscreen:hover {
-            background: #0a2a4a;
-        }
-
         .zoom-container {
             position: relative;
             width: 100%;
@@ -401,13 +357,6 @@
             max-height: 70vh;
             -webkit-overflow-scrolling: touch;
             touch-action: pan-x pan-y;
-        }
-
-        /* 🔥 AJUSTE DO ZOOM CONTAINER NO FULLSCREEN */
-        .zoom-container.fullscreen-scroll {
-            max-height: 100vh;
-            height: 100vh;
-            overflow: auto;
         }
 
         .imagem-wrapper {
@@ -431,7 +380,20 @@
         .imagem-wrapper.zoom-150 { transform: scale(1.5); }
         .imagem-wrapper.zoom-200 { transform: scale(2); }
 
-        /* ===== ZOOM CONTROLS ===== */
+        /* 🔥 INSTRUÇÃO DE TOQUE */
+        .instrucao-toque {
+            background: #e8eaf6;
+            border-radius: 8px;
+            padding: 8px 12px;
+            margin-bottom: 12px;
+            font-size: 0.8rem;
+            color: #1a237e;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+
         .zoom-controls {
             position: absolute;
             bottom: 16px;
@@ -498,7 +460,7 @@
             border-color: #1a237e;
         }
 
-        /* ===== HOTSPOTS ===== */
+        /* 🔥 PINOS MAIORES PARA CELULAR */
         .pin-peca {
             position: absolute;
             padding: 4px 8px;
@@ -535,7 +497,6 @@
             transition: opacity 0.3s ease;
         }
 
-        /* Estilos dos pins */
         .pin-peca.estilo-1 {
             border-radius: 50%;
             border: 2px solid rgba(255, 255, 255, 0.9);
@@ -612,6 +573,7 @@
             box-shadow: none !important;
             padding: 1px 5px !important;
         }
+
         @keyframes pinAppear {
             from { opacity: 0; transform: translate(-50%, -50%) scale(0); }
             to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
@@ -652,40 +614,40 @@
         }
         .pin-peca:hover .tooltip { display: block; }
 
-        /* ===== RESPONSIVE: CELULAR ===== */
+        /* 🔥 RESPONSIVO: PINOS 40% MAIORES E TOQUE MAIS FÁCIL */
         @media (max-width: 768px) {
             .pin-peca {
-                min-width: 38px !important;
-                min-height: 38px !important;
-                font-size: 14px !important;
-                padding: 6px 10px !important;
-                border-width: 2.5px !important;
-                box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4) !important;
+                min-width: 44px !important;
+                min-height: 44px !important;
+                font-size: 16px !important;
+                padding: 8px 12px !important;
+                border-width: 3px !important;
+                box-shadow: 0 3px 15px rgba(0, 0, 0, 0.4) !important;
             }
             .pin-peca.estilo-3,
             .pin-peca.estilo-4,
             .pin-peca.estilo-5,
             .pin-peca.estilo-8 {
-                min-width: 34px !important;
-                min-height: 34px !important;
-                font-size: 13px !important;
-                padding: 2px 8px !important;
+                min-width: 40px !important;
+                min-height: 40px !important;
+                font-size: 15px !important;
+                padding: 2px 10px !important;
             }
             .pin-peca.estilo-6,
             .pin-peca.estilo-7 {
                 min-width: auto !important;
                 min-height: auto !important;
-                font-size: 14px !important;
-                padding: 4px 10px !important;
+                font-size: 16px !important;
+                padding: 5px 12px !important;
             }
-            /* Área de toque ampliada */
+            /* Área de toque ampliada para evitar erros */
             .pin-peca::after {
                 content: '';
                 position: absolute;
-                top: -14px;
-                left: -14px;
-                right: -14px;
-                bottom: -14px;
+                top: -18px;
+                left: -18px;
+                right: -18px;
+                bottom: -18px;
                 border-radius: 50%;
                 background: transparent;
             }
@@ -718,11 +680,6 @@
                 min-height: 40px;
                 font-size: 16px;
             }
-            .btn-fullscreen {
-                min-width: 40px;
-                min-height: 40px;
-                font-size: 16px;
-            }
             .card-manual { padding: 16px; }
             .produto-atual { padding: 12px 16px; }
             .produto-atual .info .icone {
@@ -731,24 +688,25 @@
                 font-size: 1.2rem;
             }
             .produto-atual .info .nome { font-size: 1rem; }
+            .instrucao-toque { font-size: 0.75rem; }
         }
 
         @media (max-width: 480px) {
             .pin-peca {
-                min-width: 44px !important;
-                min-height: 44px !important;
-                font-size: 16px !important;
-                padding: 6px 12px !important;
+                min-width: 50px !important;
+                min-height: 50px !important;
+                font-size: 18px !important;
+                padding: 8px 14px !important;
                 border-width: 3px !important;
             }
             .pin-peca.estilo-3,
             .pin-peca.estilo-4,
             .pin-peca.estilo-5,
             .pin-peca.estilo-8 {
-                min-width: 38px !important;
-                min-height: 38px !important;
-                font-size: 14px !important;
-                padding: 2px 8px !important;
+                min-width: 44px !important;
+                min-height: 44px !important;
+                font-size: 16px !important;
+                padding: 2px 12px !important;
             }
             .zoom-container {
                 max-height: 50vh;
@@ -776,12 +734,6 @@
                 font-size: 14px;
                 padding: 2px 8px;
             }
-            .btn-fullscreen {
-                min-width: 34px;
-                min-height: 34px;
-                font-size: 14px;
-                padding: 2px 8px;
-            }
             .container { padding: 0 12px 30px; }
             .header-container { padding: 10px 12px; }
             .logo-img { height: 32px; }
@@ -791,9 +743,9 @@
             .produto-atual .info .nome { font-size: 0.9rem; }
             .aba { padding: 6px 12px; font-size: 0.8rem; }
             .btn-acao { padding: 6px 12px; font-size: 0.7rem; }
+            .instrucao-toque { font-size: 0.7rem; padding: 6px 10px; }
         }
 
-        /* ===== LISTA DE PEÇAS ===== */
         .grid-pecas {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -841,7 +793,6 @@
             word-break: break-word;
         }
 
-        /* ===== CARRINHO ===== */
         .card-carrinho {
             background: white;
             border-radius: 16px;
@@ -990,7 +941,6 @@
             transform: none;
         }
 
-        /* ===== MODAL ===== */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -1103,7 +1053,6 @@
         }
         .modal .btn-cancelar:hover { background: #d5dce4; }
 
-        /* ===== CLIENTE FORM ===== */
         .card-cliente {
             display: none;
             border: 2px solid #1a237e;
@@ -1199,7 +1148,6 @@
         .msg-sucesso.show { display: block; }
         .msg-sucesso strong { font-size: 1rem; }
 
-        /* ===== LOADING ===== */
         .loading {
             text-align: center;
             padding: 40px 20px;
@@ -1250,7 +1198,6 @@
             color: #721c24;
         }
 
-        /* ===== FOOTER ===== */
         footer {
             background: #0a2a4a;
             color: rgba(255, 255, 255, 0.8);
@@ -1264,7 +1211,6 @@
             opacity: 0.7;
         }
 
-        /* ===== RESPONSIVE GERAL ===== */
         @media (max-width: 768px) {
             .cliente-grid {
                 grid-template-columns: 1fr;
@@ -1283,7 +1229,7 @@
             .cliente-grid input,
             .cliente-grid select,
             .cliente-grid textarea {
-                font-size: 16px; /* Previne zoom no iOS */
+                font-size: 16px;
                 padding: 12px 14px;
             }
             .modal .numero-peca { font-size: 2rem; }
@@ -1297,7 +1243,6 @@
 </head>
 <body>
 
-    <!-- ===== TOP BAR ===== -->
     <div class="top-bar">
         <span><i class="fas fa-headset"></i> Suporte Técnico Marine</span>
         <span class="divider"></span>
@@ -1306,7 +1251,6 @@
         <span><i class="fas fa-envelope"></i> atendimento@marinefishing.com.br</span>
     </div>
 
-    <!-- ===== HEADER ===== -->
     <header class="main-header">
         <div class="header-container">
             <div class="logo-area">
@@ -1331,7 +1275,6 @@
 
     <div class="container">
 
-        <!-- ===== BREADCRUMB ===== -->
         <div class="breadcrumb">
             <a href="/"><i class="fas fa-home"></i> Início</a>
             <span> / </span>
@@ -1340,7 +1283,6 @@
             <span class="current" id="breadcrumb-manual">Peças</span>
         </div>
 
-        <!-- ===== PRODUTO ATUAL ===== -->
         <div class="produto-atual" id="barra-produto">
             <div class="info">
                 <div class="icone"><i class="fas fa-fish"></i></div>
@@ -1356,7 +1298,6 @@
             </div>
         </div>
 
-        <!-- ===== MANUAL ===== -->
         <div class="card-manual" id="card-manual" style="display: none;">
             <div class="header-manual">
                 <h2>🎣 <span id="nome-manual">Manual</span> <small id="info-manual2"></small></h2>
@@ -1373,9 +1314,12 @@
             </div>
 
             <div class="aba-conteudo ativo" id="aba-vista">
-                <p style="color: #6b7a8a; margin-bottom: 16px; font-size: 0.85rem;">
-                    💡 <strong>Toque nos números</strong> sobre a imagem para adicionar peças ao carrinho.
-                </p>
+                <!-- 🔥 INSTRUÇÃO PARA O USUÁRIO NO CELULAR -->
+                <div class="instrucao-toque">
+                    <i class="fas fa-hand-pointer"></i> 
+                    <span><strong>Toque na imagem</strong> para dar zoom e ver os números maiores. Toque novamente para voltar.</span>
+                </div>
+                
                 <div class="diagrama-wrapper" id="diagrama-wrapper">
                     <div class="loading" id="loading">
                         <div class="spinner"></div>
@@ -1391,12 +1335,6 @@
                         <span class="zoom-level" id="zoom-level">100%</span>
                         <button onclick="zoomIn()" aria-label="Aumentar zoom">+</button>
                         <button onclick="zoomReset()" style="font-size:12px;" aria-label="Resetar zoom">⟲</button>
-                        
-                        <!-- 🔥 BOTÃO FULLSCREEN -->
-                        <button class="btn-fullscreen" id="btn-fullscreen" onclick="toggleFullscreen()" aria-label="Tela cheia">
-                            ⛶
-                        </button>
-                        
                         <button class="btn-olho ativo" id="btn-olho" onclick="toggleOlho()" aria-label="Mostrar/Esconder números">
                             👁️
                         </button>
@@ -1417,7 +1355,6 @@
             </div>
         </div>
 
-        <!-- ===== CARRINHO ===== -->
         <div class="card-carrinho">
             <div class="header-carrinho">
                 <h3><i class="fas fa-shopping-cart"></i> Peças Selecionadas</h3>
@@ -1447,7 +1384,6 @@
             </div>
         </div>
 
-        <!-- ===== FORMULÁRIO DO CLIENTE ===== -->
         <div class="card-cliente" id="card-cliente">
             <h3>👤 Identificação do Cliente</h3>
             <p class="sub">Preencha os dados para finalizar o pedido.</p>
@@ -1507,7 +1443,6 @@
         </div>
     </div>
 
-    <!-- ===== MODAL ADICIONAR PEÇA ===== -->
     <div class="modal-overlay" id="modal">
         <div class="modal">
             <h3>Adicionar ao Carrinho</h3>
@@ -1525,22 +1460,16 @@
         </div>
     </div>
 
-    <!-- ===== FOOTER ===== -->
     <footer>
         <p>© 2026 Marine Fishing - Todos os direitos reservados</p>
     </footer>
 
-    <!-- ===== SCRIPT ===== -->
     <script>
-        // ============================================
-        // VARIÁVEIS GLOBAIS
-        // ============================================
         let carrinho = [];
         let hotspotAtual = null;
         let manualAtual = null;
         let zoomLevel = 1;
         let olhoAberto = true;
-        let isFullscreen = false;
         let configAtual = {
             tamanhoFonte: 12,
             corPin: '#e94560',
@@ -1548,45 +1477,56 @@
             estilo: '1'
         };
         let timeoutCNPJ = null;
+        let toqueTimer = null;
 
         // ============================================
-        // FULLSCREEN
+        // TOQUE INTELIGENTE (ZOOM AO TOCAR)
         // ============================================
-        function toggleFullscreen() {
+        function setupToqueInteligente() {
             const diagrama = document.getElementById('diagrama-wrapper');
-            const zoomContainer = document.getElementById('zoom-container');
-            const btn = document.getElementById('btn-fullscreen');
-
-            if (!isFullscreen) {
-                // 🔥 ENTRAR EM FULLSCREEN
-                isFullscreen = true;
-                diagrama.classList.add('fullscreen');
-                zoomContainer.classList.add('fullscreen-scroll');
-                btn.textContent = '✕'; // Muda para X
-                btn.style.background = '#e94560';
-                document.body.classList.add('fullscreen-mode'); // Trava o scroll do body
-            } else {
-                // 🔥 SAIR DO FULLSCREEN
-                isFullscreen = false;
-                diagrama.classList.remove('fullscreen');
-                zoomContainer.classList.remove('fullscreen-scroll');
-                btn.textContent = '⛶'; // Volta para fullscreen
-                btn.style.background = '#1a237e';
-                document.body.classList.remove('fullscreen-mode'); // Libera o scroll
-            }
+            
+            // Remove listeners antigos
+            diagrama.removeEventListener('click', toqueHandler);
+            
+            // Adiciona novo listener
+            diagrama.addEventListener('click', toqueHandler);
         }
 
-        // 🔥 Permite sair do fullscreen com o botão "Voltar" do celular
-        window.addEventListener('popstate', () => {
-            if (isFullscreen) {
-                toggleFullscreen();
-                history.pushState(null, '', window.location.href); // Re-adiciona o estado para permitir voltar novamente
-            }
-        });
+        function toqueHandler(e) {
+            // Ignora se clicou em um PIN (hotspot)
+            if (e.target.classList.contains('pin-peca')) return;
 
-        // ============================================
-        // UTILITÁRIOS
-        // ============================================
+            const diagrama = document.getElementById('diagrama-wrapper');
+            
+            // Se já estiver com zoom, volta ao normal
+            if (zoomLevel > 1) {
+                zoomReset();
+                return;
+            }
+
+            // Calcula a posição do toque relativa à imagem
+            const rect = document.getElementById('imagem-wrapper').getBoundingClientRect();
+            const xRelativo = (e.clientX - rect.left) / rect.width;
+            const yRelativo = (e.clientY - rect.top) / rect.height;
+
+            // Aplica zoom 200% e centraliza no ponto tocado
+            zoomLevel = 2;
+            aplicarZoom();
+
+            // Centraliza o scroll no ponto tocado
+            const zoomContainer = document.getElementById('zoom-container');
+            const novoScrollLeft = (xRelativo * zoomContainer.scrollWidth) - (zoomContainer.clientWidth / 2);
+            const novoScrollTop = (yRelativo * zoomContainer.scrollHeight) - (zoomContainer.clientHeight / 2);
+            
+            setTimeout(() => {
+                zoomContainer.scrollTo({
+                    left: novoScrollLeft,
+                    top: novoScrollTop,
+                    behavior: 'smooth'
+                });
+            }, 300);
+        }
+
         function getManualFromURL() {
             const params = new URLSearchParams(window.location.search);
             return params.get('manual');
@@ -1602,9 +1542,6 @@
             return manual ? decodeURIComponent(manual) : 'Produto não identificado';
         }
 
-        // ============================================
-        // CARREGAR CONFIGURAÇÕES
-        // ============================================
         async function carregarConfig() {
             try {
                 const res = await fetch('/api/config-estilos');
@@ -1618,8 +1555,6 @@
                         estilo: String(data.config.estilo || '1')
                     };
                     
-                    console.log('✅ Config carregada:', configAtual);
-                    
                     if (document.querySelectorAll('.pin-peca').length > 0) {
                         aplicarEstilosPinos();
                     }
@@ -1629,9 +1564,6 @@
             }
         }
 
-        // ============================================
-        // APLICAR ESTILOS NOS PINOS
-        // ============================================
         function aplicarEstilosPinos() {
             document.querySelectorAll('.pin-peca').forEach(pin => {
                 pin.classList.remove('estilo-1', 'estilo-2', 'estilo-3', 'estilo-4', 'estilo-5', 'estilo-6', 'estilo-7', 'estilo-8');
@@ -1661,9 +1593,6 @@
             });
         }
 
-        // ============================================
-        // CONFIGURAR TOQUE DOS PINS (CELULAR)
-        // ============================================
         function setupPinTouch() {
             document.querySelectorAll('.pin-peca').forEach(pin => {
                 pin.removeEventListener('touchstart', pin._touchHandler);
@@ -1682,9 +1611,6 @@
             });
         }
 
-        // ============================================
-        // CARREGAR VENDEDORES
-        // ============================================
         async function carregarVendedores() {
             try {
                 const res = await fetch('/api/vendedores');
@@ -1709,9 +1635,6 @@
             }
         }
 
-        // ============================================
-        // CNPJ
-        // ============================================
         function formatarCNPJ(input) {
             let valor = input.value.replace(/\D/g, '');
             if (valor.length <= 14) {
@@ -1808,24 +1731,14 @@
             }
         }
 
-        // ============================================
-        // ABA
-        // ============================================
         function trocarAba(aba) {
             document.querySelectorAll('.aba').forEach(a => a.classList.remove('ativo'));
             document.querySelectorAll('.aba-conteudo').forEach(c => c.classList.remove('ativo'));
 
             document.querySelector(`.aba[data-aba="${aba}"]`).classList.add('ativo');
             document.getElementById(`aba-${aba}`).classList.add('ativo');
-
-            if (aba === 'lista') {
-                // Re-renderiza a lista se necessário
-            }
         }
 
-        // ============================================
-        // ZOOM
-        // ============================================
         function zoomIn() {
             if (zoomLevel < 2) {
                 zoomLevel = zoomLevel === 1 ? 1.5 : 2;
@@ -1858,9 +1771,6 @@
             document.getElementById('zoom-level').textContent = Math.round(zoomLevel * 100) + '%';
         }
 
-        // ============================================
-        // OLHO (MOSTRAR/ESCONDER HOTSPOTS)
-        // ============================================
         function toggleOlho() {
             olhoAberto = !olhoAberto;
             const btn = document.getElementById('btn-olho');
@@ -1882,9 +1792,6 @@
             }
         }
 
-        // ============================================
-        // CARREGAR MANUAL
-        // ============================================
         async function carregarManual(nome) {
             const variacao = getVariacaoFromURL();
 
@@ -1990,6 +1897,7 @@
 
                 setTimeout(() => {
                     setupPinTouch();
+                    setupToqueInteligente();
                 }, 100);
 
                 gridPecas.innerHTML = '';
@@ -2032,9 +1940,6 @@
             }
         }
 
-        // ============================================
-        // MODAL
-        // ============================================
         function abrirModal(hotspot) {
             hotspotAtual = hotspot;
             document.getElementById('modal-numero').textContent = `#${hotspot.numero}`;
@@ -2075,9 +1980,6 @@
             if (e.key === 'Enter') confirmarAdicao();
         });
 
-        // ============================================
-        // CARRINHO
-        // ============================================
         function adicionarItem(numero, nome, qtd = 1) {
             const variacao = getVariacaoFromURL() || 'N/A';
             const manualNome = getProdutoNome();
@@ -2212,9 +2114,6 @@
             atualizarBadge();
         }
 
-        // ============================================
-        // FORMULÁRIO CLIENTE
-        // ============================================
         function abrirFormularioCliente() {
             if (carrinho.length === 0) {
                 alert('⚠️ Adicione pelo menos uma peça ao carrinho!');
@@ -2228,9 +2127,6 @@
             document.getElementById('card-cliente').style.display = 'none';
         }
 
-        // ============================================
-        // ENVIAR PEDIDO
-        // ============================================
         async function enviarPedido() {
             const nomeCliente = document.getElementById('cliente-nome').value.trim();
             const cnpj = document.getElementById('cliente-cnpj').value.replace(/\D/g, '');
@@ -2330,16 +2226,12 @@
             }
         }
 
-        // ============================================
-        // INICIALIZAÇÃO
-        // ============================================
         document.addEventListener('DOMContentLoaded', async () => {
             await carregarConfig();
             await carregarVendedores();
 
             const manual = getManualFromURL();
 
-            // Recupera carrinho do sessionStorage
             try {
                 const saved = sessionStorage.getItem('carrinho_pecas');
                 if (saved) {
@@ -2348,7 +2240,6 @@
                         carrinho = parsed;
                         renderizarCarrinho();
                         atualizarBadge();
-                        console.log(`🔄 Carrinho restaurado: ${carrinho.length} itens`);
                     }
                 }
             } catch (e) {}
