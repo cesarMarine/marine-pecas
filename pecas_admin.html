@@ -536,6 +536,22 @@
             color: #856404;
         }
 
+        /* BOTÃO REPETIR (CRÍTICO PARA MÚLTIPLOS HOTSPOTS) */
+        .btn-repetir {
+            background: #0984e3;
+            color: white;
+            border: none;
+            padding: 1px 5px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        .btn-repetir:hover {
+            background: #0652DD;
+        }
+
         /* BOTÕES */
         .btn-adicionar-hotspot {
             background: #e94560;
@@ -769,8 +785,9 @@
             config.corPin = document.getElementById('config-cor-pin').value;
             config.corFonte = document.getElementById('config-cor-fonte').value;
             config.estilo = document.getElementById('config-estilo').value;
+            
             try {
-                await fetch('/api/config-estilos', {
+                const res = await fetch('/api/config-estilos', {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -780,11 +797,20 @@
                         estilo: parseInt(config.estilo)
                     })
                 });
-                const status = document.getElementById('status-salvo');
-                status.style.display = 'block';
-                setTimeout(() => status.style.display = 'none', 2000);
-                aplicarConfiguracoes();
-            } catch (e) {}
+                const data = await res.json();
+                
+                if (data.success) {
+                    const status = document.getElementById('status-salvo');
+                    status.style.display = 'block';
+                    setTimeout(() => status.style.display = 'none', 2000);
+                    aplicarConfiguracoes();
+                } else {
+                    alert('❌ Erro ao salvar: ' + data.error);
+                }
+            } catch (e) {
+                console.error('❌ Erro:', e);
+                alert('❌ Erro ao salvar configurações');
+            }
         }
 
         function aplicarConfiguracoes() {
@@ -932,15 +958,9 @@
             const numero = prompt('Digite o número da peça (ex: 99):');
             if (!numero) return;
 
-            if (hotspots.some(h => h.numero === numero)) {
-                alert('⚠️ Já existe um hotspot com esse número!');
-                return;
-            }
-
             const peca = pecas.find(p => p.numero === numero);
             const nome = peca ? peca.nome : 'Peça';
 
-            // Coloca na lateral esquerda (15%, 50%)
             const novoHotspot = {
                 numero: numero,
                 nome: nome,
@@ -959,16 +979,18 @@
         }
 
         // ============================================
-        // RENDERIZAR PINOS
+        // RENDERIZAR PINOS (SUPORTE A DUPLICATAS)
         // ============================================
         function renderizarPinos() {
             document.querySelectorAll('.pin-editor').forEach(p => p.remove());
             const wrapper = document.getElementById('imagem-wrapper');
 
-            hotspots.forEach(hotspot => {
+            // Usamos o índice para diferenciar duplicatas do mesmo número
+            hotspots.forEach((hotspot, index) => {
                 const pin = document.createElement('div');
                 pin.className = 'pin-editor';
                 pin.dataset.numero = hotspot.numero;
+                pin.dataset.index = index; // 🔥 Identificador único
                 pin.dataset.x = hotspot.x_percent;
                 pin.dataset.y = hotspot.y_percent;
                 pin.style.left = `${hotspot.x_percent}%`;
@@ -980,7 +1002,7 @@
 
                 const tooltip = document.createElement('span');
                 tooltip.className = 'tooltip';
-                tooltip.textContent = `#${hotspot.numero} - ${nomePeca}`;
+                tooltip.textContent = `#${hotspot.numero} (${index + 1}ª ocorrência) - ${nomePeca}`;
                 pin.appendChild(tooltip);
 
                 const badge = document.createElement('span');
@@ -996,7 +1018,7 @@
         }
 
         // ============================================
-        // DRAG & DROP PINOS
+        // DRAG & DROP PINOS (COM ÍNDICE)
         // ============================================
         let dragging = false;
         let currentPin = null;
@@ -1064,13 +1086,12 @@
         document.addEventListener('mouseup', () => {
             if (dragging && currentPin) {
                 currentPin.classList.remove('dragging');
-                const numero = currentPin.dataset.numero;
+                const index = parseInt(currentPin.dataset.index);
                 const x = parseFloat(currentPin.dataset.x);
                 const y = parseFloat(currentPin.dataset.y);
-                const hotspot = hotspots.find(h => h.numero === numero);
-                if (hotspot) {
-                    hotspot.x_percent = x;
-                    hotspot.y_percent = y;
+                if (hotspots[index]) {
+                    hotspots[index].x_percent = x;
+                    hotspots[index].y_percent = y;
                 }
             }
             dragging = false;
@@ -1081,13 +1102,12 @@
         document.addEventListener('touchend', () => {
             if (dragging && currentPin) {
                 currentPin.classList.remove('dragging');
-                const numero = currentPin.dataset.numero;
+                const index = parseInt(currentPin.dataset.index);
                 const x = parseFloat(currentPin.dataset.x);
                 const y = parseFloat(currentPin.dataset.y);
-                const hotspot = hotspots.find(h => h.numero === numero);
-                if (hotspot) {
-                    hotspot.x_percent = x;
-                    hotspot.y_percent = y;
+                if (hotspots[index]) {
+                    hotspots[index].x_percent = x;
+                    hotspots[index].y_percent = y;
                 }
             }
             dragging = false;
@@ -1112,10 +1132,11 @@
                 const temHotspot = hotspots.some(h => h.numero === peca.numero);
                 html += `
                     <div class="item-peca ${temHotspot ? 'com-hotspot' : 'sem-hotspot'}" 
-                         data-numero="${peca.numero}" onclick="inserirPecaNoCentro('${peca.numero}')">
+                         data-numero="${peca.numero}" onclick="adicionarHotspotParaNumero('${peca.numero}')">
                         <span class="numero">#${peca.numero}</span>
                         <span class="nome">${peca.nome || 'Peça'}</span>
                         <span class="status ${temHotspot ? 'ok' : 'pendente'}">${temHotspot ? '✅ OK' : '⚠️ Pendente'}</span>
+                        <button class="btn-repetir" onclick="event.stopPropagation(); adicionarHotspotParaNumero('${peca.numero}')">➕ Repetir</button>
                     </div>
                 `;
             });
@@ -1123,14 +1144,9 @@
         }
 
         // ============================================
-        // INSERIR PEÇA NO CENTRO
+        // ADICIONAR HOTSPOT PARA NÚMERO (NOVO)
         // ============================================
-        function inserirPecaNoCentro(numero) {
-            if (hotspots.some(h => h.numero === numero)) {
-                localizarPeca(numero);
-                return;
-            }
-
+        function adicionarHotspotParaNumero(numero) {
             const peca = pecas.find(p => p.numero === numero);
             const nome = peca ? peca.nome : 'Peça';
 
@@ -1141,48 +1157,14 @@
                 y_percent: 50
             };
 
-            hotspots.push(novoHotspot);
+            hotspots.push(novoHotspot); // 🔥 SEMPRE ADICIONA, NUNCA SUBSTITUI
             renderizarPinos();
             renderizarLista();
 
-            const pin = document.querySelector(`.pin-editor[data-numero="${numero}"]`);
+            const pin = document.querySelector(`.pin-editor[data-numero="${numero}"]:last-of-type`);
             if (pin) {
                 pin.classList.add('destacado');
                 setTimeout(() => pin.classList.remove('destacado'), 2000);
-            }
-        }
-
-        // ============================================
-        // LOCALIZAR PEÇA NA IMAGEM
-        // ============================================
-        function localizarPeca(numero) {
-            document.querySelectorAll('.pin-editor').forEach(p => p.classList.remove('destacado'));
-            document.querySelectorAll('.item-peca').forEach(item => item.classList.remove('destacado'));
-
-            const pin = document.querySelector(`.pin-editor[data-numero="${numero}"]`);
-            if (pin) {
-                pin.classList.add('destacado');
-                const container = document.getElementById('zoom-container');
-                const rect = pin.getBoundingClientRect();
-                const containerRect = container.getBoundingClientRect();
-                const isVisible = (rect.left >= containerRect.left && rect.right <= containerRect.right &&
-                    rect.top >= containerRect.top && rect.bottom <= containerRect.bottom);
-                if (!isVisible) {
-                    container.scrollBy(rect.left - containerRect.left - containerRect.width / 2,
-                        rect.top - containerRect.top - containerRect.height / 2);
-                }
-                document.querySelectorAll('.item-peca').forEach(item => {
-                    if (item.dataset.numero === numero) {
-                        item.classList.add('destacado');
-                        item.scrollIntoView({ block: 'center', behavior: 'smooth' });
-                    }
-                });
-                setTimeout(() => {
-                    pin.classList.remove('destacado');
-                    document.querySelectorAll('.item-peca.destacado').forEach(item => item.classList.remove('destacado'));
-                }, 3000);
-            } else {
-                inserirPecaNoCentro(numero);
             }
         }
 
@@ -1252,7 +1234,7 @@
         }
 
         // ============================================
-        // SALVAR HOTSPOTS
+        // SALVAR HOTSPOTS (COM DUPLICATAS)
         // ============================================
         async function salvarHotspots() {
             if (!manualAtual) return;
@@ -1260,6 +1242,7 @@
             const statusMsg = document.getElementById('status-msg');
             statusMsg.textContent = '⏳ Salvando...';
 
+            // Salva TODOS os hotspots, incluindo duplicatas do mesmo número
             const hotspotsParaSalvar = hotspots.map(h => ({
                 numero: h.numero,
                 x_percent: Math.round(parseFloat(h.x_percent) * 100) / 100,
@@ -1275,7 +1258,7 @@
                 const data = await res.json();
 
                 if (data.success) {
-                    statusMsg.textContent = '✅ Hotspots salvos!';
+                    statusMsg.textContent = `✅ ${hotspotsParaSalvar.length} hotspots salvos! (Incluindo repetidos)`;
                     statusMsg.style.color = '#00b894';
                 } else {
                     statusMsg.textContent = '❌ ' + data.error;
@@ -1286,41 +1269,6 @@
                 statusMsg.style.color = '#e94560';
             }
         }
-        async function salvarConfiguracoes() {
-    config.tamanhoFonte = parseInt(document.getElementById('config-tamanho-fonte').value) || 12;
-    config.corPin = document.getElementById('config-cor-pin').value;
-    config.corFonte = document.getElementById('config-cor-fonte').value;
-    config.estilo = document.getElementById('config-estilo').value;
-    
-    console.log('💾 Salvando config:', config);
-    
-    try {
-        const res = await fetch('/api/config-estilos', {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                tamanho_fonte: config.tamanhoFonte,
-                cor_pin: config.corPin,
-                cor_fonte: config.corFonte,
-                estilo: parseInt(config.estilo)
-            })
-        });
-        const data = await res.json();
-        console.log('📥 Resposta do servidor:', data);
-        
-        if (data.success) {
-            const status = document.getElementById('status-salvo');
-            status.style.display = 'block';
-            setTimeout(() => status.style.display = 'none', 2000);
-            aplicarConfiguracoes();
-        } else {
-            alert('❌ Erro ao salvar: ' + data.error);
-        }
-    } catch (e) {
-        console.error('❌ Erro:', e);
-        alert('❌ Erro ao salvar configurações');
-    }
-}
 
         // ============================================
         // INICIALIZAÇÃO
