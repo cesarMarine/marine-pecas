@@ -997,18 +997,41 @@ app.post('/api/pedidos', async (req, res) => {
 
 app.put('/api/pedidos/:id/status', async (req, res) => {
     try {
-        const { status } = req.body;
+        const { status, motivo_recusa } = req.body;
         const id = req.params.id;
+
+        // Lista de status permitidos (incluindo os novos)
+        const statusValidos = [
+            'AGUARDANDO', 
+            'EM_ANALISE_TECNICA', 
+            'ORCAMENTO_FINALIZADO', 
+            'ENVIADO_CLIENTE', 
+            'FINALIZADO', 
+            'CANCELADO',
+            'CONFIRMADO_TECNICO',   // 🔥 NOVO
+            'ORCAMENTO_RECUSADO'    // 🔥 NOVO
+        ];
+
+        if (!statusValidos.includes(status)) {
+            return res.status(400).json({ success: false, error: 'Status inválido' });
+        }
 
         const updates = { 
             status,
             atualizado_em: new Date().toISOString()
         };
 
+        // Salva o motivo da recusa se existir
+        if (motivo_recusa !== undefined) {
+            updates.motivo_recusa = motivo_recusa || null;
+        }
+
+        // Datas automáticas para status específicos
         const dataMap = {
             'EM_ANALISE_TECNICA': 'data_analise_tecnica',
             'ORCAMENTO_FINALIZADO': 'data_orcamento_finalizado',
             'ENVIADO_CLIENTE': 'data_enviado_cliente',
+            'CONFIRMADO_TECNICO': 'data_confirmado_tecnico',   // 🔥 NOVO
             'FINALIZADO': 'data_finalizado'
         };
 
@@ -1024,6 +1047,7 @@ app.put('/api/pedidos/:id/status', async (req, res) => {
 
         if (error) throw error;
 
+        // Envia e-mail quando vai para o técnico
         if (status === 'EM_ANALISE_TECNICA') {
             const pedido = data[0];
             const assunto = `🔧 Pedido em Análise - ${pedido.numero_chamado}`;

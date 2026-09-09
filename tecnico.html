@@ -198,6 +198,8 @@
         }
         .status-analise { background: #cce5ff; color: #004085; }
         .status-orcamento { background: #d4edda; color: #155724; }
+        .status-confirmado { background: #d4edda; color: #155724; }
+        .status-recusado { background: #f8d7da; color: #721c24; }
         .status-aguardando { background: #fff3cd; color: #856404; }
         .status-enviado { background: #d1ecf1; color: #0c5460; }
         .status-finalizado { background: #d4edda; color: #155724; }
@@ -217,6 +219,11 @@
         .btn-detalhes:hover { background: #5a4bd1; }
         .btn-finalizar { background: #d63031; color: white; }
         .btn-finalizar:hover { background: #b71c1c; }
+        .btn-confirmar { background: #00b894; color: white; }
+        .btn-confirmar:hover { background: #00a381; }
+        .btn-corrigir { background: #f39c12; color: white; }
+        .btn-corrigir:hover { background: #e67e22; }
+
         .modal-overlay {
             display: none;
             position: fixed;
@@ -554,7 +561,9 @@
                 <select id="filtro-status" onchange="carregarPedidos()">
                     <option value="">Todos os Status</option>
                     <option value="EM_ANALISE_TECNICA" selected>🔧 Em Análise Técnica</option>
-                    <option value="ORCAMENTO_FINALIZADO">📊 Orçamento Finalizado</option>
+                    <option value="ORCAMENTO_FINALIZADO">📊 Aguardando Aprovação</option>
+                    <option value="CONFIRMADO_TECNICO">✅ Confirmado pelo Vendedor</option>
+                    <option value="ORCAMENTO_RECUSADO">❌ Recusado pelo Vendedor</option>
                     <option value="AGUARDANDO">⏳ Aguardando</option>
                     <option value="ENVIADO_CLIENTE">📨 Enviado ao Cliente</option>
                     <option value="FINALIZADO">✅ Finalizado</option>
@@ -623,7 +632,6 @@
         // FUNÇÃO PARA ABRIR MANUAL COM VARIAÇÃO
         // ============================================
         function abrirManual(nomeProduto, variacao) {
-            // Converte o nome para o formato da URL
             const nomeEncoded = encodeURIComponent(nomeProduto);
             let url = `/pecas.html?manual=${nomeEncoded}`;
             if (variacao && variacao !== 'N/A') {
@@ -801,8 +809,14 @@
                         <td>${formatarData(p.data_pedido)}</td>
                         <td>
                             <button class="btn-acao btn-detalhes" onclick="verDetalhes(${p.id})">📄 Detalhes</button>
+                            
                             ${p.status === 'EM_ANALISE_TECNICA' ? `<button class="btn-acao btn-orcamento" onclick="abrirOrcamento(${p.id})">📊 Orçamento</button>` : ''}
-                            ${p.status === 'ORCAMENTO_FINALIZADO' ? `<button class="btn-acao btn-finalizar" onclick="finalizarOrcamento(${p.id})">✅ Finalizar</button>` : ''}
+                            
+                            ${p.status === 'ORCAMENTO_FINALIZADO' ? `<span style="font-size:11px; color:#666;">Aguardando Vendedor...</span>` : ''}
+                            
+                            ${p.status === 'CONFIRMADO_TECNICO' ? `<button class="btn-acao btn-confirmar" onclick="finalizarPedido(${p.id})">✅ Finalizar</button>` : ''}
+                            
+                            ${p.status === 'ORCAMENTO_RECUSADO' ? `<button class="btn-acao btn-corrigir" onclick="abrirOrcamento(${p.id})">🛠️ Corrigir</button>` : ''}
                         </td>
                     `;
                     tbody.appendChild(tr);
@@ -814,7 +828,32 @@
         }
 
         // ============================================
-        // ABRIR ORÇAMENTO (COM BOTÃO VER MANUAL EM CADA LINHA)
+        // FINALIZAR PEDIDO
+        // ============================================
+        async function finalizarPedido(id) {
+            if (!confirm('Confirmar que este pedido foi finalizado?')) return;
+
+            try {
+                const res = await fetch(`/api/pedidos/${id}/status`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'FINALIZADO' })
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    alert('✅ Pedido finalizado com sucesso!');
+                    carregarPedidos();
+                } else {
+                    alert('❌ ' + data.error);
+                }
+            } catch (error) {
+                alert('❌ Erro: ' + error.message);
+            }
+        }
+
+        // ============================================
+        // ABRIR ORÇAMENTO
         // ============================================
         async function abrirOrcamento(id) {
             const modal = document.getElementById('modal-orcamento');
@@ -1222,31 +1261,6 @@
         }
 
         // ============================================
-        // FINALIZAR ORÇAMENTO
-        // ============================================
-        async function finalizarOrcamento(id) {
-            if (!confirm('Confirmar que este orçamento está pronto para o cliente?')) return;
-
-            try {
-                const res = await fetch(`/api/pedidos/${id}/status`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ status: 'ENVIADO_CLIENTE' })
-                });
-
-                const data = await res.json();
-                if (data.success) {
-                    alert('✅ Orçamento enviado para o vendedor!');
-                    carregarPedidos();
-                } else {
-                    alert('❌ ' + data.error);
-                }
-            } catch (error) {
-                alert('❌ Erro: ' + error.message);
-            }
-        }
-
-        // ============================================
         // VER DETALHES
         // ============================================
         async function verDetalhes(id) {
@@ -1287,8 +1301,18 @@
                         <p><strong>Vendedor:</strong> ${p.vendedor_nome || '-'}</p>
                         <p><strong>Data:</strong> ${formatarData(p.data_pedido)}</p>
                     </div>
+                `;
 
-                    <h3>📋 Peças Solicitadas</h3>
+                // 🔥 MOSTRA MOTIVO DA RECUSA SE EXISTIR
+                if (p.status === 'ORCAMENTO_RECUSADO') {
+                    html += `
+                        <div style="background:#f8d7da; color:#721c24; padding:10px; border-radius:8px; margin-bottom:15px;">
+                            <strong>❌ Motivo da recusa:</strong> ${p.motivo_recusa || 'Não informado'}
+                        </div>
+                    `;
+                }
+
+                html += `<h3>📋 Peças Solicitadas</h3>
                     <table>
                         <thead>
                             <tr>
@@ -1343,8 +1367,12 @@
                 }
 
                 html += `
-                    <div style="margin-top:20px; display:flex; gap:10px; justify-content:flex-end;">
+                    <div style="margin-top:20px; display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap;">
                         <button class="btn-fechar" onclick="fecharModal()">🔙 Fechar</button>
+                        
+                        ${p.status === 'CONFIRMADO_TECNICO' ? `<button class="btn-enviar" onclick="finalizarPedido(${p.id})">✅ Finalizar</button>` : ''}
+                        
+                        ${p.status === 'ORCAMENTO_RECUSADO' ? `<button class="btn-enviar" style="background:#f39c12;" onclick="fecharModal(); abrirOrcamento(${p.id})">🛠️ Corrigir</button>` : ''}
                     </div>
                 `;
 
@@ -1357,11 +1385,16 @@
             }
         }
 
+        // ============================================
+        // STATUS LABELS E CLASSES
+        // ============================================
         function getStatusClass(status) {
             const map = {
                 'AGUARDANDO': 'status-aguardando',
                 'EM_ANALISE_TECNICA': 'status-analise',
                 'ORCAMENTO_FINALIZADO': 'status-orcamento',
+                'CONFIRMADO_TECNICO': 'status-confirmado',
+                'ORCAMENTO_RECUSADO': 'status-recusado',
                 'ENVIADO_CLIENTE': 'status-enviado',
                 'FINALIZADO': 'status-finalizado',
                 'CANCELADO': 'status-cancelado'
@@ -1373,7 +1406,9 @@
             const map = {
                 'AGUARDANDO': '⏳ Aguardando',
                 'EM_ANALISE_TECNICA': '🔧 Em Análise',
-                'ORCAMENTO_FINALIZADO': '📊 Orçamento Pronto',
+                'ORCAMENTO_FINALIZADO': '📊 Aguardando Aprovação',
+                'CONFIRMADO_TECNICO': '✅ Confirmado pelo Vendedor',
+                'ORCAMENTO_RECUSADO': '❌ Recusado pelo Vendedor',
                 'ENVIADO_CLIENTE': '📨 Enviado ao Cliente',
                 'FINALIZADO': '✅ Finalizado',
                 'CANCELADO': '❌ Cancelado'
