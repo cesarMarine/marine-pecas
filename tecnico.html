@@ -561,8 +561,8 @@
                 <select id="filtro-status" onchange="carregarPedidos()">
                     <option value="">Todos os Status</option>
                     <option value="EM_ANALISE_TECNICA" selected>🔧 Em Análise Técnica</option>
-                    <option value="ORCAMENTO_FINALIZADO">📊 Aguardando Aprovação</option>
-                    <option value="CONFIRMADO_TECNICO">✅ Confirmado pelo Vendedor</option>
+                    <option value="ORCAMENTO_FINALIZADO">📊 Enviado ao Vendedor</option>
+                    <option value="CONFIRMADO_TECNICO">✅ Aprovado pelo Vendedor</option>
                     <option value="ORCAMENTO_RECUSADO">❌ Recusado pelo Vendedor</option>
                     <option value="AGUARDANDO">⏳ Aguardando</option>
                     <option value="ENVIADO_CLIENTE">📨 Enviado ao Cliente</option>
@@ -812,7 +812,7 @@
                             
                             ${p.status === 'EM_ANALISE_TECNICA' ? `<button class="btn-acao btn-orcamento" onclick="abrirOrcamento(${p.id})">📊 Orçamento</button>` : ''}
                             
-                            ${p.status === 'ORCAMENTO_FINALIZADO' ? `<span style="font-size:11px; color:#666;">Aguardando Vendedor...</span>` : ''}
+                            ${p.status === 'ORCAMENTO_FINALIZADO' ? `<span style="font-size:11px; color:#666;">Enviado ao Vendedor... Aguardando</span>` : ''}
                             
                             ${p.status === 'CONFIRMADO_TECNICO' ? `<button class="btn-acao btn-confirmar" onclick="finalizarPedido(${p.id})">✅ Finalizar</button>` : ''}
                             
@@ -1406,8 +1406,8 @@
             const map = {
                 'AGUARDANDO': '⏳ Aguardando',
                 'EM_ANALISE_TECNICA': '🔧 Em Análise',
-                'ORCAMENTO_FINALIZADO': '📊 Aguardando Aprovação',
-                'CONFIRMADO_TECNICO': '✅ Confirmado pelo Vendedor',
+                'ORCAMENTO_FINALIZADO': '📊 Enviado ao Vendedor',
+                'CONFIRMADO_TECNICO': '✅ Aprovado pelo Vendedor',
                 'ORCAMENTO_RECUSADO': '❌ Recusado pelo Vendedor',
                 'ENVIADO_CLIENTE': '📨 Enviado ao Cliente',
                 'FINALIZADO': '✅ Finalizado',

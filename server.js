@@ -1000,7 +1000,6 @@ app.put('/api/pedidos/:id/status', async (req, res) => {
         const { status, motivo_recusa } = req.body;
         const id = req.params.id;
 
-        // Lista de status permitidos (incluindo os novos)
         const statusValidos = [
             'AGUARDANDO', 
             'EM_ANALISE_TECNICA', 
@@ -1008,8 +1007,8 @@ app.put('/api/pedidos/:id/status', async (req, res) => {
             'ENVIADO_CLIENTE', 
             'FINALIZADO', 
             'CANCELADO',
-            'CONFIRMADO_TECNICO',   // 🔥 NOVO
-            'ORCAMENTO_RECUSADO'    // 🔥 NOVO
+            'CONFIRMADO_TECNICO',    // 🔥 NOVO
+            'ORCAMENTO_RECUSADO'     // 🔥 NOVO
         ];
 
         if (!statusValidos.includes(status)) {
@@ -1026,12 +1025,11 @@ app.put('/api/pedidos/:id/status', async (req, res) => {
             updates.motivo_recusa = motivo_recusa || null;
         }
 
-        // Datas automáticas para status específicos
         const dataMap = {
             'EM_ANALISE_TECNICA': 'data_analise_tecnica',
             'ORCAMENTO_FINALIZADO': 'data_orcamento_finalizado',
             'ENVIADO_CLIENTE': 'data_enviado_cliente',
-            'CONFIRMADO_TECNICO': 'data_confirmado_tecnico',   // 🔥 NOVO
+            'CONFIRMADO_TECNICO': 'data_confirmado_tecnico',  // 🔥 NOVO
             'FINALIZADO': 'data_finalizado'
         };
 

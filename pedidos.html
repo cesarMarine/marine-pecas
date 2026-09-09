@@ -88,7 +88,6 @@
         .status-aguardando { background: #fff3cd; color: #856404; }
         .status-analise { background: #cce5ff; color: #004085; }
         .status-orcamento { background: #d4edda; color: #155724; }
-        .status-aprovado { background: #d4edda; color: #155724; }
         .status-enviado { background: #d1ecf1; color: #0c5460; }
         .status-finalizado { background: #d4edda; color: #155724; }
         .status-cancelado { background: #f8d7da; color: #721c24; }
@@ -244,8 +243,9 @@
                     <option value="">Todos os Status</option>
                     <option value="AGUARDANDO">⏳ Aguardando</option>
                     <option value="EM_ANALISE_TECNICA">🔧 Em Análise Técnica</option>
-                    <option value="ORCAMENTO_FINALIZADO">📊 Orçamento Pronto</option>
+                    <option value="ORCAMENTO_FINALIZADO">📊 Orçamento Enviado ao Vendedor</option>
                     <option value="ENVIADO_CLIENTE">📨 Enviado ao Cliente</option>
+                    <option value="CONFIRMADO_TECNICO">✅ Confirmado</option>
                     <option value="FINALIZADO">✅ Finalizado</option>
                     <option value="CANCELADO">❌ Cancelado</option>
                 </select>
@@ -328,9 +328,14 @@
                             
                             ${p.status === 'AGUARDANDO' ? `<button class="btn-acao btn-analise" onclick="enviarParaTecnico(${p.id})">🔧 Enviar Técnico</button>` : ''}
                             
-                            ${p.status === 'ORCAMENTO_FINALIZADO' ? `<button class="btn-acao btn-cliente" onclick="enviarParaCliente(${p.id})">📨 Enviar Cliente</button>` : ''}
+                            ${p.status === 'ORCAMENTO_FINALIZADO' ? `
+                                <button class="btn-acao btn-cliente" onclick="enviarParaCliente(${p.id})">📨 Enviar ao Cliente</button>
+                                <button class="btn-acao btn-confirmar" onclick="confirmarComTecnico(${p.id})">✅ Confirmar Orçamento</button>
+                            ` : ''}
                             
                             ${p.status === 'ENVIADO_CLIENTE' ? `<button class="btn-acao btn-confirmar" onclick="confirmarComTecnico(${p.id})">✅ OK Técnico</button>` : ''}
+                            
+                            ${p.status === 'CONFIRMADO_TECNICO' ? `<span style="font-size:11px; color:#155724; font-weight:600;">✅ Confirmado</span>` : ''}
                         </td>
                     `;
                     tbody.appendChild(tr);
@@ -347,6 +352,7 @@
                 'EM_ANALISE_TECNICA': 'status-analise',
                 'ORCAMENTO_FINALIZADO': 'status-orcamento',
                 'ENVIADO_CLIENTE': 'status-enviado',
+                'CONFIRMADO_TECNICO': 'status-finalizado',
                 'FINALIZADO': 'status-finalizado',
                 'CANCELADO': 'status-cancelado'
             };
@@ -357,8 +363,9 @@
             const map = {
                 'AGUARDANDO': '⏳ Aguardando',
                 'EM_ANALISE_TECNICA': '🔧 Em Análise',
-                'ORCAMENTO_FINALIZADO': '📊 Orçamento Pronto',
+                'ORCAMENTO_FINALIZADO': '📊 Orçamento Enviado ao Vendedor',
                 'ENVIADO_CLIENTE': '📨 Enviado ao Cliente',
+                'CONFIRMADO_TECNICO': '✅ Confirmado',
                 'FINALIZADO': '✅ Finalizado',
                 'CANCELADO': '❌ Cancelado'
             };
@@ -508,7 +515,10 @@
                         
                         ${p.status === 'AGUARDANDO' ? `<button class="btn-enviar" onclick="enviarParaTecnico(${p.id})">🔧 Enviar para Técnico</button>` : ''}
                         
-                        ${p.status === 'ORCAMENTO_FINALIZADO' ? `<button class="btn-enviar" onclick="enviarParaCliente(${p.id})">📨 Enviar para Cliente</button>` : ''}
+                        ${p.status === 'ORCAMENTO_FINALIZADO' ? `
+                            <button class="btn-enviar" style="background:#00b894;" onclick="confirmarComTecnico(${p.id})">✅ Confirmar Orçamento</button>
+                            <button class="btn-enviar" onclick="enviarParaCliente(${p.id})">📨 Enviar ao Cliente</button>
+                        ` : ''}
                         
                         ${p.status === 'ENVIADO_CLIENTE' ? `<button class="btn-enviar" style="background:#00b894;" onclick="confirmarComTecnico(${p.id})">✅ OK Técnico</button>` : ''}
                     </div>
@@ -575,7 +585,7 @@
 
         // 🔥 NOVA FUNÇÃO: CONFIRMAR COM O TÉCNICO
         async function confirmarComTecnico(id) {
-            if (!confirm('Confirmar com o técnico que o orçamento foi enviado ao cliente?')) return;
+            if (!confirm('Confirmar com o técnico que este orçamento está aprovado?')) return;
 
             try {
                 const res = await fetch(`/api/pedidos/${id}/status`, {
