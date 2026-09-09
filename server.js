@@ -965,23 +965,18 @@ app.post('/api/pedidos', async (req, res) => {
 
         if (error) throw error;
 
-        if (cliente_email) {
-            const assunto = `📋 Pedido Recebido - ${numero_chamado}`;
-            const mensagem = templateEmailCliente(cliente_nome, numero_chamado, vendedor_nome, total_itens);
-            await enviarEmail(cliente_email, assunto, mensagem);
-        }
 
-        const { data: vendedorData } = await supabase
-            .from('vendedores')
-            .select('email')
-            .eq('id', vendedor_id)
-            .single();
+const { data: vendedorData } = await supabase
+    .from('vendedores')
+    .select('email')
+    .eq('id', vendedor_id)
+    .single();
 
-        if (vendedorData?.email) {
-            const assunto = `🔔 Novo Pedido - ${numero_chamado}`;
-            const mensagem = templateEmailVendedor(cliente_nome, cliente_cnpj, numero_chamado, total_itens);
-            await enviarEmail(vendedorData.email, assunto, mensagem);
-        }
+if (vendedorData?.email) {
+    const assunto = `🔔 Novo Pedido - ${numero_chamado}`;
+    const mensagem = templateEmailVendedor(cliente_nome, cliente_cnpj, numero_chamado, total_itens);
+    await enviarEmail(vendedorData.email, assunto, mensagem);
+}
 
         res.json({ 
             success: true, 
@@ -1045,16 +1040,31 @@ app.put('/api/pedidos/:id/status', async (req, res) => {
 
         if (error) throw error;
 
-        // Envia e-mail quando vai para o técnico
-        if (status === 'EM_ANALISE_TECNICA') {
+        // 🔥 E-MAIL 1: Quando muda para CONFIRMADO_TECNICO (Vendedor aprovou)
+        if (status === 'CONFIRMADO_TECNICO') {
             const pedido = data[0];
-            const assunto = `🔧 Pedido em Análise - ${pedido.numero_chamado}`;
-            const mensagem = templateEmailTecnico(
+            const assunto = `✅ Pedido Aprovado - ${pedido.numero_chamado}`;
+            const mensagem = `
+                <p>O pedido <strong>${pedido.numero_chamado}</strong> foi aprovado pelo vendedor.</p>
+                <p><strong>Cliente:</strong> ${pedido.cliente_nome}</p>
+                <p><a href="${BASE_URL}/tecnico.html">Ver no sistema</a></p>
+            `;
+            await enviarEmail('anderson@marinefishing.com.br', assunto, mensagem);
+        }
+
+        // 🔥 E-MAIL 2: Quando muda para ENVIADO_CLIENTE (Vendedor envia para o cliente)
+        if (status === 'ENVIADO_CLIENTE') {
+            const pedido = data[0];
+            const valor_total = pedido.valor_total || 0;
+            const assunto = `📊 Seu Orçamento Está Pronto - ${pedido.numero_chamado}`;
+            const mensagem = templateEmailOrcamentoCliente(
                 pedido.cliente_nome,
                 pedido.numero_chamado,
-                pedido.vendedor_nome || 'Vendedor'
+                valor_total
             );
-            await enviarEmail('anderson@marinefishing.com.br', assunto, mensagem);
+            if (pedido.cliente_email) {
+                await enviarEmail(pedido.cliente_email, assunto, mensagem);
+            }
         }
 
         res.json({ success: true, pedido: data[0] });
@@ -1102,33 +1112,7 @@ app.put('/api/pedidos/:id/orcamento', async (req, res) => {
 
         if (error) throw error;
 
-        const pedido = data[0];
-
-        if (pedido.cliente_email) {
-            const assunto = `📊 Orçamento Finalizado - ${pedido.numero_chamado}`;
-            const mensagem = templateEmailOrcamentoCliente(
-                pedido.cliente_nome,
-                pedido.numero_chamado,
-                valor_total
-            );
-            await enviarEmail(pedido.cliente_email, assunto, mensagem);
-        }
-
-        const { data: vendedorData } = await supabase
-            .from('vendedores')
-            .select('email')
-            .eq('id', pedido.vendedor_id)
-            .single();
-
-        if (vendedorData?.email) {
-            const assunto = `📊 Orçamento Pronto - ${pedido.numero_chamado}`;
-            const mensagem = templateEmailOrcamentoVendedor(
-                pedido.cliente_nome,
-                pedido.numero_chamado,
-                valor_total
-            );
-            await enviarEmail(vendedorData.email, assunto, mensagem);
-        }
+        // 🔥 NÃO ENVIAR E-MAIL AQUI! O cliente só será avisado quando o vendedor mandar (ENVIADO_CLIENTE)
 
         res.json({ success: true, pedido: data[0] });
     } catch (error) {
