@@ -61,6 +61,29 @@
         }
         .filtros button:hover { background: #0d1555; }
 
+        /* 🔥 SEÇÃO DE PENDENTES NO TOPO */
+        .pendentes-header {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            color: #856404;
+            font-size: 15px;
+        }
+        .pendentes-header .icone { font-size: 24px; }
+        .pendentes-header .contador {
+            background: #856404;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
         .config-global {
             background: #f8f9fa;
             border: 2px solid #ddd;
@@ -521,6 +544,13 @@
             </div>
         </div>
 
+        <!-- 🔥 SEÇÃO DE PENDENTES DE PREÇO -->
+        <div class="pendentes-header" id="pendentes-header" style="display:none;">
+            <span class="icone">🔧</span>
+            <span>Pedidos aguardando você colocar os preços:</span>
+            <span class="contador" id="contador-pendentes">0</span>
+        </div>
+
         <!-- CONFIGURAÇÃO GLOBAL -->
         <div class="card config-global" id="config-global">
             <div class="config-header" onclick="abrirConfig()">
@@ -560,7 +590,7 @@
             <div class="filtros">
                 <select id="filtro-status" onchange="carregarPedidos()">
                     <option value="">Todos os Status</option>
-                    <option value="EM_ANALISE_TECNICA" selected>🔧 Em Análise Técnica</option>
+                    <option value="EM_ANALISE_TECNICA">🔧 Em Análise Técnica</option>
                     <option value="ORCAMENTO_FINALIZADO">📊 Enviado ao Vendedor</option>
                     <option value="CONFIRMADO_TECNICO">✅ Aprovado pelo Vendedor</option>
                     <option value="ORCAMENTO_RECUSADO">❌ Recusado pelo Vendedor</option>
@@ -754,7 +784,7 @@
         }
 
         // ============================================
-        // CARREGAR PEDIDOS
+        // CARREGAR PEDIDOS (COM DESTAQUE PARA PENDENTES)
         // ============================================
         async function carregarPedidos() {
             const status = document.getElementById('filtro-status').value;
@@ -781,6 +811,18 @@
 
                 pedidos = data.pedidos;
                 totalSpan.textContent = `${pedidos.length} pedido(s)`;
+
+                // 🔥 CONTAR PEDIDOS EM ANÁLISE TÉCNICA
+                const pendentes = pedidos.filter(p => p.status === 'EM_ANALISE_TECNICA');
+                const pendentesHeader = document.getElementById('pendentes-header');
+                const contadorPendentes = document.getElementById('contador-pendentes');
+
+                if (pendentes.length > 0) {
+                    pendentesHeader.style.display = 'flex';
+                    contadorPendentes.textContent = pendentes.length;
+                } else {
+                    pendentesHeader.style.display = 'none';
+                }
 
                 if (pedidos.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="10" class="empty">📭 Nenhum pedido encontrado</td></tr>';
