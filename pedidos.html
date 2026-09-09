@@ -91,6 +91,7 @@
         .status-enviado { background: #d1ecf1; color: #0c5460; }
         .status-finalizado { background: #d4edda; color: #155724; }
         .status-cancelado { background: #f8d7da; color: #721c24; }
+        .status-reprovado { background: #f8d7da; color: #721c24; }
         
         .btn-acao {
             padding: 5px 12px;
@@ -109,8 +110,12 @@
         .btn-cliente:hover { background: #0d1555; }
         .btn-detalhes { background: #6c5ce7; color: white; }
         .btn-detalhes:hover { background: #5a4bd1; }
-        .btn-confirmar { background: #00b894; color: white; }
-        .btn-confirmar:hover { background: #00a381; }
+        .btn-aprovar { background: #00b894; color: white; }
+        .btn-aprovar:hover { background: #00a381; }
+        .btn-reprovar { background: #f39c12; color: white; }
+        .btn-reprovar:hover { background: #e67e22; }
+        .btn-cancelar { background: #e94560; color: white; }
+        .btn-cancelar:hover { background: #c62828; }
         
         .modal-overlay {
             display: none;
@@ -243,9 +248,10 @@
                     <option value="">Todos os Status</option>
                     <option value="AGUARDANDO">⏳ Aguardando</option>
                     <option value="EM_ANALISE_TECNICA">🔧 Em Análise Técnica</option>
-                    <option value="ORCAMENTO_FINALIZADO">📊 Orçamento Enviado ao Vendedor</option>
+                    <option value="ORCAMENTO_FINALIZADO">📊 Orçamento Pronto</option>
                     <option value="ENVIADO_CLIENTE">📨 Enviado ao Cliente</option>
                     <option value="CONFIRMADO_TECNICO">✅ Confirmado</option>
+                    <option value="ORCAMENTO_RECUSADO">❌ Reprovado</option>
                     <option value="FINALIZADO">✅ Finalizado</option>
                     <option value="CANCELADO">❌ Cancelado</option>
                 </select>
@@ -329,13 +335,14 @@
                             ${p.status === 'AGUARDANDO' ? `<button class="btn-acao btn-analise" onclick="enviarParaTecnico(${p.id})">🔧 Enviar Técnico</button>` : ''}
                             
                             ${p.status === 'ORCAMENTO_FINALIZADO' ? `
-                                <button class="btn-acao btn-cliente" onclick="enviarParaCliente(${p.id})">📨 Enviar ao Cliente</button>
-                                <button class="btn-acao btn-confirmar" onclick="confirmarComTecnico(${p.id})">✅ Confirmar Orçamento</button>
+                                <button class="btn-acao btn-aprovar" onclick="aprovarOrcamento(${p.id})">✅ Aprovar</button>
+                                <button class="btn-acao btn-reprovar" onclick="reprovarOrcamento(${p.id})">❌ Reprovar</button>
+                                <button class="btn-acao btn-cancelar" onclick="deletarPedido(${p.id})">🗑️ Deletar</button>
                             ` : ''}
                             
-                            ${p.status === 'ENVIADO_CLIENTE' ? `<button class="btn-acao btn-confirmar" onclick="confirmarComTecnico(${p.id})">✅ OK Técnico</button>` : ''}
+                            ${p.status === 'ENVIADO_CLIENTE' ? `<button class="btn-acao btn-aprovar" onclick="confirmarComTecnico(${p.id})">✅ OK Técnico</button>` : ''}
                             
-                            ${p.status === 'CONFIRMADO_TECNICO' ? `<span style="font-size:11px; color:#155724; font-weight:600;">✅ Confirmado</span>` : ''}
+                            ${p.status === 'CANCELADO' ? `<button class="btn-acao btn-cancelar" onclick="deletarPedido(${p.id})">🗑️ Deletar</button>` : ''}
                         </td>
                     `;
                     tbody.appendChild(tr);
@@ -353,6 +360,7 @@
                 'ORCAMENTO_FINALIZADO': 'status-orcamento',
                 'ENVIADO_CLIENTE': 'status-enviado',
                 'CONFIRMADO_TECNICO': 'status-finalizado',
+                'ORCAMENTO_RECUSADO': 'status-reprovado',
                 'FINALIZADO': 'status-finalizado',
                 'CANCELADO': 'status-cancelado'
             };
@@ -363,9 +371,10 @@
             const map = {
                 'AGUARDANDO': '⏳ Aguardando',
                 'EM_ANALISE_TECNICA': '🔧 Em Análise',
-                'ORCAMENTO_FINALIZADO': '📊 Orçamento Enviado ao Vendedor',
+                'ORCAMENTO_FINALIZADO': '📊 Orçamento Pronto',
                 'ENVIADO_CLIENTE': '📨 Enviado ao Cliente',
                 'CONFIRMADO_TECNICO': '✅ Confirmado',
+                'ORCAMENTO_RECUSADO': '❌ Reprovado',
                 'FINALIZADO': '✅ Finalizado',
                 'CANCELADO': '❌ Cancelado'
             };
@@ -396,20 +405,6 @@
                 const itens = p.itens || [];
                 const statusLabel = getStatusLabel(p.status);
 
-                // Agrupa itens por produto
-                const grupos = {};
-                itens.forEach(item => {
-                    const chave = `${item.manual_nome || 'Produto'}|${item.variacao || 'N/A'}`;
-                    if (!grupos[chave]) {
-                        grupos[chave] = {
-                            manual_nome: item.manual_nome || 'Produto',
-                            variacao: item.variacao || 'N/A',
-                            itens: []
-                        };
-                    }
-                    grupos[chave].itens.push(item);
-                });
-
                 let html = `
                     <h2>📄 Pedido #${p.numero_chamado}</h2>
                     
@@ -427,7 +422,19 @@
                     <h3>📋 Peças Solicitadas</h3>
                 `;
 
-                // Mostra os grupos de produtos
+                const grupos = {};
+                itens.forEach(item => {
+                    const chave = `${item.manual_nome || 'Produto'}|${item.variacao || 'N/A'}`;
+                    if (!grupos[chave]) {
+                        grupos[chave] = {
+                            manual_nome: item.manual_nome || 'Produto',
+                            variacao: item.variacao || 'N/A',
+                            itens: []
+                        };
+                    }
+                    grupos[chave].itens.push(item);
+                });
+
                 Object.keys(grupos).forEach(chave => {
                     const grupo = grupos[chave];
                     html += `
@@ -465,8 +472,8 @@
                     `;
                 });
 
-                // Mostra o orçamento se existir
                 if (p.orcamento && p.orcamento.length > 0) {
+                    let totalGeral = 0;
                     html += `
                         <h3 style="margin-top:20px;">📊 Orçamento Técnico</h3>
                         <table>
@@ -482,7 +489,6 @@
                             <tbody>
                     `;
 
-                    let totalGeral = 0;
                     p.orcamento.forEach(item => {
                         const total = (item.preco_unitario || 0) * (item.qtd || 0);
                         totalGeral += total;
@@ -516,8 +522,9 @@
                         ${p.status === 'AGUARDANDO' ? `<button class="btn-enviar" onclick="enviarParaTecnico(${p.id})">🔧 Enviar para Técnico</button>` : ''}
                         
                         ${p.status === 'ORCAMENTO_FINALIZADO' ? `
-                            <button class="btn-enviar" style="background:#00b894;" onclick="confirmarComTecnico(${p.id})">✅ Confirmar Orçamento</button>
-                            <button class="btn-enviar" onclick="enviarParaCliente(${p.id})">📨 Enviar ao Cliente</button>
+                            <button class="btn-enviar" style="background:#00b894;" onclick="aprovarOrcamento(${p.id})">✅ Aprovar</button>
+                            <button class="btn-enviar" style="background:#f39c12;" onclick="reprovarOrcamento(${p.id})">❌ Reprovar</button>
+                            <button class="btn-enviar" style="background:#e94560;" onclick="deletarPedido(${p.id})">🗑️ Deletar</button>
                         ` : ''}
                         
                         ${p.status === 'ENVIADO_CLIENTE' ? `<button class="btn-enviar" style="background:#00b894;" onclick="confirmarComTecnico(${p.id})">✅ OK Técnico</button>` : ''}
@@ -560,8 +567,8 @@
             }
         }
 
-        async function enviarParaCliente(id) {
-            if (!confirm('Enviar este orçamento para o cliente?')) return;
+        async function aprovarOrcamento(id) {
+            if (!confirm('Aprovar este orçamento?')) return;
 
             try {
                 const res = await fetch(`/api/pedidos/${id}/status`, {
@@ -572,7 +579,7 @@
 
                 const data = await res.json();
                 if (data.success) {
-                    alert('✅ Orçamento enviado para o cliente!');
+                    alert('✅ Orçamento aprovado e enviado para o cliente!');
                     fecharModal();
                     carregarPedidos();
                 } else {
@@ -583,9 +590,55 @@
             }
         }
 
-        // 🔥 NOVA FUNÇÃO: CONFIRMAR COM O TÉCNICO
+        async function reprovarOrcamento(id) {
+            const motivo = prompt('Digite o motivo da reprovação (opcional):');
+            if (motivo === null) return;
+
+            if (!confirm('Reprovar este orçamento? O técnico será notificado para ajustar.')) return;
+
+            try {
+                const res = await fetch(`/api/pedidos/${id}/status`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'ORCAMENTO_RECUSADO', motivo_recusa: motivo })
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    alert('❌ Orçamento reprovado!');
+                    fecharModal();
+                    carregarPedidos();
+                } else {
+                    alert('❌ ' + data.error);
+                }
+            } catch (error) {
+                alert('❌ Erro: ' + error.message);
+            }
+        }
+
+        async function deletarPedido(id) {
+            if (!confirm('🗑️ Tem certeza que deseja DELETAR este pedido permanentemente?')) return;
+
+            try {
+                const res = await fetch(`/api/pedidos/${id}`, {
+                    method: 'DELETE'
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    alert('✅ Pedido deletado com sucesso!');
+                    fecharModal();
+                    carregarPedidos();
+                } else {
+                    alert('❌ ' + data.error);
+                }
+            } catch (error) {
+                alert('❌ Erro: ' + error.message);
+            }
+        }
+
         async function confirmarComTecnico(id) {
-            if (!confirm('Confirmar com o técnico que este orçamento está aprovado?')) return;
+            if (!confirm('Confirmar com o técnico que este orçamento foi enviado ao cliente?')) return;
 
             try {
                 const res = await fetch(`/api/pedidos/${id}/status`, {

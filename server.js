@@ -990,6 +990,27 @@ if (vendedorData?.email) {
     }
 });
 
+// ============================================
+// DELETAR PEDIDO (Cancelar/Deletar)
+// ============================================
+app.delete('/api/pedidos/:id', async (req, res) => {
+    try {
+        const id = req.params.id;
+        
+        const { error } = await supabase
+            .from('orcamentos')
+            .delete()
+            .eq('id', id);
+            
+        if (error) throw error;
+        
+        res.json({ success: true, message: 'Pedido deletado com sucesso' });
+    } catch (error) {
+        console.error('❌ Erro ao deletar pedido:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
 app.put('/api/pedidos/:id/status', async (req, res) => {
     try {
         const { status, motivo_recusa } = req.body;
