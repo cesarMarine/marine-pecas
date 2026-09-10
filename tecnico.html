@@ -1720,61 +1720,125 @@ function atualizarTabelaOrcamento() {
         // ============================================
         // SALVAR ORÇAMENTO
         // ============================================
-        async function salvarOrcamento(id) {
-            const observacoes = document.getElementById('obs-tecnico')?.value || '';
+// ============================================
+// SALVAR ORÇAMENTO (COM REGRAS CORRETAS DE PREÇO)
+// ============================================
+async function salvarOrcamento(id) {
+    const observacoes = document.getElementById('obs-tecnico')?.value || '';
 
-            const temPreco = orcamentoAtual.some(item => (item.preco_unitario || 0) > 0);
-            if (!temPreco) {
-                alert('⚠️ Adicione pelo menos um item com preço no orçamento.');
-                return;
-            }
+    const temPreco = orcamentoAtual.some(item => (item.preco_unitario || 0) > 0);
+    if (!temPreco) {
+        alert('⚠️ Adicione pelo menos um item com preço no orçamento.');
+        return;
+    }
 
-            if (!confirm('Finalizar orçamento e enviar para o vendedor?')) return;
+    if (!confirm('Finalizar orçamento e enviar para o vendedor?')) return;
 
-            try {
-                for (const item of orcamentoAtual) {
-                    if (item.codigo && item.preco_unitario > 0) {
-                        try {
-                            await fetch('/api/precos', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({
-                                    codigo: item.codigo,
-                                    descricao: item.descricao || '',
-                                    preco: item.preco_unitario,
-                                    codigo_manual: item.codigo_manual || '',
-                                    descricao_manual: item.descricao_manual || '',
-                                    compatibilidade: item.compatibilidade || ''
-                                })
-                            });
-                            console.log(`✅ Preço ${item.codigo} salvo na base de referência`);
-                        } catch (e) {
-                            console.warn(`⚠️ Não foi possível salvar ${item.codigo}:`, e);
-                        }
+    try {
+        // 🔥 PASSO 1: Buscar preços ATUAIS de todos os códigos e recalcular
+        console.log('🔄 Recalculando preços com câmbio e coeficiente atuais...');
+        
+        for (let i = 0; i < orcamentoAtual.length; i++) {
+            const item = orcamentoAtual[i];
+            
+            if (item.codigo) {
+                try {
+                    // Busca preço ATUAL da base de referência
+                    const precoRes = await fetch(`/api/precos/${encodeURIComponent(item.codigo)}`);
+                    const precoData = await precoRes.json();
+                    
+                    if (precoData.success && precoData.preco) {
+                        const precoBase = parseFloat(precoData.preco.preco) || 0;
+                        const precoFinal = precoBase * globalCambio * globalCoeficiente;
+                        
+                        orcamentoAtual[i].preco_base = precoBase;
+                        orcamentoAtual[i].preco_unitario = parseFloat(precoFinal.toFixed(2));
+                        orcamentoAtual[i].total = orcamentoAtual[i].preco_unitario * (item.qtd || 1);
+                        
+                        console.log(`✅ ${item.codigo}: R$ ${precoBase} × ${globalCambio} × ${globalCoeficiente} = R$ ${orcamentoAtual[i].preco_unitario}`);
                     }
+                } catch (e) {
+                    console.warn(`⚠️ Erro ao buscar preço de ${item.codigo}:`, e);
                 }
-
-                const res = await fetch(`/api/pedidos/${id}/orcamento`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        orcamento: orcamentoAtual,
-                        observacoes_tecnico: observacoes
-                    })
-                });
-
-                const data = await res.json();
-                if (data.success) {
-                    alert('✅ Orçamento finalizado com sucesso!');
-                    fecharModal();
-                    carregarPedidos();
-                } else {
-                    alert('❌ ' + data.error);
-                }
-            } catch (error) {
-                alert('❌ Erro: ' + error.message);
             }
         }
+
+        // 🔥 PASSO 2: Salvar/atualizar APENAS a base de preços (precos_referencia)
+        // Aqui salvamos o PREÇO BASE (sem câmbio/coeficiente aplicados)
+        for (const item of orcamentoAtual) {
+            if (item.codigo && (item.preco_base || 0) > 0) {
+                try {
+                    await fetch('/api/precos', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            codigo: item.codigo,
+                            descricao: item.descricao || '',
+                            preco: item.preco_base, // 🔥 SALVA PREÇO BASE, não o final!
+                            codigo_manual: item.codigo_manual || '',
+                            descricao_manual: item.descricao_manual || '',
+                            compatibilidade: item.compatibilidade || ''
+                        })
+                    });
+                    console.log(`✅ Preço base ${item.codigo} = R$ ${item.preco_base} salvo na base`);
+                } catch (e) {
+                    console.warn(`⚠️ Não foi possível salvar ${item.codigo}:`, e);
+                }
+            }
+        }
+
+        // 🔥 PASSO 3: Vincular códigos às peças específicas (SEM PREÇO)
+        // Isso permite que o manual do cliente mostre quais peças já têm código
+        for (const item of orcamentoAtual) {
+            if (item.codigo && item.codigo_manual && pedidoAtual) {
+                try {
+                    await fetch('/api/pecas-codigos', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            manual_id: pedidoAtual.manual_id || null,
+                            numero_peca: String(item.codigo_manual),
+                            variacao: item.variacao || 'N/A',
+                            codigo: item.codigo,
+                            descricao: item.descricao || '',
+                            compatibilidade: item.compatibilidade || '',
+                            foto_url: item.foto_url || '',
+                            observacao: item.observacao || '',
+                            status_item: item.status_item || 'OK'
+                            // 🔥 NÃO ENVIA PREÇO! Só o vínculo.
+                        })
+                    });
+                    console.log(`✅ Peça #${item.codigo_manual} vinculada ao código ${item.codigo}`);
+                } catch (e) {
+                    console.warn(`⚠️ Não foi possível vincular código à peça #${item.codigo_manual}:`, e);
+                }
+            }
+        }
+
+        // 🔥 PASSO 4: Salvar o orçamento no pedido (COM SNAPSHOT dos preços)
+        // Aqui SIM salvamos os preços finais, porque é o histórico do que foi aprovado
+        const res = await fetch(`/api/pedidos/${id}/orcamento`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                orcamento: orcamentoAtual, // 🔥 contém preço_unitario (snapshot final)
+                observacoes_tecnico: observacoes
+            })
+        });
+
+        const data = await res.json();
+        if (data.success) {
+            alert('✅ Orçamento finalizado com sucesso!');
+            fecharModal();
+            carregarPedidos();
+        } else {
+            alert('❌ ' + data.error);
+        }
+    } catch (error) {
+        alert('❌ Erro: ' + error.message);
+        console.error(error);
+    }
+}
 
         // ============================================
         // VER DETALHES
