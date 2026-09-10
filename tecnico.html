@@ -1305,127 +1305,222 @@
         // ============================================
         // VER DETALHES
         // ============================================
-        async function verDetalhes(id) {
-            const modal = document.getElementById('modal-orcamento');
-            const body = document.getElementById('modal-body');
+        // ============================================
+// VER DETALHES (COM ORÇAMENTO APROVADO)
+// ============================================
+async function verDetalhes(id) {
+    const modal = document.getElementById('modal-orcamento');
+    const body = document.getElementById('modal-body');
 
-            try {
-                const res = await fetch(`/api/pedidos/${id}`);
-                const data = await res.json();
+    try {
+        const res = await fetch(`/api/pedidos/${id}`);
+        const data = await res.json();
 
-                if (!data.success) {
-                    body.innerHTML = `<p class="empty">❌ ${data.error}</p>`;
-                    modal.classList.add('active');
-                    return;
-                }
-
-                const p = data.pedido;
-                const itens = p.itens || [];
-                const statusLabel = getStatusLabel(p.status);
-                const nomeProduto = p.manual_nome || 'Produto não identificado';
-
-                let html = `
-                    <h2>📄 Pedido #${p.numero_chamado}</h2>
-                    
-                    <div style="background:#1a237e; color:white; padding:10px; border-radius:8px; margin-bottom:15px; font-size:14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-                        <span>🎣 <strong>${nomeProduto}</strong></span>
-                        <button onclick="abrirManual('${nomeProduto}', '')" class="btn-manual" style="font-size:12px; padding:4px 14px;">
-                            📖 Ver Manual
-                        </button>
-                    </div>
-                    
-                    <div class="info-cliente">
-                        <p><strong>Status:</strong> <span class="status ${getStatusClass(p.status)}">${statusLabel}</span></p>
-                        <p><strong>Cliente:</strong> ${p.cliente_nome}</p>
-                        <p><strong>CNPJ:</strong> ${p.cliente_cnpj}</p>
-                        ${p.cliente_telefone ? `<p><strong>Telefone:</strong> ${p.cliente_telefone}</p>` : ''}
-                        ${p.cliente_email ? `<p><strong>E-mail:</strong> ${p.cliente_email}</p>` : ''}
-                        <p><strong>Vendedor:</strong> ${p.vendedor_nome || '-'}</p>
-                        <p><strong>Data:</strong> ${formatarData(p.data_pedido)}</p>
-                    </div>
-                `;
-
-                // 🔥 MOSTRA MOTIVO DA RECUSA SE EXISTIR
-                if (p.status === 'ORCAMENTO_RECUSADO') {
-                    html += `
-                        <div style="background:#f8d7da; color:#721c24; padding:10px; border-radius:8px; margin-bottom:15px;">
-                            <strong>❌ Motivo da recusa:</strong> ${p.motivo_recusa || 'Não informado'}
-                        </div>
-                    `;
-                }
-
-                html += `<h3>📋 Peças Solicitadas</h3>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Posição</th>
-                                <th>Descrição</th>
-                                <th>Produto</th>
-                                <th style="text-align:center;">Variação</th>
-                                <th style="text-align:center;">Qtd</th>
-                                <th>Manual</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                `;
-
-                if (itens.length === 0) {
-                    html += `<tr><td colspan="6" class="empty">Nenhum item</td></tr>`;
-                } else {
-                    itens.forEach(item => {
-                        const variacao = item.variacao || 'N/A';
-                        const produtoItem = item.manual_nome || nomeProduto;
-                        html += `
-                            <tr>
-                                <td><strong>#${item.numero}</strong></td>
-                                <td>${item.nome}</td>
-                                <td><span class="produto-tag">${produtoItem}</span></td>
-                                <td style="text-align:center;"><span class="variacao-tag">${variacao}</span></td>
-                                <td style="text-align:center;">${item.qtd}</td>
-                                <td>
-                                    <button class="btn-manual-linha" onclick="abrirManual('${produtoItem}', '${variacao}')">📖</button>
-                                </td>
-                            </tr>
-                        `;
-                    });
-                }
-
-                html += `
-                        </tbody>
-                    </table>
-                `;
-
-                if (p.imagem_url) {
-                    html += `
-                        <div class="imagem-esquema">
-                            <h3>📷 Esquema do Produto</h3>
-                            <img src="${p.imagem_url}" alt="Esquema do produto" onerror="this.style.display='none'">
-                            <button onclick="verImagemEsquema('${p.imagem_url}')" 
-                                    style="position:absolute; top:10px; right:10px; background:#1a237e; color:white; border:none; padding:5px 15px; border-radius:6px; cursor:pointer; font-weight:600; font-size:12px;">
-                                🔍 Ampliar
-                            </button>
-                        </div>
-                    `;
-                }
-
-                html += `
-                    <div style="margin-top:20px; display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap;">
-                        <button class="btn-fechar" onclick="fecharModal()">🔙 Fechar</button>
-                        
-                        ${p.status === 'CONFIRMADO_TECNICO' ? `<button class="btn-enviar" onclick="finalizarPedido(${p.id})">✅ Finalizar</button>` : ''}
-                        
-                        ${p.status === 'ORCAMENTO_RECUSADO' ? `<button class="btn-enviar" style="background:#f39c12;" onclick="fecharModal(); abrirOrcamento(${p.id})">🛠️ Corrigir</button>` : ''}
-                    </div>
-                `;
-
-                body.innerHTML = html;
-                modal.classList.add('active');
-
-            } catch (error) {
-                body.innerHTML = `<p class="empty">❌ Erro: ${error.message}</p>`;
-                modal.classList.add('active');
-            }
+        if (!data.success) {
+            body.innerHTML = `<p class="empty">❌ ${data.error}</p>`;
+            modal.classList.add('active');
+            return;
         }
+
+        const p = data.pedido;
+        const itens = p.itens || [];
+        const orcamento = p.orcamento || [];
+        const statusLabel = getStatusLabel(p.status);
+        const nomeProduto = p.manual_nome || 'Produto não identificado';
+        const temOrcamento = orcamento.length > 0;
+        const mostrarOrcamento = ['CONFIRMADO_TECNICO', 'ORCAMENTO_FINALIZADO', 'ENVIADO_CLIENTE', 'FINALIZADO'].includes(p.status);
+
+        let html = `
+            <h2>📄 Pedido #${p.numero_chamado}</h2>
+            
+            <div style="background:#1a237e; color:white; padding:12px; border-radius:8px; margin-bottom:15px; font-size:14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                <span>🎣 <strong>${nomeProduto}</strong></span>
+                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                    <button onclick="abrirManual('${nomeProduto}', '')" class="btn-manual" style="font-size:12px; padding:4px 14px;">
+                        📖 Ver Manual
+                    </button>
+                    ${mostrarOrcamento && temOrcamento ? `
+                        <button onclick="imprimirPedido(${p.id})" class="btn-manual" style="background:#00b894; font-size:12px; padding:4px 14px;">
+                            🖨️ Imprimir
+                        </button>
+                    ` : ''}
+                </div>
+            </div>
+            
+            <div class="info-cliente">
+                <p><strong>Status:</strong> <span class="status ${getStatusClass(p.status)}">${statusLabel}</span></p>
+                <p><strong>Cliente:</strong> ${p.cliente_nome}</p>
+                <p><strong>CNPJ:</strong> ${p.cliente_cnpj}</p>
+                ${p.cliente_telefone ? `<p><strong>Telefone:</strong> ${p.cliente_telefone}</p>` : ''}
+                ${p.cliente_email ? `<p><strong>E-mail:</strong> ${p.cliente_email}</p>` : ''}
+                <p><strong>Vendedor:</strong> ${p.vendedor_nome || '-'}</p>
+                <p><strong>Data:</strong> ${formatarData(p.data_pedido)}</p>
+            </div>
+        `;
+
+        // 🔥 MOSTRA MOTIVO DA RECUSA
+        if (p.status === 'ORCAMENTO_RECUSADO') {
+            html += `
+                <div style="background:#f8d7da; color:#721c24; padding:10px; border-radius:8px; margin-bottom:15px;">
+                    <strong>❌ Motivo da recusa:</strong> ${p.motivo_recusa || 'Não informado'}
+                </div>
+            `;
+        }
+
+        // 🔥 MOSTRA O ORÇAMENTO APROVADO (SE EXISTIR E STATUS PERMITIR)
+        if (mostrarOrcamento && temOrcamento) {
+            const totalGeral = orcamento.reduce((sum, item) => {
+                return sum + ((item.preco_unitario || 0) * (item.qtd || 0));
+            }, 0);
+
+            html += `
+                <div style="background:#d4edda; border:2px solid #00b894; padding:12px; border-radius:8px; margin-bottom:15px;">
+                    <strong>✅ Orçamento Aprovado pelo Vendedor</strong>
+                    <span style="font-size:13px; color:#666; margin-left:10px;">(${orcamento.length} item(ns))</span>
+                </div>
+
+                <h3>📋 Peças do Orçamento (para separação)</h3>
+                <div style="overflow-x:auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="min-width:70px;">Código</th>
+                            <th style="min-width:100px;">Descrição</th>
+                            <th style="min-width:50px;text-align:center;">Qtd</th>
+                            <th style="min-width:100px;">Produto</th>
+                            <th style="min-width:70px;text-align:center;">Variação</th>
+                            <th style="min-width:70px;text-align:center;">Posição</th>
+                            <th style="min-width:80px;text-align:right;">Preço Unit.</th>
+                            <th style="min-width:70px;text-align:right;">Total</th>
+                            <th style="min-width:70px;">Cod. Manual</th>
+                            <th style="min-width:90px;">Desc. Manual</th>
+                            <th style="min-width:90px;">Compatibilidade</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            orcamento.forEach(item => {
+                const total = (item.preco_unitario || 0) * (item.qtd || 0);
+                html += `
+                    <tr>
+                        <td><strong>${item.codigo || '-'}</strong></td>
+                        <td>${item.descricao || '-'}</td>
+                        <td style="text-align:center;"><strong>${item.qtd || 0}</strong></td>
+                        <td><span class="produto-tag">${item.manual_nome || nomeProduto}</span></td>
+                        <td style="text-align:center;"><span class="variacao-tag">${item.variacao || 'N/A'}</span></td>
+                        <td style="text-align:center;"><strong>#${item.codigo_manual || '-'}</strong></td>
+                        <td style="text-align:right;">R$ ${(item.preco_unitario || 0).toFixed(2)}</td>
+                        <td style="text-align:right;font-weight:bold;">R$ ${total.toFixed(2)}</td>
+                        <td>${item.codigo_manual || '-'}</td>
+                        <td>${item.descricao_manual || '-'}</td>
+                        <td>${item.compatibilidade || '-'}</td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                    </tbody>
+                </table>
+                </div>
+                
+                <div class="total-orcamento" style="border-top:2px solid #00b894; color:#00b894;">
+                    TOTAL: R$ ${totalGeral.toFixed(2)}
+                </div>
+            `;
+
+            // Observações do técnico
+            if (p.observacoes_tecnico) {
+                html += `
+                    <div style="background:#f8f9fa; padding:12px; border-radius:8px; margin-top:15px;">
+                        <strong>📝 Observações:</strong><br>
+                        <span style="font-size:13px;">${p.observacoes_tecnico}</span>
+                    </div>
+                `;
+            }
+
+        } else {
+            // Mostra apenas os itens solicitados (sem orçamento)
+            html += `
+                <h3>📋 Peças Solicitadas</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Posição</th>
+                            <th>Descrição</th>
+                            <th>Produto</th>
+                            <th style="text-align:center;">Variação</th>
+                            <th style="text-align:center;">Qtd</th>
+                            <th>Manual</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            if (itens.length === 0) {
+                html += `<tr><td colspan="6" class="empty">Nenhum item</td></tr>`;
+            } else {
+                itens.forEach(item => {
+                    const variacao = item.variacao || 'N/A';
+                    const produtoItem = item.manual_nome || nomeProduto;
+                    html += `
+                        <tr>
+                            <td><strong>#${item.numero}</strong></td>
+                            <td>${item.nome}</td>
+                            <td><span class="produto-tag">${produtoItem}</span></td>
+                            <td style="text-align:center;"><span class="variacao-tag">${variacao}</span></td>
+                            <td style="text-align:center;">${item.qtd}</td>
+                            <td>
+                                <button class="btn-manual-linha" onclick="abrirManual('${produtoItem}', '${variacao}')">📖</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+
+            html += `</tbody></table>`;
+        }
+
+        // 🔥 IMAGEM DO ESQUEMA
+        if (p.imagem_url) {
+            html += `
+                <div class="imagem-esquema">
+                    <h3>📷 Esquema do Produto</h3>
+                    <img src="${p.imagem_url}" alt="Esquema do produto" onerror="this.style.display='none'">
+                    <button onclick="verImagemEsquema('${p.imagem_url}')" 
+                            style="position:absolute; top:10px; right:10px; background:#1a237e; color:white; border:none; padding:5px 15px; border-radius:6px; cursor:pointer; font-weight:600; font-size:12px;">
+                        🔍 Ampliar
+                    </button>
+                </div>
+            `;
+        }
+
+        // 🔥 BOTÕES DE AÇÃO
+        html += `
+            <div style="margin-top:20px; display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap;">
+                <button class="btn-fechar" onclick="fecharModal()">🔙 Fechar</button>
+                
+                ${mostrarOrcamento && temOrcamento ? `
+                    <button onclick="imprimirPedido(${p.id})" 
+                            style="background:#00b894; color:white; border:none; padding:10px 30px; border-radius:8px; cursor:pointer; font-weight:600;">
+                        🖨️ Imprimir Orçamento
+                    </button>
+                ` : ''}
+                
+                ${p.status === 'CONFIRMADO_TECNICO' ? `<button class="btn-enviar" onclick="finalizarPedido(${p.id})">✅ Finalizar</button>` : ''}
+                
+                ${p.status === 'ORCAMENTO_RECUSADO' ? `<button class="btn-enviar" style="background:#f39c12;" onclick="fecharModal(); abrirOrcamento(${p.id})">🛠️ Corrigir</button>` : ''}
+            </div>
+        `;
+
+        body.innerHTML = html;
+        modal.classList.add('active');
+
+    } catch (error) {
+        body.innerHTML = `<p class="empty">❌ Erro: ${error.message}</p>`;
+        modal.classList.add('active');
+    }
+}
 
         // ============================================
         // STATUS LABELS E CLASSES
@@ -1563,6 +1658,250 @@
             await carregarConfigGlobal();
             carregarPedidos();
         });
+
+        // ============================================
+// IMPRIMIR PEDIDO (NOVA JANELA)
+// ============================================
+async function imprimirPedido(id) {
+    try {
+        const res = await fetch(`/api/pedidos/${id}`);
+        const data = await res.json();
+
+        if (!data.success) {
+            alert('❌ Erro ao carregar pedido: ' + data.error);
+            return;
+        }
+
+        const p = data.pedido;
+        const orcamento = p.orcamento || [];
+        const nomeProduto = p.manual_nome || 'Produto';
+        const totalGeral = orcamento.reduce((sum, item) => {
+            return sum + ((item.preco_unitario || 0) * (item.qtd || 0));
+        }, 0);
+
+        // Cria nova janela para impressão
+        const printWindow = window.open('', '_blank', 'width=900,height=700');
+
+        const html = `
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Pedido ${p.numero_chamado}</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            padding: 20px;
+            color: #333;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid #1a237e;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        .header .logo {
+            font-size: 24px;
+            font-weight: 800;
+            color: #1a237e;
+        }
+        .header .logo span {
+            color: #f8b81f;
+        }
+        .header .info {
+            text-align: right;
+            font-size: 13px;
+            color: #666;
+        }
+        .header .info .chamado {
+            font-size: 20px;
+            font-weight: 800;
+            color: #1a237e;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .cliente-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            font-size: 13px;
+        }
+        .cliente-info strong {
+            color: #1a237e;
+        }
+        h2 {
+            color: #1a237e;
+            font-size: 16px;
+            margin-bottom: 10px;
+            margin-top: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+        th {
+            background: #1a237e;
+            color: white;
+            padding: 8px;
+            text-align: left;
+            font-size: 11px;
+        }
+        td {
+            padding: 8px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        .total {
+            margin-top: 20px;
+            text-align: right;
+            font-size: 18px;
+            font-weight: 800;
+            color: #1a237e;
+            padding: 15px;
+            background: #e8eaf6;
+            border-radius: 8px;
+        }
+        .observacoes {
+            margin-top: 20px;
+            padding: 15px;
+            background: #fff3cd;
+            border-left: 4px solid #f8b81f;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 11px;
+            color: #999;
+            border-top: 1px solid #e0e0e0;
+            padding-top: 15px;
+        }
+        .assinatura {
+            margin-top: 40px;
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+        .assinatura .linha {
+            flex: 1;
+            border-top: 1px solid #333;
+            padding-top: 5px;
+            font-size: 11px;
+            text-align: center;
+        }
+        @media print {
+            body { padding: 0; }
+            .no-print { display: none; }
+            tr:nth-child(even) { background: #f8f9fa !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            th { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .total { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .observacoes { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">Marine <span>Fishing</span></div>
+        <div class="info">
+            <span class="chamado">#${p.numero_chamado}</span>
+            Data: ${formatarData(p.data_pedido)}
+        </div>
+    </div>
+
+    <div class="cliente-info">
+        <div><strong>Cliente:</strong> ${p.cliente_nome}</div>
+        <div><strong>CNPJ:</strong> ${p.cliente_cnpj}</div>
+        <div><strong>Vendedor:</strong> ${p.vendedor_nome || '-'}</div>
+        <div><strong>Produto:</strong> ${nomeProduto}</div>
+        ${p.cliente_telefone ? `<div><strong>Telefone:</strong> ${p.cliente_telefone}</div>` : ''}
+        ${p.cliente_email ? `<div><strong>E-mail:</strong> ${p.cliente_email}</div>` : ''}
+    </div>
+
+    <h2>📋 Lista de Peças para Separação</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th style="width:70px;">Código</th>
+                <th style="width:60px;text-align:center;">Qtd</th>
+                <th>Descrição</th>
+                <th style="width:80px;text-align:center;">Posição</th>
+                <th style="width:100px;">Desc. Manual</th>
+                <th style="width:100px;">Compatibilidade</th>
+            </tr>
+        </thead>
+        <tbody>
+            ${orcamento.map(item => `
+                <tr>
+                    <td><strong>${item.codigo || '-'}</strong></td>
+                    <td style="text-align:center;"><strong>${item.qtd || 0}</strong></td>
+                    <td>${item.descricao || '-'}</td>
+                    <td style="text-align:center;">#${item.codigo_manual || '-'}</td>
+                    <td>${item.descricao_manual || '-'}</td>
+                    <td>${item.compatibilidade || '-'}</td>
+                </tr>
+            `).join('')}
+        </tbody>
+    </table>
+
+    <div class="total">
+        TOTAL: R$ ${totalGeral.toFixed(2)}
+    </div>
+
+    ${p.observacoes_tecnico ? `
+        <div class="observacoes">
+            <strong>📝 Observações:</strong><br>
+            ${p.observacoes_tecnico}
+        </div>
+    ` : ''}
+
+    <div class="assinatura">
+        <div class="linha">Separado por</div>
+        <div class="linha">Conferido por</div>
+        <div class="linha">Data</div>
+    </div>
+
+    <div class="footer">
+        Marine Fishing - Sistema de Peças | ${new Date().toLocaleDateString('pt-BR')}
+    </div>
+
+    <div class="no-print" style="text-align:center; margin-top:20px;">
+        <button onclick="window.print()" style="padding:12px 30px; background:#1a237e; color:white; border:none; border-radius:8px; cursor:pointer; font-size:16px; font-weight:700;">
+            🖨️ Imprimir Agora
+        </button>
+        <button onclick="window.close()" style="padding:12px 30px; background:#e0e0e0; color:#333; border:none; border-radius:8px; cursor:pointer; font-size:16px; font-weight:700; margin-left:10px;">
+            ❌ Fechar
+        </button>
+    </div>
+
+    <script>
+        // Abre o diálogo de impressão automaticamente após carregar
+        window.onload = function() {
+            setTimeout(() => window.print(), 500);
+        };
+    <\/script>
+</body>
+</html>
+        `;
+
+        printWindow.document.write(html);
+        printWindow.document.close();
+
+    } catch (error) {
+        alert('❌ Erro ao gerar impressão: ' + error.message);
+    }
+}
     </script>
 </body>
 </html>
