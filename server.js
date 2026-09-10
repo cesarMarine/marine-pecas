@@ -1757,6 +1757,27 @@ app.post('/api/config-tecnico', async (req, res) => {
 });
 
 
+// ============================================
+// DELETAR PEDIDO
+// ============================================
+app.delete('/api/pedidos/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        const { error } = await supabase
+            .from('orcamentos')
+            .delete()
+            .eq('id', id);
+            
+        if (error) throw error;
+        
+        res.json({ success: true, message: 'Pedido deletado com sucesso' });
+    } catch (error) {
+        console.error('❌ Erro ao deletar pedido:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
 
 // ============================================
 // SERVIDOR DE IMAGENS LOCAL
