@@ -325,26 +325,32 @@
                     const statusLabel = getStatusLabel(p.status);
 
                     tr.innerHTML = `
-                        <td><strong>${p.numero_chamado}</strong></td>
-                        <td>${p.cliente_nome}</td>
-                        <td><span class="status ${statusClass}">${statusLabel}</span></td>
-                        <td>${formatarData(p.data_pedido)}</td>
-                        <td>
-                            <button class="btn-acao btn-detalhes" onclick="verDetalhes(${p.id})">📄 Detalhes</button>
-                            
-                            ${p.status === 'AGUARDANDO' ? `<button class="btn-acao btn-analise" onclick="enviarParaTecnico(${p.id})">🔧 Enviar Técnico</button>` : ''}
-                            
-                            ${p.status === 'ORCAMENTO_FINALIZADO' ? `
-                                <button class="btn-acao btn-aprovar" onclick="aprovarOrcamento(${p.id})">✅ Aprovar</button>
-                                <button class="btn-acao btn-reprovar" onclick="reprovarOrcamento(${p.id})">❌ Reprovar</button>
-                                <button class="btn-acao btn-cancelar" onclick="deletarPedido(${p.id})">🗑️ Deletar</button>
-                            ` : ''}
-                            
-                            ${p.status === 'ENVIADO_CLIENTE' ? `<button class="btn-acao btn-aprovar" onclick="confirmarComTecnico(${p.id})">✅ OK Técnico</button>` : ''}
-                            
-                            ${p.status === 'CANCELADO' ? `<button class="btn-acao btn-cancelar" onclick="deletarPedido(${p.id})">🗑️ Deletar</button>` : ''}
-                        </td>
-                    `;
+    <td><strong>${p.numero_chamado}</strong></td>
+    <td>
+        ${p.cliente_nome}
+        ${p.numero_cliente ? `<br><span style="background:#e8eaf6; color:#1a237e; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:700;">Nº ${p.numero_cliente}</span>` : ''}
+    </td>
+    <td>
+        <span class="status ${statusClass}">${statusLabel}</span>
+        ${p.status_separado ? `<br><span class="status" style="background:#6c5ce7; color:white; margin-top:4px;">📦 Separado</span>` : ''}
+    </td>
+    <td>${formatarData(p.data_pedido)}</td>
+    <td>
+        <button class="btn-acao btn-detalhes" onclick="verDetalhes(${p.id})">📄 Detalhes</button>
+        
+        ${p.status === 'AGUARDANDO' ? `<button class="btn-acao btn-analise" onclick="enviarParaTecnico(${p.id})">🔧 Enviar Técnico</button>` : ''}
+        
+        ${p.status === 'ORCAMENTO_FINALIZADO' ? `
+            <button class="btn-acao btn-aprovar" onclick="aprovarOrcamento(${p.id})">✅ Aprovar</button>
+            <button class="btn-acao btn-reprovar" onclick="reprovarOrcamento(${p.id})">❌ Reprovar</button>
+            <button class="btn-acao btn-cancelar" onclick="deletarPedido(${p.id})">🗑️ Deletar</button>
+        ` : ''}
+        
+        ${p.status === 'ENVIADO_CLIENTE' ? `<button class="btn-acao btn-aprovar" onclick="confirmarComTecnico(${p.id})">✅ OK Técnico</button>` : ''}
+        
+        ${p.status === 'CANCELADO' ? `<button class="btn-acao btn-cancelar" onclick="deletarPedido(${p.id})">🗑️ Deletar</button>` : ''}
+    </td>
+`;
                     tbody.appendChild(tr);
                 });
 
@@ -368,18 +374,19 @@
         }
 
         function getStatusLabel(status) {
-            const map = {
-                'AGUARDANDO': '⏳ Aguardando',
-                'EM_ANALISE_TECNICA': '🔧 Em Análise',
-                'ORCAMENTO_FINALIZADO': '📊 Orçamento Pronto',
-                'ENVIADO_CLIENTE': '📨 Enviado ao Cliente',
-                'CONFIRMADO_TECNICO': '✅ Confirmado',
-                'ORCAMENTO_RECUSADO': '❌ Reprovado',
-                'FINALIZADO': '✅ Finalizado',
-                'CANCELADO': '❌ Cancelado'
-            };
-            return map[status] || status;
-        }
+    const map = {
+        'AGUARDANDO': '⏳ Aguardando',
+        'EM_ANALISE_TECNICA': '🔧 Em Análise',
+        'ORCAMENTO_FINALIZADO': '📊 Orçamento Pronto',
+        'ENVIADO_CLIENTE': '📨 Enviado ao Cliente',
+        'CONFIRMADO_TECNICO': '✅ Confirmado',
+        'ORCAMENTO_RECUSADO': '❌ Reprovado',
+        'FINALIZADO': '✅ Finalizado',
+        'CANCELADO': '❌ Cancelado',
+        'SEPARADO': '📦 Separado'
+    };
+    return map[status] || status;
+}
 
         function formatarData(data) {
             if (!data) return '-';
@@ -409,8 +416,9 @@
                     <h2>📄 Pedido #${p.numero_chamado}</h2>
                     
                     <div class="info-cliente">
-                        <p><strong>Status:</strong> <span class="status ${getStatusClass(p.status)}">${statusLabel}</span></p>
-                        <p><strong>Cliente:</strong> ${p.cliente_nome}</p>
+    <p><strong>Status:</strong> <span class="status ${getStatusClass(p.status)}">${statusLabel}</span>${p.status_separado ? ' <span class="status" style="background:#6c5ce7;color:white;">📦 Separado</span>' : ''}</p>
+    <p><strong>Cliente:</strong> ${p.cliente_nome}</p>
+    ${p.numero_cliente ? `<p><strong>🔢 Nº Cliente:</strong> <span style="background:#e8eaf6; color:#1a237e; padding:3px 10px; border-radius:10px; font-weight:700;">${p.numero_cliente}</span></p>` : ''}
                         <p><strong>CNPJ:</strong> ${p.cliente_cnpj}</p>
                         ${p.cliente_telefone ? `<p><strong>Telefone:</strong> ${p.cliente_telefone}</p>` : ''}
                         ${p.cliente_email ? `<p><strong>E-mail:</strong> ${p.cliente_email}</p>` : ''}
@@ -545,27 +553,143 @@
         }
 
         async function enviarParaTecnico(id) {
-            if (!confirm('Enviar este pedido para análise técnica?')) return;
-
-            try {
-                const res = await fetch(`/api/pedidos/${id}/status`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ status: 'EM_ANALISE_TECNICA' })
-                });
-
-                const data = await res.json();
-                if (data.success) {
-                    alert('✅ Pedido enviado para análise técnica!');
-                    fecharModal();
-                    carregarPedidos();
-                } else {
-                    alert('❌ ' + data.error);
-                }
-            } catch (error) {
-                alert('❌ Erro: ' + error.message);
-            }
+    // Busca dados do pedido para mostrar
+    const pedido = pedidos.find(p => p.id === id);
+    const nomeCliente = pedido ? pedido.cliente_nome : 'Cliente';
+    const numeroAtual = pedido?.numero_cliente || '';
+    
+    // 🔥 MODAL CUSTOMIZADO
+    const modalHtml = `
+        <div style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:2000; display:flex; align-items:center; justify-content:center; padding:20px;" id="modal-numero-cliente">
+            <div style="background:white; padding:30px; border-radius:16px; max-width:450px; width:100%; box-shadow:0 20px 60px rgba(0,0,0,0.4);">
+                <h2 style="color:#1a237e; margin-bottom:10px;">📤 Enviar para Análise Técnica</h2>
+                <p style="color:#666; font-size:14px; margin-bottom:20px;">
+                    Cliente: <strong>${nomeCliente}</strong>
+                </p>
+                
+                <label style="display:block; font-weight:700; color:#1a237e; margin-bottom:8px;">
+                    🔢 Número do Cliente <span style="color:#e94560;">*</span>
+                </label>
+                <p style="font-size:12px; color:#888; margin-bottom:8px;">
+                    Este número é essencial para o técnico enviar as peças corretas.
+                </p>
+                <input type="number" 
+                       id="input-numero-cliente" 
+                       value="${numeroAtual}"
+                       placeholder="Ex: 4521"
+                       min="1"
+                       step="1"
+                       style="width:100%; padding:15px; font-size:22px; text-align:center; border:2px solid #ddd; border-radius:8px; font-weight:700; letter-spacing:2px; margin-bottom:10px;">
+                
+                <div id="erro-numero" style="color:#e94560; font-size:13px; font-weight:600; min-height:20px; text-align:center; margin-bottom:10px;"></div>
+                
+                <div style="display:flex; gap:10px;">
+                    <button onclick="fecharModalNumero()" 
+                            style="flex:1; padding:12px; background:#e0e0e0; color:#333; border:none; border-radius:8px; cursor:pointer; font-weight:700; font-size:14px; font-family:inherit;">
+                        ❌ Cancelar
+                    </button>
+                    <button onclick="confirmarEnvioTecnico(${id})" 
+                            style="flex:1; padding:12px; background:#1a237e; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:700; font-size:14px; font-family:inherit;">
+                        ✅ Confirmar
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Remove modal anterior se existir
+    const antigo = document.getElementById('modal-numero-cliente');
+    if (antigo) antigo.remove();
+    
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+    
+    // Foca no input
+    setTimeout(() => {
+        const input = document.getElementById('input-numero-cliente');
+        if (input) {
+            input.focus();
+            input.select();
         }
+    }, 200);
+    
+    // Enter para confirmar
+    setTimeout(() => {
+        const input = document.getElementById('input-numero-cliente');
+        if (input) {
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') confirmarEnvioTecnico(id);
+            });
+        }
+    }, 300);
+}
+
+function fecharModalNumero() {
+    const modal = document.getElementById('modal-numero-cliente');
+    if (modal) modal.remove();
+}
+
+async function confirmarEnvioTecnico(id) {
+    const input = document.getElementById('input-numero-cliente');
+    const erroDiv = document.getElementById('erro-numero');
+    const numero = input.value.trim();
+    
+    // 🔥 VALIDAÇÃO
+    if (!numero) {
+        erroDiv.textContent = '⚠️ Digite o número do cliente!';
+        input.focus();
+        return;
+    }
+    
+    if (!/^\d+$/.test(numero) || parseInt(numero) <= 0) {
+        erroDiv.textContent = '⚠️ Digite apenas números inteiros!';
+        input.focus();
+        input.select();
+        return;
+    }
+    
+    // 🔥 CONFIRMAÇÃO
+    if (!confirm(`Confirma que o número do cliente é ${numero}?`)) {
+        input.focus();
+        input.select();
+        return;
+    }
+    
+    const numeroInt = parseInt(numero);
+    
+    try {
+        // 1. Salva o número do cliente
+        const resNum = await fetch(`/api/pedidos/${id}/numero-cliente`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ numero_cliente: numeroInt })
+        });
+        
+        const dataNum = await resNum.json();
+        if (!dataNum.success) {
+            erroDiv.textContent = '❌ Erro ao salvar: ' + dataNum.error;
+            return;
+        }
+        
+        // 2. Envia para análise técnica
+        const res = await fetch(`/api/pedidos/${id}/status`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: 'EM_ANALISE_TECNICA' })
+        });
+        
+        const data = await res.json();
+        if (data.success) {
+            alert(`✅ Pedido enviado para o técnico!\nNº Cliente: ${numero}`);
+            fecharModalNumero();
+            fecharModal();
+            carregarPedidos();
+        } else {
+            erroDiv.textContent = '❌ ' + data.error;
+        }
+    } catch (error) {
+        erroDiv.textContent = '❌ Erro: ' + error.message;
+    }
+}
 
         async function aprovarOrcamento(id) {
             if (!confirm('Aprovar este orçamento?')) return;

@@ -1010,22 +1010,83 @@ app.delete('/api/pedidos/:id', async (req, res) => {
         res.status(500).json({ success: false, error: error.message });
     }
 });
+// ============================================
+// NÚMERO DO CLIENTE (VENDEDOR)
+// ============================================
+app.put('/api/pedidos/:id/numero-cliente', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { numero_cliente } = req.body;
+        
+        // 🔥 VALIDAÇÃO: precisa ser número inteiro
+        if (numero_cliente === undefined || numero_cliente === null || numero_cliente === '') {
+            return res.status(400).json({ success: false, error: 'Número do cliente é obrigatório' });
+        }
+        
+        const numeroInt = parseInt(numero_cliente);
+        if (isNaN(numeroInt) || numeroInt <= 0) {
+            return res.status(400).json({ success: false, error: 'Digite um número inteiro válido' });
+        }
+        
+        const { error } = await supabase
+            .from('orcamentos')
+            .update({ 
+                numero_cliente: numeroInt,
+                atualizado_em: new Date().toISOString()
+            })
+            .eq('id', id);
+        
+        if (error) throw error;
+        res.json({ success: true, numero_cliente: numeroInt });
+    } catch (error) {
+        console.error('❌ Erro ao salvar número do cliente:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
 
+// ============================================
+// MARCAR PEDIDO COMO SEPARADO (TÉCNICO)
+// ============================================
+app.put('/api/pedidos/:id/separado', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status_separado } = req.body;
+        
+        const updates = {
+            status_separado: status_separado === true,
+            data_separado: status_separado === true ? new Date().toISOString() : null,
+            atualizado_em: new Date().toISOString()
+        };
+        
+        const { data, error } = await supabase
+            .from('orcamentos')
+            .update(updates)
+            .eq('id', id)
+            .select();
+        
+        if (error) throw error;
+        res.json({ success: true, pedido: data[0] });
+    } catch (error) {
+        console.error('❌ Erro ao marcar como separado:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
 app.put('/api/pedidos/:id/status', async (req, res) => {
     try {
         const { status, motivo_recusa } = req.body;
         const id = req.params.id;
 
-        const statusValidos = [
-            'AGUARDANDO', 
-            'EM_ANALISE_TECNICA', 
-            'ORCAMENTO_FINALIZADO', 
-            'ENVIADO_CLIENTE', 
-            'FINALIZADO', 
-            'CANCELADO',
-            'CONFIRMADO_TECNICO',    // 🔥 NOVO
-            'ORCAMENTO_RECUSADO'     // 🔥 NOVO
-        ];
+const statusValidos = [
+    'AGUARDANDO', 
+    'EM_ANALISE_TECNICA', 
+    'ORCAMENTO_FINALIZADO', 
+    'ENVIADO_CLIENTE', 
+    'FINALIZADO', 
+    'CANCELADO',
+    'CONFIRMADO_TECNICO',
+    'ORCAMENTO_RECUSADO',
+    'SEPARADO'
+];
 
         if (!statusValidos.includes(status)) {
             return res.status(400).json({ success: false, error: 'Status inválido' });
@@ -1778,6 +1839,153 @@ app.delete('/api/pedidos/:id', async (req, res) => {
     }
 });
 
+// ============================================
+// UPLOAD DE FOTO DO ORÇAMENTO
+// ============================================
+app.post('/api/upload-foto-orcamento', upload.single('file'), async (req, res) => {
+    console.log('📤 Upload de foto do orçamento iniciado');
+    
+    try {
+        if (!req.file) {
+            return res.status(400).json({ success: false, error: 'Nenhum arquivo enviado' });
+        }
+
+        const ext = path.extname(req.file.originalname);
+        const name = path.basename(req.file.originalname, ext).replace(/[^a-zA-Z0-9]/g, '_');
+        const fileName = `orcamento_${name}_${Date.now()}${ext}`;
+
+        const { data, error } = await supabase.storage
+            .from('icones')
+            .upload(fileName, req.file.buffer, {
+                contentType: req.file.mimetype,
+                cacheControl: '3600'
+            });
+
+        if (error) {
+            console.error('❌ Supabase error:', error);
+            return res.status(500).json({ success: false, error: error.message });
+        }
+
+        const { data: urlData } = supabase.storage
+            .from('icones')
+            .getPublicUrl(fileName);
+
+        console.log('✅ Foto do orçamento enviada!');
+        res.json({
+            success: true,
+            fileName: fileName,
+            url: urlData.publicUrl
+        });
+
+    } catch (error) {
+        console.error('❌ Erro:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+app.post('/api/pecas-codigos', async (req, res) => {
+    try {
+        const {
+            manual_id,
+            numero_peca,
+            variacao,
+            codigo,
+            descricao,
+            compatibilidade,
+            foto_url,
+            observacao,
+            status_item
+        } = req.body;
+        
+        if (!manual_id || !numero_peca || !codigo) {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'manual_id, numero_peca e codigo são obrigatórios' 
+            });
+        }
+        
+        const dados = {
+            manual_id,
+            numero_peca: String(numero_peca),
+            variacao: variacao || 'N/A',
+            codigo: codigo,
+            descricao: descricao || '',
+            compatibilidade: compatibilidade || '',
+            foto_url: foto_url || '',
+            observacao: observacao || '',
+            status_item: status_item || 'OK',
+            atualizado_em: new Date().toISOString()
+        };
+        
+        const { data, error } = await supabase
+            .from('pecas_codigos')
+            .upsert(dados, { 
+                onConflict: 'manual_id,numero_peca,variacao',
+                ignoreDuplicates: false 
+            })
+            .select()
+            .single();
+        
+        if (error) throw error;
+        
+        // 🔥 BUSCA O PREÇO ATUAL PARA RETORNAR
+        const { data: precoData } = await supabase
+            .from('precos_referencia')
+            .select('preco')
+            .eq('codigo', codigo)
+            .maybeSingle();
+        
+        res.json({ 
+            success: true, 
+            codigo: data,
+            preco_base_atual: precoData?.preco || 0
+        });
+    } catch (error) {
+        console.error('❌ Erro ao salvar código:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+app.get('/api/pecas-codigos/:manualId', async (req, res) => {
+    try {
+        const { manualId } = req.params;
+        const { variacao } = req.query;
+        
+        let query = supabase
+            .from('pecas_codigos')
+            .select('*')
+            .eq('manual_id', manualId);
+        
+        if (variacao) {
+            query = query.eq('variacao', variacao);
+        }
+        
+        const { data: codigos, error } = await query;
+        if (error) throw error;
+        
+        // 🔥 BUSCAR PREÇOS ATUAIS de todos os códigos
+        const codigosComPreco = await Promise.all(
+            (codigos || []).map(async (c) => {
+                if (!c.codigo) return { ...c, preco_base: 0 };
+                
+                const { data: precoData } = await supabase
+                    .from('precos_referencia')
+                    .select('preco')
+                    .eq('codigo', c.codigo)
+                    .maybeSingle();
+                
+                return {
+                    ...c,
+                    preco_base: precoData?.preco || 0
+                };
+            })
+        );
+        
+        res.json({ success: true, codigos: codigosComPreco });
+    } catch (error) {
+        console.error('❌ Erro ao buscar códigos:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
 
 // ============================================
 // SERVIDOR DE IMAGENS LOCAL
