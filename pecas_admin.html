@@ -5,11 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin · Manuais & Hotspots</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
@@ -19,10 +15,7 @@
             min-height: 100vh;
         }
 
-        .container {
-            max-width: 1600px;
-            margin: 0 auto;
-        }
+        .container { max-width: 1600px; margin: 0 auto; }
 
         /* HEADER */
         .header {
@@ -42,20 +35,9 @@
             z-index: 100;
         }
 
-        .header h1 {
-            color: #2d3436;
-            font-size: 18px;
-            font-weight: 700;
-        }
-
-        .header h1 span {
-            color: #e94560;
-        }
-
-        .header .info {
-            color: #636e72;
-            font-size: 12px;
-        }
+        .header h1 { color: #2d3436; font-size: 18px; font-weight: 700; }
+        .header h1 span { color: #e94560; }
+        .header .info { color: #636e72; font-size: 12px; }
 
         .btn-voltar {
             background: #dfe6e9;
@@ -69,10 +51,7 @@
             transition: 0.2s;
             text-decoration: none;
         }
-
-        .btn-voltar:hover {
-            background: #b2bec3;
-        }
+        .btn-voltar:hover { background: #b2bec3; }
 
         /* CONFIG GLOBAL */
         .config-global {
@@ -87,20 +66,8 @@
             align-items: center;
             box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
         }
-
-        .config-global .grupo {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            flex-wrap: wrap;
-        }
-
-        .config-global label {
-            font-size: 11px;
-            color: #636e72;
-            font-weight: 600;
-        }
-
+        .config-global .grupo { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+        .config-global label { font-size: 11px; color: #636e72; font-weight: 600; }
         .config-global input[type="number"],
         .config-global select {
             padding: 3px 6px;
@@ -110,7 +77,6 @@
             background: #f8f9fa;
             width: 50px;
         }
-
         .config-global input[type="color"] {
             width: 28px;
             height: 28px;
@@ -120,7 +86,6 @@
             cursor: pointer;
             background: #f8f9fa;
         }
-
         .btn-salvar-config {
             background: #00b894;
             color: white;
@@ -132,9 +97,7 @@
             font-weight: 600;
             transition: 0.2s;
         }
-        .btn-salvar-config:hover {
-            background: #00a381;
-        }
+        .btn-salvar-config:hover { background: #00a381; }
 
         /* LISTA DE MANUAIS */
         .grid-manuais {
@@ -146,7 +109,6 @@
             border: 1px solid #dce1e8;
             border-radius: 10px;
         }
-
         .btn-manual {
             display: flex;
             flex-direction: column;
@@ -161,30 +123,19 @@
             text-align: center;
             min-height: 90px;
         }
-
-        .btn-manual:hover {
-            border-color: #e94560;
-            background: #fef0f2;
-        }
-
+        .btn-manual:hover { border-color: #e94560; background: #fef0f2; }
         .btn-manual.ativo {
             border-color: #e94560;
             background: #fef0f2;
             box-shadow: 0 0 0 3px rgba(233, 69, 96, 0.2);
         }
-
         .btn-manual .nome {
             font-weight: bold;
             font-size: 12px;
             color: #2d3436;
             word-break: break-word;
         }
-
-        .btn-manual .info {
-            font-size: 10px;
-            color: #636e72;
-            margin-top: 5px;
-        }
+        .btn-manual .info { font-size: 10px; color: #636e72; margin-top: 5px; }
 
         /* EDITOR */
         .editor-container {
@@ -195,27 +146,17 @@
             border-radius: 10px;
             padding: 15px;
         }
+        .editor-container.ativo { display: block; }
 
-        .editor-container.ativo {
-            display: block;
-        }
-
-        /* LAYOUT: Imagem à esquerda, Peças à direita */
         .editor-layout {
             display: flex;
             gap: 10px;
             min-height: 70vh;
         }
+        .editor-imagem-area { flex: 1; position: relative; }
 
-        /* Área da imagem (80%) */
-        .editor-imagem-area {
-            flex: 1;
-            position: relative;
-        }
-
-        /* Quadro de peças (20%) */
         .lista-pecas-wrapper {
-            width: 20%;
+            width: 22%;
             background: #ffffff;
             border: 1px solid #dce1e8;
             border-radius: 10px;
@@ -224,15 +165,51 @@
             padding: 10px;
             transition: width 0.3s ease;
         }
+        .lista-pecas-wrapper.oculto { display: none; }
+        .lista-pecas-wrapper h3 { margin-bottom: 10px; font-size: 14px; }
 
-        .lista-pecas-wrapper.oculto {
-            display: none;
-        }
-
-        .lista-pecas-wrapper h3 {
+        /* BARRA DE AÇÕES DOS PINS */
+        .barra-pin-acoes {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 8px;
+            padding: 8px 12px;
             margin-bottom: 10px;
-            font-size: 14px;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
         }
+        .barra-pin-acoes.ativa { display: flex; }
+        .barra-pin-acoes .info-pin {
+            font-weight: 700;
+            color: #856404;
+            font-size: 13px;
+        }
+        .barra-pin-acoes button {
+            padding: 5px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 700;
+            transition: 0.2s;
+        }
+        .barra-pin-acoes .btn-duplicar {
+            background: #0984e3;
+            color: white;
+        }
+        .barra-pin-acoes .btn-duplicar:hover { background: #0652DD; }
+        .barra-pin-acoes .btn-deletar {
+            background: #e94560;
+            color: white;
+        }
+        .barra-pin-acoes .btn-deletar:hover { background: #c62828; }
+        .barra-pin-acoes .btn-limpar {
+            background: #6c5ce7;
+            color: white;
+        }
+        .barra-pin-acoes .btn-limpar:hover { background: #5a4bd1; }
 
         /* DIAGRAMA */
         .diagrama-wrapper {
@@ -243,14 +220,12 @@
             overflow: hidden;
             min-height: 60vh;
         }
-
         .zoom-container {
             position: relative;
             width: 100%;
             overflow: auto;
             max-height: 65vh;
         }
-
         .imagem-wrapper {
             position: relative;
             width: 100%;
@@ -258,14 +233,12 @@
             transform-origin: top left;
             transition: transform 0.25s ease;
         }
-
         .imagem-wrapper img {
             width: 100%;
             height: auto;
             display: block;
             pointer-events: none;
         }
-
         .imagem-wrapper.zoom-150 { transform: scale(1.5); }
         .imagem-wrapper.zoom-200 { transform: scale(2); }
 
@@ -283,7 +256,6 @@
             border: 1px solid #dce1e8;
             align-items: center;
         }
-
         .zoom-controls button {
             background: #ffffff;
             border: 1px solid #dce1e8;
@@ -295,7 +267,6 @@
             color: #2d3436;
             transition: 0.2s;
         }
-
         .zoom-controls button:hover {
             background: #e94560;
             color: white;
@@ -308,7 +279,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: grab;
+            cursor: pointer;
             transform: translate(-50%, -50%);
             transition: all 0.2s;
             user-select: none;
@@ -322,16 +293,35 @@
             min-height: 26px;
             font-size: 11px;
         }
-
         .pin-editor:hover {
             transform: translate(-50%, -50%) scale(1.15);
             z-index: 20;
         }
-
         .pin-editor.dragging {
             cursor: grabbing;
             z-index: 100;
             transform: translate(-50%, -50%) scale(1.2);
+        }
+        .pin-editor.selecionado {
+            box-shadow: 0 0 0 3px #f8b81f, 0 0 20px rgba(248, 184, 31, 0.6) !important;
+            z-index: 80 !important;
+            transform: translate(-50%, -50%) scale(1.25) !important;
+            animation: pulso 1s infinite;
+        }
+        @keyframes pulso {
+            0%, 100% { box-shadow: 0 0 0 3px #f8b81f, 0 0 20px rgba(248, 184, 31, 0.6); }
+            50% { box-shadow: 0 0 0 5px #f8b81f, 0 0 30px rgba(248, 184, 31, 0.9); }
+        }
+        .pin-editor.destacado {
+            animation: highlightPulse 0.8s ease-in-out 3 !important;
+            z-index: 50 !important;
+            transform: translate(-50%, -50%) scale(1.4) !important;
+            box-shadow: 0 0 30px rgba(233, 69, 96, 0.9), 0 0 60px rgba(233, 69, 96, 0.4) !important;
+            border-color: #ffffff !important;
+        }
+        @keyframes highlightPulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1.4); opacity: 1; }
+            50% { transform: translate(-50%, -50%) scale(1.7); opacity: 0.8; }
         }
 
         .pin-editor .tooltip {
@@ -349,70 +339,48 @@
             pointer-events: none;
             z-index: 200;
         }
+        .pin-editor:hover .tooltip { display: block; }
 
-        .pin-editor:hover .tooltip {
-            display: block;
-        }
-
-        .pin-editor .badge-status {
+        .pin-editor .badge-duplicado {
             position: absolute;
-            top: -5px;
-            right: -5px;
+            top: -6px;
+            right: -6px;
+            background: #f8b81f;
+            color: #2d3436;
             width: 14px;
             height: 14px;
             border-radius: 50%;
-            border: 2px solid white;
-            font-size: 7px;
+            font-size: 8px;
+            font-weight: 800;
             display: flex;
             align-items: center;
             justify-content: center;
+            border: 2px solid white;
         }
 
-        .pin-editor .badge-status.confirmado {
-            background: #00b894;
-            color: white;
-        }
-
-        .pin-editor .badge-status.nao-confirmado {
-            background: #fdcb6e;
-            color: #2d3436;
-            animation: blink 1s infinite;
-        }
-
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
-
+        /* Estilos dos Pins */
         .pin-estilo-1 {
             background: var(--pin-cor, #e94560) !important;
             border-radius: 50% !important;
-            border: 2px solid rgba(255, 255, 255, 0.9) !important;
             color: var(--pin-fonte-cor, white) !important;
             text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
-            box-shadow: 0 2px 12px rgba(233, 69, 96, 0.4) !important;
             padding: 2px 5px !important;
         }
-
         .pin-estilo-2 {
             background: var(--pin-cor, #0984e3) !important;
             border-radius: 4px !important;
-            border: 2px solid #dfe6e9 !important;
             color: var(--pin-fonte-cor, white) !important;
             text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
-            box-shadow: 0 2px 12px rgba(9, 132, 227, 0.4) !important;
             padding: 2px 5px !important;
         }
-
         .pin-estilo-3 {
             background: transparent !important;
             border: none !important;
             box-shadow: none !important;
             color: var(--pin-fonte-cor, #2d3436) !important;
-            text-shadow: -1px -1px 0 #ffffff, 1px -1px 0 #ffffff, -1px 1px 0 #ffffff, 1px 1px 0 #ffffff, 0 0 8px rgba(255, 255, 255, 0.8) !important;
+            text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff, 0 0 8px rgba(255,255,255,0.8) !important;
             padding: 0 2px !important;
         }
-
         .pin-estilo-4 {
             background: transparent !important;
             border: 2px solid rgba(255, 255, 255, 0.9) !important;
@@ -421,63 +389,36 @@
             color: var(--pin-fonte-cor, #2d3436) !important;
             padding: 1px 5px !important;
         }
-
         .pin-estilo-5 {
             background: rgba(255, 255, 255, 0.6) !important;
             backdrop-filter: blur(2px) !important;
             border: 1px solid rgba(255, 255, 255, 0.8) !important;
             border-radius: 4px !important;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
             color: var(--pin-fonte-cor, #2d3436) !important;
             padding: 1px 5px !important;
         }
-
         .pin-estilo-6 {
             background: var(--pin-cor, #e94560) !important;
             border-radius: 4px !important;
             border: none !important;
-            box-shadow: 0 2px 8px rgba(233, 69, 96, 0.3) !important;
             color: var(--pin-fonte-cor, white) !important;
             padding: 1px 5px !important;
-            display: inline-block !important;
-            width: auto !important;
-            height: auto !important;
             line-height: 1.2 !important;
         }
-
         .pin-estilo-7 {
-            background: #ffffff !important;
+            background: #fff !important;
             border: 2px solid var(--pin-cor, #2d3436) !important;
             border-radius: 4px !important;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
             color: var(--pin-cor, #2d3436) !important;
             padding: 0px 4px !important;
-            display: inline-block !important;
-            width: auto !important;
-            height: auto !important;
             line-height: 1.2 !important;
         }
-
         .pin-estilo-8 {
             background: transparent !important;
             border: 2px dashed rgba(44, 62, 80, 0.6) !important;
             border-radius: 50% !important;
-            box-shadow: none !important;
             color: var(--pin-fonte-cor, #2d3436) !important;
             padding: 1px 5px !important;
-        }
-
-        .pin-editor.destacado {
-            animation: highlightPulse 0.8s ease-in-out 3 !important;
-            z-index: 50 !important;
-            transform: translate(-50%, -50%) scale(1.4) !important;
-            box-shadow: 0 0 30px rgba(233, 69, 96, 0.9), 0 0 60px rgba(233, 69, 96, 0.4) !important;
-            border-color: #ffffff !important;
-        }
-
-        @keyframes highlightPulse {
-            0%, 100% { transform: translate(-50%, -50%) scale(1.4); opacity: 1; }
-            50% { transform: translate(-50%, -50%) scale(1.7); opacity: 0.8; }
         }
 
         /* ITENS DA LISTA */
@@ -485,71 +426,44 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            padding: 3px 6px;
+            padding: 5px 6px;
             background: #f8f9fa;
             border: 2px solid #dce1e8;
             border-radius: 5px;
-            margin-bottom: 2px;
+            margin-bottom: 3px;
             cursor: pointer;
             transition: all 0.2s;
         }
-
-        .item-peca:hover {
-            border-color: #e94560;
-        }
-
-        .item-peca.com-hotspot {
-            border-color: #00b894;
-        }
-        .item-peca.sem-hotspot {
-            border-color: #fdcb6e;
-        }
+        .item-peca:hover { border-color: #e94560; background: #fef0f2; }
+        .item-peca.com-hotspot { border-color: #00b894; background: #f0fdf8; }
+        .item-peca.sem-hotspot { border-color: #fdcb6e; background: #fffdf5; }
 
         .item-peca .numero {
             font-weight: bold;
             color: #e94560;
-            min-width: 28px;
-            font-size: 11px;
+            min-width: 32px;
+            font-size: 12px;
         }
-
         .item-peca .nome {
             flex: 1;
-            font-size: 10px;
+            font-size: 11px;
             color: #2d3436;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
-
-        .item-peca .status {
-            font-size: 8px;
-            padding: 1px 5px;
-            border-radius: 8px;
-            flex-shrink: 0;
-        }
-        .item-peca .status.ok {
-            background: #d4edda;
-            color: #155724;
-        }
-        .item-peca .status.pendente {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        /* BOTÃO REPETIR (CRÍTICO PARA MÚLTIPLOS HOTSPOTS) */
-        .btn-repetir {
-            background: #0984e3;
-            color: white;
-            border: none;
-            padding: 1px 5px;
-            border-radius: 3px;
-            cursor: pointer;
+        .item-peca .contador {
             font-size: 10px;
-            font-weight: bold;
+            background: #1a237e;
+            color: white;
+            padding: 2px 7px;
+            border-radius: 10px;
+            font-weight: 700;
             flex-shrink: 0;
         }
-        .btn-repetir:hover {
-            background: #0652DD;
+        .item-peca.sem-hotspot .contador {
+            background: #fdcb6e;
+            color: #2d3436;
         }
 
         /* BOTÕES */
@@ -565,10 +479,7 @@
             margin-top: 10px;
             transition: 0.2s;
         }
-
-        .btn-adicionar-hotspot:hover {
-            background: #c62828;
-        }
+        .btn-adicionar-hotspot:hover { background: #c62828; }
 
         .btn-salvar {
             background: #00b894;
@@ -583,7 +494,6 @@
             width: 100%;
             transition: 0.2s;
         }
-
         .btn-salvar:hover {
             background: #00a381;
             transform: translateY(-2px);
@@ -610,13 +520,11 @@
             animation: spin 1s linear infinite;
             margin: 0 auto 20px;
         }
-
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
 
-        /* BOTÃO OCULTAR LISTA */
         .btn-ocultar-lista {
             background: #0984e3;
             color: white;
@@ -629,10 +537,7 @@
             margin-bottom: 10px;
             transition: 0.2s;
         }
-
-        .btn-ocultar-lista:hover {
-            background: #0652DD;
-        }
+        .btn-ocultar-lista:hover { background: #0652DD; }
     </style>
 </head>
 <body>
@@ -642,7 +547,7 @@
         <div class="header">
             <div>
                 <h1>📂 <span>Admin</span> · Manuais & Hotspots</h1>
-                <span class="info">Gerencie os manuais e hotspots do Supabase</span>
+                <span class="info">Clique num pin para selecionar → depois use Duplicar/Deletar</span>
             </div>
             <button class="btn-voltar" onclick="window.location.href='/'">← Início</button>
         </div>
@@ -696,6 +601,14 @@
             <div class="editor-layout">
                 <!-- ÁREA DA IMAGEM (80%) -->
                 <div class="editor-imagem-area">
+                    <!-- BARRA DE AÇÕES DO PIN SELECIONADO -->
+                    <div class="barra-pin-acoes" id="barra-pin-acoes">
+                        <span class="info-pin" id="info-pin-selecionado">Pin selecionado</span>
+                        <button class="btn-duplicar" onclick="duplicarPinSelecionado()">📋 Duplicar</button>
+                        <button class="btn-deletar" onclick="deletarPinSelecionado()">🗑️ Deletar</button>
+                        <button class="btn-limpar" onclick="limparSelecao()">✕ Desselecionar</button>
+                    </div>
+
                     <div class="diagrama-wrapper" id="diagrama-wrapper">
                         <div class="loading" id="loading">
                             <div class="spinner"></div>
@@ -711,15 +624,15 @@
                             <span class="zoom-level" id="zoom-level">100%</span>
                             <button onclick="zoomIn()">+</button>
                             <button onclick="zoomReset()" style="font-size:11px;">⟲</button>
-                            <button class="btn-olho ativo" id="btn-olho" onclick="toggleOlho()" title="Mostrar/Esconder Hotspots">👁️</button>
+                            <button id="btn-olho" onclick="toggleOlho()" title="Mostrar/Esconder Hotspots" style="background:#1a237e; color:white;">👁️</button>
                         </div>
                     </div>
-                    <button class="btn-adicionar-hotspot" onclick="adicionarHotspotManual()">➕ Adicionar Hotspot</button>
+                    <button class="btn-adicionar-hotspot" onclick="adicionarHotspotManual()">➕ Adicionar Hotspot Manual</button>
                     <button class="btn-salvar" onclick="salvarHotspots()">💾 SALVAR HOTSPOTS</button>
                     <div class="status-msg" id="status-msg"></div>
                 </div>
 
-                <!-- QUADRO DE PEÇAS (20%) -->
+                <!-- QUADRO DE PEÇAS (22%) -->
                 <div class="lista-pecas-wrapper" id="lista-pecas">
                     <button class="btn-ocultar-lista" onclick="ocultarLista()">⬅ Ocultar</button>
                     <h3>📋 Peças do Manual</h3>
@@ -737,8 +650,7 @@
         let pecas = [];
         let zoomLevel = 1;
         let olhoAberto = true;
-
-        const CONFIG_KEY = 'admin_hotspot_config';
+        let pinSelecionado = null;
 
         let config = {
             tamanhoFonte: 12,
@@ -767,10 +679,10 @@
                 const data = await res.json();
                 if (data.success && data.config) {
                     config = {
-                        tamanhoFonte: data.config.tamanho_fonte,
-                        corPin: data.config.cor_pin,
-                        corFonte: data.config.cor_fonte,
-                        estilo: String(data.config.estilo)
+                        tamanhoFonte: data.config.tamanho_fonte || 12,
+                        corPin: data.config.cor_pin || '#e94560',
+                        corFonte: data.config.cor_fonte || '#ffffff',
+                        estilo: String(data.config.estilo || '1')
                     };
                 }
             } catch (e) {}
@@ -785,7 +697,7 @@
             config.corPin = document.getElementById('config-cor-pin').value;
             config.corFonte = document.getElementById('config-cor-fonte').value;
             config.estilo = document.getElementById('config-estilo').value;
-            
+
             try {
                 const res = await fetch('/api/config-estilos', {
                     method: 'PUT',
@@ -798,19 +710,14 @@
                     })
                 });
                 const data = await res.json();
-                
+
                 if (data.success) {
                     const status = document.getElementById('status-salvo');
                     status.style.display = 'block';
                     setTimeout(() => status.style.display = 'none', 2000);
                     aplicarConfiguracoes();
-                } else {
-                    alert('❌ Erro ao salvar: ' + data.error);
                 }
-            } catch (e) {
-                console.error('❌ Erro:', e);
-                alert('❌ Erro ao salvar configurações');
-            }
+            } catch (e) {}
         }
 
         function aplicarConfiguracoes() {
@@ -829,13 +736,9 @@
                 pin.style.setProperty('--pin-fonte-cor', corFonte);
                 pin.style.fontSize = tamanho + 'px';
 
-                if (['3', '4', '8'].includes(estilo)) {
-                    pin.style.padding = '0 2px';
-                } else if (['6', '7'].includes(estilo)) {
-                    pin.style.padding = '1px 4px';
-                } else {
-                    pin.style.padding = '2px 5px';
-                }
+                if (['3', '4', '8'].includes(estilo)) pin.style.padding = '0 2px';
+                else if (['6', '7'].includes(estilo)) pin.style.padding = '1px 4px';
+                else pin.style.padding = '2px 5px';
 
                 if (['1', '2'].includes(estilo)) {
                     const size = Math.max(tamanho + 8, 22);
@@ -844,13 +747,6 @@
                 } else {
                     pin.style.minWidth = 'auto';
                     pin.style.minHeight = 'auto';
-                }
-
-                const badge = pin.querySelector('.badge-status');
-                if (['3', '4', '5', '6', '7', '8'].includes(estilo)) {
-                    if (badge) badge.style.display = 'none';
-                } else {
-                    if (badge) badge.style.display = 'flex';
                 }
             });
         }
@@ -900,7 +796,6 @@
             const editor = document.getElementById('editor-container');
             const listaItens = document.getElementById('lista-itens');
             const titulo = document.getElementById('titulo-manual');
-            const wrapper = document.getElementById('imagem-wrapper');
 
             document.querySelectorAll('.btn-manual').forEach(b => b.classList.remove('ativo'));
             document.querySelectorAll('.btn-manual').forEach(b => {
@@ -908,6 +803,8 @@
             });
 
             document.querySelectorAll('.pin-editor').forEach(p => p.remove());
+            pinSelecionado = null;
+            document.getElementById('barra-pin-acoes').classList.remove('ativa');
 
             editor.classList.add('ativo');
             loading.style.display = 'block';
@@ -947,7 +844,7 @@
         }
 
         // ============================================
-        // ADICIONAR HOTSPOT (NA LATERAL ESQUERDA)
+        // ADICIONAR HOTSPOT MANUAL
         // ============================================
         function adicionarHotspotManual() {
             if (!manualAtual) {
@@ -958,165 +855,330 @@
             const numero = prompt('Digite o número da peça (ex: 99):');
             if (!numero) return;
 
-            const peca = pecas.find(p => p.numero === numero);
-            const nome = peca ? peca.nome : 'Peça';
+            const peca = pecas.find(p => String(p.numero) === String(numero));
+            if (!peca) {
+                alert(`⚠️ Peça #${numero} não encontrada no Excel!`);
+                return;
+            }
 
+            // 🔥 USA O NOME DO EXCEL SEMPRE
             const novoHotspot = {
-                numero: numero,
-                nome: nome,
-                x_percent: 15,
-                y_percent: 50            };
+                numero: String(peca.numero),
+                nome: peca.nome, // ← SEMPRE do Excel
+                x_percent: 50,
+                y_percent: 50
+            };
 
             hotspots.push(novoHotspot);
             renderizarPinos();
             renderizarLista();
 
-            const pin = document.querySelector(`.pin-editor[data-numero="${numero}"]`);
-            if (pin) {
-                pin.classList.add('destacado');
-                setTimeout(() => pin.classList.remove('destacado'), 2000);
+            // Destaca o novo pin
+            const pins = document.querySelectorAll(`.pin-editor[data-numero="${numero}"]`);
+            const ultimoPin = pins[pins.length - 1];
+            if (ultimoPin) {
+                ultimoPin.classList.add('destacado');
+                setTimeout(() => ultimoPin.classList.remove('destacado'), 2000);
             }
         }
 
         // ============================================
-        // RENDERIZAR PINOS (SUPORTE A DUPLICATAS)
+        // RENDERIZAR PINOS
         // ============================================
         function renderizarPinos() {
             document.querySelectorAll('.pin-editor').forEach(p => p.remove());
             const wrapper = document.getElementById('imagem-wrapper');
 
-            // Usamos o índice para diferenciar duplicatas do mesmo número
+            // Conta quantas vezes cada número aparece
+            const contagem = {};
+            hotspots.forEach(h => {
+                contagem[h.numero] = (contagem[h.numero] || 0) + 1;
+            });
+
+            // Contador atual para mostrar badge
+            const contadorAtual = {};
+
             hotspots.forEach((hotspot, index) => {
+                // 🔥 SEMPRE BUSCA O NOME DO EXCEL
+                const peca = pecas.find(p => String(p.numero) === String(hotspot.numero));
+                const nomePeca = peca ? peca.nome : 'Peça';
+
                 const pin = document.createElement('div');
                 pin.className = 'pin-editor';
                 pin.dataset.numero = hotspot.numero;
-                pin.dataset.index = index; // 🔥 Identificador único
+                pin.dataset.index = index;
                 pin.dataset.x = hotspot.x_percent;
                 pin.dataset.y = hotspot.y_percent;
                 pin.style.left = `${hotspot.x_percent}%`;
                 pin.style.top = `${hotspot.y_percent}%`;
                 pin.innerText = hotspot.numero;
 
-                const peca = pecas.find(p => p.numero === hotspot.numero);
-                const nomePeca = peca ? peca.nome : 'Peça';
-
+                // 🔥 TOOLTIP: SÓ número + nome (SEM observação, SEM "(1ª ocorrência)")
                 const tooltip = document.createElement('span');
                 tooltip.className = 'tooltip';
-                tooltip.textContent = `#${hotspot.numero} (${index + 1}ª ocorrência) - ${nomePeca}`;
+                tooltip.textContent = `#${hotspot.numero} - ${nomePeca}`;
                 pin.appendChild(tooltip);
 
-                const badge = document.createElement('span');
-                badge.className = 'badge-status confirmado';
-                badge.textContent = '✓';
-                pin.appendChild(badge);
+                // Badge se for duplicado
+                contadorAtual[hotspot.numero] = (contadorAtual[hotspot.numero] || 0) + 1;
+                if (contagem[hotspot.numero] > 1) {
+                    const badge = document.createElement('span');
+                    badge.className = 'badge-duplicado';
+                    badge.textContent = contadorAtual[hotspot.numero];
+                    pin.appendChild(badge);
+                }
 
+                // Eventos
                 pin.addEventListener('mousedown', (e) => iniciarDrag(e, pin));
                 pin.addEventListener('touchstart', (e) => iniciarDragTouch(e, pin), { passive: true });
+                pin.addEventListener('click', (e) => {
+                    if (!dragging) selecionarPin(pin);
+                });
 
                 wrapper.appendChild(pin);
             });
+
+            // Reaplica configurações visuais
+            aplicarConfiguracoes();
+
+            // Reaplica seleção se havia
+            if (pinSelecionado !== null) {
+                const pin = document.querySelector(`.pin-editor[data-index="${pinSelecionado}"]`);
+                if (pin) pin.classList.add('selecionado');
+                else {
+                    pinSelecionado = null;
+                    document.getElementById('barra-pin-acoes').classList.remove('ativa');
+                }
+            }
         }
 
         // ============================================
-        // DRAG & DROP PINOS (COM ÍNDICE)
+        // SELECIONAR PIN
+        // ============================================
+        function selecionarPin(pin) {
+            document.querySelectorAll('.pin-editor').forEach(p => p.classList.remove('selecionado'));
+            pin.classList.add('selecionado');
+            pinSelecionado = parseInt(pin.dataset.index);
+
+            const numero = pin.dataset.numero;
+            const peca = pecas.find(p => String(p.numero) === String(numero));
+            const nome = peca ? peca.nome : 'Peça';
+
+            document.getElementById('info-pin-selecionado').textContent = `🎯 Pin selecionado: #${numero} - ${nome}`;
+            document.getElementById('barra-pin-acoes').classList.add('ativa');
+        }
+
+        function limparSelecao() {
+            document.querySelectorAll('.pin-editor').forEach(p => p.classList.remove('selecionado'));
+            pinSelecionado = null;
+            document.getElementById('barra-pin-acoes').classList.remove('ativa');
+        }
+
+        // ============================================
+        // DUPLICAR PIN SELECIONADO
+        // ============================================
+        function duplicarPinSelecionado() {
+            if (pinSelecionado === null) {
+                alert('⚠️ Selecione um pin primeiro!');
+                return;
+            }
+
+            const pinOriginal = hotspots[pinSelecionado];
+            if (!pinOriginal) {
+                alert('⚠️ Pin não encontrado!');
+                return;
+            }
+
+            // 🔥 USA O NOME DO EXCEL SEMPRE
+            const peca = pecas.find(p => String(p.numero) === String(pinOriginal.numero));
+            const nome = peca ? peca.nome : 'Peça';
+
+            // Cria cópia ligeiramente deslocada
+            const novoHotspot = {
+                numero: String(pinOriginal.numero),
+                nome: nome, // ← SEMPRE do Excel
+                x_percent: Math.min(100, Math.max(0, parseFloat(pinOriginal.x_percent) + 3)),
+                y_percent: Math.min(100, Math.max(0, parseFloat(pinOriginal.y_percent) + 3))
+            };
+
+            hotspots.push(novoHotspot);
+            const novoIndex = hotspots.length - 1;
+
+            renderizarPinos();
+            renderizarLista();
+
+            // Seleciona o novo pin
+            setTimeout(() => {
+                const novoPin = document.querySelector(`.pin-editor[data-index="${novoIndex}"]`);
+                if (novoPin) {
+                    selecionarPin(novoPin);
+                    novoPin.classList.add('destacado');
+                    setTimeout(() => novoPin.classList.remove('destacado'), 2000);
+                }
+            }, 100);
+        }
+
+        // ============================================
+        // DELETAR PIN SELECIONADO
+        // ============================================
+        function deletarPinSelecionado() {
+            if (pinSelecionado === null) {
+                alert('⚠️ Selecione um pin primeiro!');
+                return;
+            }
+
+            const pin = hotspots[pinSelecionado];
+            if (!pin) return;
+
+            const peca = pecas.find(p => String(p.numero) === String(pin.numero));
+            const nome = peca ? peca.nome : 'Peça';
+
+            if (!confirm(`🗑️ Deletar o hotspot #${pin.numero} - ${nome}?`)) return;
+
+            hotspots.splice(pinSelecionado, 1);
+            limparSelecao();
+            renderizarPinos();
+            renderizarLista();
+        }
+
+        // ============================================
+        // DRAG & DROP
         // ============================================
         let dragging = false;
         let currentPin = null;
         let dragData = null;
+        let mouseMoveuDistancia = 0;
 
         function iniciarDrag(e, pin) {
-            e.preventDefault();
-            dragging = true;
+            dragging = false; // ainda não é drag, só se mover
+            mouseMoveuDistancia = 0;
             currentPin = pin;
-            pin.classList.add('dragging');
+
+            const startX = e.clientX;
+            const startY = e.clientY;
+
             dragData = {
                 pin: pin,
                 startX: e.clientX,
-                startY: e.clientY,
-                left: parseFloat(pin.style.left),
-                top: parseFloat(pin.style.top)
+                startY: e.clientY
             };
+
+            const onMove = (moveEvent) => {
+                const dx = moveEvent.clientX - startX;
+                const dy = moveEvent.clientY - startY;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+
+                if (dist > 5) {
+                    if (!dragging) {
+                        dragging = true;
+                        pin.classList.add('dragging');
+                    }
+
+                    const wrapper = document.getElementById('imagem-wrapper');
+                    const rect = wrapper.getBoundingClientRect();
+                    let xPercent = ((moveEvent.clientX - rect.left) / rect.width) * 100;
+                    let yPercent = ((moveEvent.clientY - rect.top) / rect.height) * 100;
+                    xPercent = Math.max(0, Math.min(100, xPercent));
+                    yPercent = Math.max(0, Math.min(100, yPercent));
+                    pin.style.left = `${xPercent}%`;
+                    pin.style.top = `${yPercent}%`;
+                    pin.dataset.x = xPercent;
+                    pin.dataset.y = yPercent;
+                }
+            };
+
+            const onUp = () => {
+                document.removeEventListener('mousemove', onMove);
+                document.removeEventListener('mouseup', onUp);
+
+                if (dragging) {
+                    pin.classList.remove('dragging');
+                    const index = parseInt(pin.dataset.index);
+                    const x = parseFloat(pin.dataset.x);
+                    const y = parseFloat(pin.dataset.y);
+                    if (hotspots[index]) {
+                        hotspots[index].x_percent = x;
+                        hotspots[index].y_percent = y;
+                    }
+                }
+
+                setTimeout(() => { dragging = false; }, 100);
+                currentPin = null;
+                dragData = null;
+            };
+
+            document.addEventListener('mousemove', onMove);
+            document.addEventListener('mouseup', onUp);
         }
 
         function iniciarDragTouch(e, pin) {
             const touch = e.touches[0];
             if (!touch) return;
-            dragging = true;
+
+            dragging = false;
             currentPin = pin;
-            pin.classList.add('dragging');
+            const startX = touch.clientX;
+            const startY = touch.clientY;
+
             dragData = {
                 pin: pin,
                 startX: touch.clientX,
-                startY: touch.clientY,
-                left: parseFloat(pin.style.left),
-                top: parseFloat(pin.style.top)
+                startY: touch.clientY
             };
+
+            const onMove = (moveEvent) => {
+                const t = moveEvent.touches[0];
+                if (!t) return;
+
+                const dx = t.clientX - startX;
+                const dy = t.clientY - startY;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+
+                if (dist > 8) {
+                    if (!dragging) {
+                        dragging = true;
+                        pin.classList.add('dragging');
+                    }
+
+                    const wrapper = document.getElementById('imagem-wrapper');
+                    const rect = wrapper.getBoundingClientRect();
+                    let xPercent = ((t.clientX - rect.left) / rect.width) * 100;
+                    let yPercent = ((t.clientY - rect.top) / rect.height) * 100;
+                    xPercent = Math.max(0, Math.min(100, xPercent));
+                    yPercent = Math.max(0, Math.min(100, yPercent));
+                    pin.style.left = `${xPercent}%`;
+                    pin.style.top = `${yPercent}%`;
+                    pin.dataset.x = xPercent;
+                    pin.dataset.y = yPercent;
+                }
+            };
+
+            const onEnd = () => {
+                document.removeEventListener('touchmove', onMove);
+                document.removeEventListener('touchend', onEnd);
+
+                if (dragging) {
+                    pin.classList.remove('dragging');
+                    const index = parseInt(pin.dataset.index);
+                    const x = parseFloat(pin.dataset.x);
+                    const y = parseFloat(pin.dataset.y);
+                    if (hotspots[index]) {
+                        hotspots[index].x_percent = x;
+                        hotspots[index].y_percent = y;
+                    }
+                }
+
+                setTimeout(() => { dragging = false; }, 100);
+                currentPin = null;
+                dragData = null;
+            };
+
+            document.addEventListener('touchmove', onMove, { passive: false });
+            document.addEventListener('touchend', onEnd);
         }
 
-        document.addEventListener('mousemove', (e) => {
-            if (!dragging || !dragData) return;
-            const wrapper = document.getElementById('imagem-wrapper');
-            const rect = wrapper.getBoundingClientRect();
-            let xPercent = ((e.clientX - rect.left) / rect.width) * 100;
-            let yPercent = ((e.clientY - rect.top) / rect.height) * 100;
-            xPercent = Math.max(0, Math.min(100, xPercent));
-            yPercent = Math.max(0, Math.min(100, yPercent));
-            dragData.pin.style.left = `${xPercent}%`;
-            dragData.pin.style.top = `${yPercent}%`;
-            dragData.pin.dataset.x = xPercent;
-            dragData.pin.dataset.y = yPercent;
-        });
-
-        document.addEventListener('touchmove', (e) => {
-            if (!dragging || !dragData) return;
-            const touch = e.touches[0];
-            if (!touch) return;
-            const wrapper = document.getElementById('imagem-wrapper');
-            const rect = wrapper.getBoundingClientRect();
-            let xPercent = ((touch.clientX - rect.left) / rect.width) * 100;
-            let yPercent = ((touch.clientY - rect.top) / rect.height) * 100;
-            xPercent = Math.max(0, Math.min(100, xPercent));
-            yPercent = Math.max(0, Math.min(100, yPercent));
-            dragData.pin.style.left = `${xPercent}%`;
-            dragData.pin.style.top = `${yPercent}%`;
-            dragData.pin.dataset.x = xPercent;
-            dragData.pin.dataset.y = yPercent;
-        });
-
-        document.addEventListener('mouseup', () => {
-            if (dragging && currentPin) {
-                currentPin.classList.remove('dragging');
-                const index = parseInt(currentPin.dataset.index);
-                const x = parseFloat(currentPin.dataset.x);
-                const y = parseFloat(currentPin.dataset.y);
-                if (hotspots[index]) {
-                    hotspots[index].x_percent = x;
-                    hotspots[index].y_percent = y;
-                }
-            }
-            dragging = false;
-            dragData = null;
-            currentPin = null;
-        });
-
-        document.addEventListener('touchend', () => {
-            if (dragging && currentPin) {
-                currentPin.classList.remove('dragging');
-                const index = parseInt(currentPin.dataset.index);
-                const x = parseFloat(currentPin.dataset.x);
-                const y = parseFloat(currentPin.dataset.y);
-                if (hotspots[index]) {
-                    hotspots[index].x_percent = x;
-                    hotspots[index].y_percent = y;
-                }
-            }
-            dragging = false;
-            dragData = null;
-            currentPin = null;
-        });
-
         // ============================================
-        // RENDERIZAR LISTA (ORDENADA POR NÚMERO)
+        // RENDERIZAR LISTA DE PEÇAS
         // ============================================
         function renderizarLista() {
             const listaItens = document.getElementById('lista-itens');
@@ -1125,18 +1187,23 @@
                 return;
             }
 
-            const pecasOrdenadas = [...pecas].sort((a, b) => parseInt(a.numero) - parseInt(b.numero));
+            const pecasOrdenadas = [...pecas].sort((a, b) => {
+                const nA = parseInt(a.numero) || 0;
+                const nB = parseInt(b.numero) || 0;
+                return nA - nB;
+            });
 
             let html = '';
             pecasOrdenadas.forEach(peca => {
-                const temHotspot = hotspots.some(h => h.numero === peca.numero);
+                const qtdHotspots = hotspots.filter(h => String(h.numero) === String(peca.numero)).length;
+                const temHotspot = qtdHotspots > 0;
+
                 html += `
                     <div class="item-peca ${temHotspot ? 'com-hotspot' : 'sem-hotspot'}" 
-                         data-numero="${peca.numero}" onclick="adicionarHotspotParaNumero('${peca.numero}')">
+                         onclick="clicarNaPeca('${peca.numero}')">
                         <span class="numero">#${peca.numero}</span>
                         <span class="nome">${peca.nome || 'Peça'}</span>
-                        <span class="status ${temHotspot ? 'ok' : 'pendente'}">${temHotspot ? '✅ OK' : '⚠️ Pendente'}</span>
-                        <button class="btn-repetir" onclick="event.stopPropagation(); adicionarHotspotParaNumero('${peca.numero}')">➕ Repetir</button>
+                        <span class="contador">${qtdHotspots}</span>
                     </div>
                 `;
             });
@@ -1144,27 +1211,62 @@
         }
 
         // ============================================
-        // ADICIONAR HOTSPOT PARA NÚMERO (NOVO)
+        // CLICAR NA PEÇA DA LISTA
         // ============================================
-        function adicionarHotspotParaNumero(numero) {
-            const peca = pecas.find(p => p.numero === numero);
-            const nome = peca ? peca.nome : 'Peça';
+        function clicarNaPeca(numero) {
+            const pins = document.querySelectorAll(`.pin-editor[data-numero="${numero}"]`);
 
-            const novoHotspot = {
-                numero: numero,
-                nome: nome,
-                x_percent: 50,
-                y_percent: 50
-            };
+            if (pins.length > 0) {
+                // 🔥 EXISTE PIN → PISCA PARA LOCALIZAR
+                pins.forEach(pin => {
+                    pin.classList.remove('destacado');
+                    void pin.offsetWidth; // reflow
+                    pin.classList.add('destacado');
+                });
 
-            hotspots.push(novoHotspot); // 🔥 SEMPRE ADICIONA, NUNCA SUBSTITUI
-            renderizarPinos();
-            renderizarLista();
+                // Scroll até o primeiro
+                const primeiroPin = pins[0];
+                const container = document.getElementById('zoom-container');
+                const rect = primeiroPin.getBoundingClientRect();
+                const containerRect = container.getBoundingClientRect();
 
-            const pin = document.querySelector(`.pin-editor[data-numero="${numero}"]:last-of-type`);
-            if (pin) {
-                pin.classList.add('destacado');
-                setTimeout(() => pin.classList.remove('destacado'), 2000);
+                const isVisible = (rect.left >= containerRect.left && rect.right <= containerRect.right &&
+                    rect.top >= containerRect.top && rect.bottom <= containerRect.bottom);
+
+                if (!isVisible) {
+                    container.scrollBy(
+                        rect.left - containerRect.left - containerRect.width / 2,
+                        rect.top - containerRect.top - containerRect.height / 2
+                    );
+                }
+
+                setTimeout(() => {
+                    pins.forEach(pin => pin.classList.remove('destacado'));
+                }, 2500);
+
+            } else {
+                // 🔥 NÃO EXISTE PIN → ADICIONA NO CENTRO
+                const peca = pecas.find(p => String(p.numero) === String(numero));
+                if (!peca) return;
+
+                const novoHotspot = {
+                    numero: String(peca.numero),
+                    nome: peca.nome,
+                    x_percent: 50,
+                    y_percent: 50
+                };
+
+                hotspots.push(novoHotspot);
+                renderizarPinos();
+                renderizarLista();
+
+                setTimeout(() => {
+                    const novoPin = document.querySelector(`.pin-editor[data-numero="${numero}"]`);
+                    if (novoPin) {
+                        novoPin.classList.add('destacado');
+                        setTimeout(() => novoPin.classList.remove('destacado'), 2000);
+                    }
+                }, 100);
             }
         }
 
@@ -1192,19 +1294,16 @@
                 aplicarZoom();
             }
         }
-
         function zoomOut() {
             if (zoomLevel > 0.5) {
                 zoomLevel = zoomLevel === 2 ? 1.5 : 1;
                 aplicarZoom();
             }
         }
-
         function zoomReset() {
             zoomLevel = 1;
             aplicarZoom();
         }
-
         function aplicarZoom() {
             const wrapper = document.getElementById('imagem-wrapper');
             wrapper.classList.remove('zoom-150', 'zoom-200');
@@ -1213,41 +1312,47 @@
             document.getElementById('zoom-level').textContent = Math.round(zoomLevel * 100) + '%';
         }
 
+        // ============================================
+        // OLHO (MOSTRAR/ESCONDER)
+        // ============================================
         function toggleOlho() {
             olhoAberto = !olhoAberto;
             const btn = document.getElementById('btn-olho');
             if (olhoAberto) {
                 btn.textContent = '👁️';
-                btn.classList.add('ativo');
+                btn.style.background = '#1a237e';
                 document.querySelectorAll('.pin-editor').forEach(pin => {
-                    pin.classList.remove('oculto');
-                    pin.classList.add('visivel');
+                    pin.style.display = 'flex';
                 });
             } else {
                 btn.textContent = '👁️‍🗨️';
-                btn.classList.remove('ativo');
+                btn.style.background = '#e94560';
                 document.querySelectorAll('.pin-editor').forEach(pin => {
-                    pin.classList.add('oculto');
-                    pin.classList.remove('visivel');
+                    pin.style.display = 'none';
                 });
             }
         }
 
         // ============================================
-        // SALVAR HOTSPOTS (COM DUPLICATAS)
+        // SALVAR HOTSPOTS
         // ============================================
         async function salvarHotspots() {
             if (!manualAtual) return;
 
             const statusMsg = document.getElementById('status-msg');
             statusMsg.textContent = '⏳ Salvando...';
+            statusMsg.style.color = '#1a237e';
 
-            // Salva TODOS os hotspots, incluindo duplicatas do mesmo número
-            const hotspotsParaSalvar = hotspots.map(h => ({
-                numero: h.numero,
-                x_percent: Math.round(parseFloat(h.x_percent) * 100) / 100,
-                y_percent: Math.round(parseFloat(h.y_percent) * 100) / 100
-            }));
+            // 🔥 SEMPRE USA O NOME DO EXCEL
+            const hotspotsParaSalvar = hotspots.map(h => {
+                const peca = pecas.find(p => String(p.numero) === String(h.numero));
+                return {
+                    numero: String(h.numero),
+                    nome: peca ? peca.nome : 'Peça', // ← SEMPRE do Excel
+                    x_percent: Math.round(parseFloat(h.x_percent) * 100) / 100,
+                    y_percent: Math.round(parseFloat(h.y_percent) * 100) / 100
+                };
+            });
 
             try {
                 const res = await fetch(`/api/manuais/${encodeURIComponent(manualAtual.nome)}/hotspots`, {
@@ -1258,7 +1363,7 @@
                 const data = await res.json();
 
                 if (data.success) {
-                    statusMsg.textContent = `✅ ${hotspotsParaSalvar.length} hotspots salvos! (Incluindo repetidos)`;
+                    statusMsg.textContent = `✅ ${hotspotsParaSalvar.length} hotspots salvos!`;
                     statusMsg.style.color = '#00b894';
                 } else {
                     statusMsg.textContent = '❌ ' + data.error;
