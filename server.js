@@ -1156,6 +1156,127 @@ const statusValidos = [
     }
 });
 
+// ============================================
+// DELETAR MANUAL INTEIRO (imagem + excel + peças + hotspots)
+// ============================================
+app.delete('/api/manuais/:nome', async (req, res) => {
+    try {
+        const nomeBase = decodeURIComponent(req.params.nome);
+        console.log(`🗑️ Deletando manual: ${nomeBase}`);
+
+        // 1. Busca o manual
+        const { data: manual, error: erroBusca } = await supabase
+            .from('manuais')
+            .select('id')
+            .ilike('nome_base', nomeBase)
+            .single();
+
+        if (erroBusca || !manual) {
+            return res.status(404).json({ success: false, error: 'Manual não encontrado' });
+        }
+
+        // 2. Deleta peças e hotspots (cascade)
+        await supabase.from('pecas_catalogo').delete().eq('manual_id', manual.id);
+        await supabase.from('hotspots').delete().eq('manual_id', manual.id);
+        await supabase.from('pecas_codigos').delete().eq('manual_id', manual.id);
+
+        // 3. Deleta o manual
+        const { error: erroDelete } = await supabase
+            .from('manuais')
+            .delete()
+            .eq('id', manual.id);
+
+        if (erroDelete) throw erroDelete;
+
+        // 4. Deleta a imagem do Storage
+        const nomeLimpo = nomeBase
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/[^a-zA-Z0-9]/g, '_');
+
+        try {
+            await supabase.storage.from('esquemas').remove([`${nomeLimpo}.jpg`]);
+            await supabase.storage.from('esquemas').remove([`${nomeLimpo}.png`]);
+            console.log(`✅ Imagem removida do Storage: ${nomeLimpo}`);
+        } catch (e) {
+            console.warn('⚠️ Imagem não encontrada no Storage:', e.message);
+        }
+
+        res.json({ success: true, message: `Manual "${nomeBase}" deletado` });
+    } catch (error) {
+        console.error('❌ Erro ao deletar manual:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// ============================================
+// MARCAR MANUAL COMO REVISADO / NÃO REVISADO
+// ============================================
+app.put('/api/manuais/:nome/revisado', async (req, res) => {
+    try {
+        const nomeBase = decodeURIComponent(req.params.nome);
+        const { revisado } = req.body;
+
+        console.log(`📝 Marcando manual "${nomeBase}" como: ${revisado ? 'REVISADO' : 'NÃO REVISADO'}`);
+
+        const updates = {
+            revisado: revisado === true,
+            data_revisao: revisado === true ? new Date().toISOString() : null
+        };
+
+        const { data, error } = await supabase
+            .from('manuais')
+            .update(updates)
+            .ilike('nome_base', nomeBase)
+            .select()
+            .single();
+
+        if (error) throw error;
+
+        res.json({ success: true, manual: data });
+    } catch (error) {
+        console.error('❌ Erro ao marcar como revisado:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// ============================================
+// LISTAR MANUAIS (com filtro de revisado)
+// ============================================
+app.get('/api/manuais', async (req, res) => {
+    try {
+        const { filtro } = req.query; // 'todos', 'revisados', 'nao_revisados'
+
+        let query = supabase
+            .from('manuais')
+            .select('*')
+            .order('nome_base', { ascending: true });
+
+        if (filtro === 'revisados') {
+            query = query.eq('revisado', true);
+        } else if (filtro === 'nao_revisados') {
+            query = query.or('revisado.eq.false,revisado.is.null');
+        }
+
+        const { data: manuais, error } = await query;
+        if (error) throw error;
+
+        // Adiciona contador de peças
+        for (const manual of manuais) {
+            const { count } = await supabase
+                .from('pecas_catalogo')
+                .select('*', { count: 'exact', head: true })
+                .eq('manual_id', manual.id);
+            manual.total_pecas = count || 0;
+        }
+
+        res.json({ success: true, manuais });
+    } catch (error) {
+        console.error('❌ Erro ao listar manuais:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
 app.put('/api/pedidos/:id/orcamento', async (req, res) => {
     try {
         const id = req.params.id;

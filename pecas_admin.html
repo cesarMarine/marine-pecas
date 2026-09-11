@@ -17,7 +17,6 @@
 
         .container { max-width: 1600px; margin: 0 auto; }
 
-        /* HEADER */
         .header {
             display: flex;
             justify-content: space-between;
@@ -34,7 +33,6 @@
             top: 0;
             z-index: 100;
         }
-
         .header h1 { color: #2d3436; font-size: 18px; font-weight: 700; }
         .header h1 span { color: #e94560; }
         .header .info { color: #636e72; font-size: 12px; }
@@ -48,12 +46,51 @@
             cursor: pointer;
             font-size: 13px;
             font-weight: 600;
-            transition: 0.2s;
             text-decoration: none;
         }
         .btn-voltar:hover { background: #b2bec3; }
 
-        /* CONFIG GLOBAL */
+        /* FILTRO */
+        .barra-filtros {
+            background: #ffffff;
+            border: 2px solid #dce1e8;
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin-bottom: 10px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+        }
+        .barra-filtros label {
+            font-size: 13px;
+            font-weight: 700;
+            color: #2d3436;
+        }
+        .barra-filtros select {
+            padding: 8px 14px;
+            border: 2px solid #dce1e8;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            background: #f8f9fa;
+            cursor: pointer;
+            min-width: 200px;
+        }
+        .barra-filtros select:focus {
+            border-color: #1a237e;
+            outline: none;
+        }
+        .barra-filtros .contador {
+            background: #1a237e;
+            color: white;
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
         .config-global {
             background: #ffffff;
             border: 2px solid #dce1e8;
@@ -95,47 +132,107 @@
             cursor: pointer;
             font-size: 11px;
             font-weight: 600;
-            transition: 0.2s;
         }
         .btn-salvar-config:hover { background: #00a381; }
 
-        /* LISTA DE MANUAIS */
+        /* GRID DE MANUAIS */
         .grid-manuais {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 10px;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 12px;
             padding: 15px;
             background: #ffffff;
             border: 1px solid #dce1e8;
             border-radius: 10px;
         }
-        .btn-manual {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 15px;
-            background: #f8f9fa;
+
+        .card-manual {
+            background: #ffffff;
             border: 2px solid #e0e0e0;
             border-radius: 10px;
-            cursor: pointer;
+            padding: 12px;
             transition: all 0.3s;
-            text-align: center;
-            min-height: 90px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
-        .btn-manual:hover { border-color: #e94560; background: #fef0f2; }
-        .btn-manual.ativo {
+        .card-manual:hover {
             border-color: #e94560;
-            background: #fef0f2;
-            box-shadow: 0 0 0 3px rgba(233, 69, 96, 0.2);
+            box-shadow: 0 4px 12px rgba(233, 69, 96, 0.15);
         }
-        .btn-manual .nome {
-            font-weight: bold;
-            font-size: 12px;
+        .card-manual.revisado {
+            background: #f0fdf8;
+            border-color: #00b894;
+        }
+        .card-manual.revisado::before {
+            content: '✅ REVISADO';
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: #00b894;
+            color: white;
+            font-size: 9px;
+            font-weight: 800;
+            padding: 3px 8px;
+            border-radius: 10px;
+            letter-spacing: 0.5px;
+        }
+        .card-manual.ativo {
+            border-color: #1a237e;
+            box-shadow: 0 0 0 3px rgba(26, 35, 126, 0.2);
+        }
+
+        .card-manual .nome {
+            font-weight: 700;
+            font-size: 13px;
             color: #2d3436;
             word-break: break-word;
+            padding-right: 70px;
+            margin-bottom: 4px;
         }
-        .btn-manual .info { font-size: 10px; color: #636e72; margin-top: 5px; }
+        .card-manual .info {
+            font-size: 11px;
+            color: #636e72;
+        }
+
+        .card-manual .acoes {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+            margin-top: 4px;
+        }
+        .card-manual .acoes button {
+            flex: 1;
+            padding: 6px 8px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: 700;
+            transition: 0.2s;
+            white-space: nowrap;
+        }
+        .btn-abrir {
+            background: #0984e3;
+            color: white;
+        }
+        .btn-abrir:hover { background: #0652DD; }
+        .btn-revisar {
+            background: #00b894;
+            color: white;
+        }
+        .btn-revisar:hover { background: #00a381; }
+        .btn-desrevisar {
+            background: #f39c12;
+            color: white;
+        }
+        .btn-desrevisar:hover { background: #e67e22; }
+        .btn-deletar-manual {
+            background: #e94560;
+            color: white;
+        }
+        .btn-deletar-manual:hover { background: #c62828; }
 
         /* EDITOR */
         .editor-container {
@@ -163,12 +260,10 @@
             max-height: 70vh;
             overflow-y: auto;
             padding: 10px;
-            transition: width 0.3s ease;
         }
         .lista-pecas-wrapper.oculto { display: none; }
         .lista-pecas-wrapper h3 { margin-bottom: 10px; font-size: 14px; }
 
-        /* BARRA DE AÇÕES DOS PINS */
         .barra-pin-acoes {
             background: #fff3cd;
             border: 2px solid #ffc107;
@@ -193,25 +288,14 @@
             cursor: pointer;
             font-size: 12px;
             font-weight: 700;
-            transition: 0.2s;
         }
-        .barra-pin-acoes .btn-duplicar {
-            background: #0984e3;
-            color: white;
-        }
+        .barra-pin-acoes .btn-duplicar { background: #0984e3; color: white; }
         .barra-pin-acoes .btn-duplicar:hover { background: #0652DD; }
-        .barra-pin-acoes .btn-deletar {
-            background: #e94560;
-            color: white;
-        }
+        .barra-pin-acoes .btn-deletar { background: #e94560; color: white; }
         .barra-pin-acoes .btn-deletar:hover { background: #c62828; }
-        .barra-pin-acoes .btn-limpar {
-            background: #6c5ce7;
-            color: white;
-        }
+        .barra-pin-acoes .btn-limpar { background: #6c5ce7; color: white; }
         .barra-pin-acoes .btn-limpar:hover { background: #5a4bd1; }
 
-        /* DIAGRAMA */
         .diagrama-wrapper {
             position: relative;
             background: #f8f9fa;
@@ -265,7 +349,6 @@
             font-size: 13px;
             font-weight: 700;
             color: #2d3436;
-            transition: 0.2s;
         }
         .zoom-controls button:hover {
             background: #e94560;
@@ -358,7 +441,6 @@
             border: 2px solid white;
         }
 
-        /* Estilos dos Pins */
         .pin-estilo-1 {
             background: var(--pin-cor, #e94560) !important;
             border-radius: 50% !important;
@@ -370,13 +452,11 @@
             background: var(--pin-cor, #0984e3) !important;
             border-radius: 4px !important;
             color: var(--pin-fonte-cor, white) !important;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
             padding: 2px 5px !important;
         }
         .pin-estilo-3 {
             background: transparent !important;
             border: none !important;
-            box-shadow: none !important;
             color: var(--pin-fonte-cor, #2d3436) !important;
             text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff, 0 0 8px rgba(255,255,255,0.8) !important;
             padding: 0 2px !important;
@@ -385,13 +465,11 @@
             background: transparent !important;
             border: 2px solid rgba(255, 255, 255, 0.9) !important;
             border-radius: 4px !important;
-            box-shadow: 0 0 12px rgba(255, 255, 255, 0.5) !important;
             color: var(--pin-fonte-cor, #2d3436) !important;
             padding: 1px 5px !important;
         }
         .pin-estilo-5 {
             background: rgba(255, 255, 255, 0.6) !important;
-            backdrop-filter: blur(2px) !important;
             border: 1px solid rgba(255, 255, 255, 0.8) !important;
             border-radius: 4px !important;
             color: var(--pin-fonte-cor, #2d3436) !important;
@@ -403,7 +481,6 @@
             border: none !important;
             color: var(--pin-fonte-cor, white) !important;
             padding: 1px 5px !important;
-            line-height: 1.2 !important;
         }
         .pin-estilo-7 {
             background: #fff !important;
@@ -411,7 +488,6 @@
             border-radius: 4px !important;
             color: var(--pin-cor, #2d3436) !important;
             padding: 0px 4px !important;
-            line-height: 1.2 !important;
         }
         .pin-estilo-8 {
             background: transparent !important;
@@ -421,7 +497,6 @@
             padding: 1px 5px !important;
         }
 
-        /* ITENS DA LISTA */
         .item-peca {
             display: flex;
             align-items: center;
@@ -466,7 +541,6 @@
             color: #2d3436;
         }
 
-        /* BOTÕES */
         .btn-adicionar-hotspot {
             background: #e94560;
             color: white;
@@ -477,7 +551,6 @@
             font-size: 12px;
             font-weight: bold;
             margin-top: 10px;
-            transition: 0.2s;
         }
         .btn-adicionar-hotspot:hover { background: #c62828; }
 
@@ -492,7 +565,6 @@
             font-weight: bold;
             margin-top: 15px;
             width: 100%;
-            transition: 0.2s;
         }
         .btn-salvar:hover {
             background: #00a381;
@@ -535,9 +607,85 @@
             font-size: 11px;
             font-weight: bold;
             margin-bottom: 10px;
-            transition: 0.2s;
         }
         .btn-ocultar-lista:hover { background: #0652DD; }
+
+        /* MODAL SENHA */
+        .modal-senha-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-senha-overlay.active { display: flex; }
+        .modal-senha {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            animation: modalIn 0.3s ease;
+        }
+        .modal-senha h2 {
+            color: #e94560;
+            margin-bottom: 10px;
+            font-size: 22px;
+        }
+        .modal-senha p {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        .modal-senha input[type="password"] {
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            text-align: center;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            letter-spacing: 3px;
+            margin-bottom: 15px;
+        }
+        .modal-senha input[type="password"]:focus {
+            border-color: #e94560;
+            outline: none;
+        }
+        .modal-senha .botoes {
+            display: flex;
+            gap: 10px;
+        }
+        .modal-senha .botoes button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .modal-senha .btn-cancelar { background: #e0e0e0; color: #333; }
+        .modal-senha .btn-cancelar:hover { background: #bdbdbd; }
+        .modal-senha .btn-confirmar { background: #e94560; color: white; }
+        .modal-senha .btn-confirmar:hover { background: #c62828; }
+        .modal-senha .erro-senha {
+            color: #e94560;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            min-height: 20px;
+        }
+        @keyframes modalIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
     </style>
 </head>
 <body>
@@ -547,9 +695,20 @@
         <div class="header">
             <div>
                 <h1>📂 <span>Admin</span> · Manuais & Hotspots</h1>
-                <span class="info">Clique num pin para selecionar → depois use Duplicar/Deletar</span>
+                <span class="info">Revise manuais, marque como revisado e gerencie hotspots</span>
             </div>
             <button class="btn-voltar" onclick="window.location.href='/'">← Início</button>
+        </div>
+
+        <!-- BARRA DE FILTROS -->
+        <div class="barra-filtros">
+            <label for="filtro-revisao">📋 Mostrar:</label>
+            <select id="filtro-revisao" onchange="carregarManuais()">
+                <option value="nao_revisados" selected>🔴 Não Revisados (padrão)</option>
+                <option value="revisados">✅ Apenas Revisados</option>
+                <option value="todos">📚 Todos os Manuais</option>
+            </select>
+            <span class="contador" id="contador-manuais">0 manual(is)</span>
         </div>
 
         <!-- CONFIGURAÇÕES -->
@@ -557,7 +716,7 @@
             <div class="grupo">
                 <label>Tamanho:</label>
                 <input type="number" id="config-tamanho-fonte" value="12" min="6" max="30" onchange="aplicarConfiguracoes()">
-                <label style="margin-left:4px;">px</label>
+                <label>px</label>
             </div>
             <div class="grupo">
                 <label>Cor:</label>
@@ -582,7 +741,7 @@
             </div>
             <div class="grupo">
                 <button class="btn-salvar-config" onclick="salvarConfiguracoes()">💾 Salvar</button>
-                <span class="status-salvo" id="status-salvo" style="font-size:11px; color:#00b894; display:none;">✅ Salvo!</span>
+                <span id="status-salvo" style="font-size:11px; color:#00b894; display:none;">✅ Salvo!</span>
             </div>
         </div>
 
@@ -599,9 +758,7 @@
             <h2 id="titulo-manual" style="margin-bottom: 15px; color: #2d3436;">📄 Manual</h2>
 
             <div class="editor-layout">
-                <!-- ÁREA DA IMAGEM (80%) -->
                 <div class="editor-imagem-area">
-                    <!-- BARRA DE AÇÕES DO PIN SELECIONADO -->
                     <div class="barra-pin-acoes" id="barra-pin-acoes">
                         <span class="info-pin" id="info-pin-selecionado">Pin selecionado</span>
                         <button class="btn-duplicar" onclick="duplicarPinSelecionado()">📋 Duplicar</button>
@@ -621,10 +778,10 @@
                         </div>
                         <div class="zoom-controls">
                             <button onclick="zoomOut()">−</button>
-                            <span class="zoom-level" id="zoom-level">100%</span>
+                            <span id="zoom-level">100%</span>
                             <button onclick="zoomIn()">+</button>
                             <button onclick="zoomReset()" style="font-size:11px;">⟲</button>
-                            <button id="btn-olho" onclick="toggleOlho()" title="Mostrar/Esconder Hotspots" style="background:#1a237e; color:white;">👁️</button>
+                            <button id="btn-olho" onclick="toggleOlho()" style="background:#1a237e; color:white;">👁️</button>
                         </div>
                     </div>
                     <button class="btn-adicionar-hotspot" onclick="adicionarHotspotManual()">➕ Adicionar Hotspot Manual</button>
@@ -632,7 +789,6 @@
                     <div class="status-msg" id="status-msg"></div>
                 </div>
 
-                <!-- QUADRO DE PEÇAS (22%) -->
                 <div class="lista-pecas-wrapper" id="lista-pecas">
                     <button class="btn-ocultar-lista" onclick="ocultarLista()">⬅ Ocultar</button>
                     <h3>📋 Peças do Manual</h3>
@@ -644,6 +800,20 @@
         </div>
     </div>
 
+    <!-- MODAL SENHA -->
+    <div class="modal-senha-overlay" id="modal-senha">
+        <div class="modal-senha">
+            <h2>🔒 Confirmação de Segurança</h2>
+            <p id="texto-senha">Digite a senha para deletar</p>
+            <div class="erro-senha" id="erro-senha"></div>
+            <input type="password" id="input-senha" placeholder="••••••••" onkeydown="if(event.key==='Enter') confirmarSenha()">
+            <div class="botoes">
+                <button class="btn-cancelar" onclick="fecharModalSenha()">Cancelar</button>
+                <button class="btn-confirmar" onclick="confirmarSenha()">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         let manualAtual = null;
         let hotspots = [];
@@ -651,6 +821,7 @@
         let zoomLevel = 1;
         let olhoAberto = true;
         let pinSelecionado = null;
+        let acaoPosSenha = null;
 
         let config = {
             tamanhoFonte: 12,
@@ -660,15 +831,168 @@
         };
 
         const ESTILOS = {
-            '1': { nome: 'Círculo', class: 'pin-estilo-1' },
-            '2': { nome: 'Quadrado', class: 'pin-estilo-2' },
-            '3': { nome: 'Sem Fundo', class: 'pin-estilo-3' },
-            '4': { nome: 'Borda', class: 'pin-estilo-4' },
-            '5': { nome: 'Transparente', class: 'pin-estilo-5' },
-            '6': { nome: 'Fundo Ajustado', class: 'pin-estilo-6' },
-            '7': { nome: 'Ajustado c/ Borda', class: 'pin-estilo-7' },
-            '8': { nome: 'Pontilhado', class: 'pin-estilo-8' }
+            '1': { class: 'pin-estilo-1' },
+            '2': { class: 'pin-estilo-2' },
+            '3': { class: 'pin-estilo-3' },
+            '4': { class: 'pin-estilo-4' },
+            '5': { class: 'pin-estilo-5' },
+            '6': { class: 'pin-estilo-6' },
+            '7': { class: 'pin-estilo-7' },
+            '8': { class: 'pin-estilo-8' }
         };
+
+        // ============================================
+        // SENHA
+        // ============================================
+        function pedirSenha(texto, callback) {
+            acaoPosSenha = callback;
+            document.getElementById('texto-senha').textContent = texto || 'Digite a senha';
+            document.getElementById('erro-senha').textContent = '';
+            document.getElementById('input-senha').value = '';
+            document.getElementById('modal-senha').classList.add('active');
+            setTimeout(() => document.getElementById('input-senha').focus(), 300);
+        }
+
+        function fecharModalSenha() {
+            document.getElementById('modal-senha').classList.remove('active');
+            acaoPosSenha = null;
+        }
+
+        function confirmarSenha() {
+            const senha = document.getElementById('input-senha').value;
+            if (senha !== 'MEUPATO') {
+                document.getElementById('erro-senha').textContent = '❌ Senha incorreta!';
+                document.getElementById('input-senha').value = '';
+                document.getElementById('input-senha').focus();
+                return;
+            }
+            if (acaoPosSenha) {
+                const cb = acaoPosSenha;
+                fecharModalSenha();
+                cb();
+            }
+        }
+
+        // ============================================
+        // CARREGAR MANUAIS (COM FILTRO)
+        // ============================================
+        async function carregarManuais() {
+            const grid = document.getElementById('grid-manuais');
+            const filtro = document.getElementById('filtro-revisao').value;
+
+            grid.innerHTML = `
+                <div style="grid-column: 1/-1; text-align:center; color:#888; padding:20px;">
+                    <div class="spinner" style="margin:0 auto 10px; width:30px; height:30px; border-width:3px;"></div>
+                    Carregando manuais...
+                </div>
+            `;
+
+            try {
+                const res = await fetch(`/api/manuais?filtro=${filtro}`);
+                const data = await res.json();
+
+                if (!data.success) {
+                    grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; color:#e94560; padding:20px;">❌ ${data.error}</div>`;
+                    return;
+                }
+
+                document.getElementById('contador-manuais').textContent = `${data.manuais.length} manual(is)`;
+
+                if (data.manuais.length === 0) {
+                    const msg = filtro === 'nao_revisados' 
+                        ? '🎉 Todos os manuais foram revisados!' 
+                        : '📭 Nenhum manual encontrado';
+                    grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; color:#888; padding:20px;">${msg}</div>`;
+                    return;
+                }
+
+                grid.innerHTML = '';
+                data.manuais.forEach(manual => {
+                    const card = document.createElement('div');
+                    card.className = 'card-manual' + (manual.revisado ? ' revisado' : '');
+                    card.dataset.nome = manual.nome_base;
+
+                    const dataRev = manual.data_revisao 
+                        ? new Date(manual.data_revisao).toLocaleDateString('pt-BR')
+                        : '';
+
+                    card.innerHTML = `
+                        <div class="nome">${manual.nome_base}</div>
+                        <div class="info">
+                            📦 ${manual.total_pecas || 0} peças
+                            ${dataRev ? `<br>✅ Revisado em ${dataRev}` : ''}
+                        </div>
+                        <div class="acoes">
+                            <button class="btn-abrir" onclick="abrirManual('${manual.nome_base}')">📂 Abrir</button>
+                            ${manual.revisado 
+                                ? `<button class="btn-desrevisar" onclick="marcarRevisado('${manual.nome_base}', false)">↩️ Desmarcar</button>`
+                                : `<button class="btn-revisar" onclick="marcarRevisado('${manual.nome_base}', true)">✅ Revisar</button>`
+                            }
+                            <button class="btn-deletar-manual" onclick="deletarManual('${manual.nome_base}')">🗑️</button>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+            } catch (error) {
+                grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; color:#e94560; padding:20px;">❌ ${error.message}</div>`;
+            }
+        }
+
+        // ============================================
+        // MARCAR COMO REVISADO
+        // ============================================
+        async function marcarRevisado(nome, revisado) {
+            const acao = revisado ? 'REVISADO' : 'NÃO REVISADO';
+            if (!confirm(`Marcar o manual "${nome}" como ${acao}?`)) return;
+
+            try {
+                const res = await fetch(`/api/manuais/${encodeURIComponent(nome)}/revisado`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ revisado: revisado })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    // Fecha o editor se estiver aberto
+                    document.getElementById('editor-container').classList.remove('ativo');
+                    manualAtual = null;
+                    // Recarrega a lista
+                    carregarManuais();
+                } else {
+                    alert('❌ ' + data.error);
+                }
+            } catch (error) {
+                alert('❌ Erro: ' + error.message);
+            }
+        }
+
+        // ============================================
+        // DELETAR MANUAL (COM SENHA)
+        // ============================================
+        function deletarManual(nome) {
+            pedirSenha(`🗑️ Deletar o manual "${nome}" permanentemente?\n\nDigite a senha:`, async () => {
+                try {
+                    const res = await fetch(`/api/manuais/${encodeURIComponent(nome)}`, {
+                        method: 'DELETE'
+                    });
+
+                    const data = await res.json();
+
+                    if (data.success) {
+                        alert(`✅ Manual "${nome}" deletado com sucesso!`);
+                        document.getElementById('editor-container').classList.remove('ativo');
+                        manualAtual = null;
+                        carregarManuais();
+                    } else {
+                        alert('❌ ' + data.error);
+                    }
+                } catch (error) {
+                    alert('❌ Erro: ' + error.message);
+                }
+            });
+        }
 
         // ============================================
         // CONFIGURAÇÕES
@@ -710,7 +1034,6 @@
                     })
                 });
                 const data = await res.json();
-
                 if (data.success) {
                     const status = document.getElementById('status-salvo');
                     status.style.display = 'block';
@@ -752,42 +1075,6 @@
         }
 
         // ============================================
-        // CARREGAR MANUAIS
-        // ============================================
-        async function carregarManuais() {
-            const grid = document.getElementById('grid-manuais');
-            try {
-                const res = await fetch('/api/manuais');
-                const data = await res.json();
-
-                if (!data.success) {
-                    grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; color:#e94560; padding:20px;">❌ ${data.error}</div>`;
-                    return;
-                }
-
-                if (data.manuais.length === 0) {
-                    grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; color:#888; padding:20px;">📭 Nenhum manual encontrado</div>`;
-                    return;
-                }
-
-                grid.innerHTML = '';
-                data.manuais.forEach(manual => {
-                    const btn = document.createElement('div');
-                    btn.className = 'btn-manual';
-                    btn.dataset.nome = manual.nome_base;
-                    btn.innerHTML = `
-                        <div class="nome">${manual.nome_base}</div>
-                        <div class="info">${manual.total_pecas || 0} peças</div>
-                    `;
-                    btn.onclick = () => abrirManual(manual.nome_base);
-                    grid.appendChild(btn);
-                });
-            } catch (error) {
-                grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; color:#e94560; padding:20px;">❌ ${error.message}</div>`;
-            }
-        }
-
-        // ============================================
         // ABRIR MANUAL
         // ============================================
         async function abrirManual(nome) {
@@ -797,9 +1084,9 @@
             const listaItens = document.getElementById('lista-itens');
             const titulo = document.getElementById('titulo-manual');
 
-            document.querySelectorAll('.btn-manual').forEach(b => b.classList.remove('ativo'));
-            document.querySelectorAll('.btn-manual').forEach(b => {
-                if (b.dataset.nome === nome) b.classList.add('ativo');
+            document.querySelectorAll('.card-manual').forEach(c => c.classList.remove('ativo'));
+            document.querySelectorAll('.card-manual').forEach(c => {
+                if (c.dataset.nome === nome) c.classList.add('ativo');
             });
 
             document.querySelectorAll('.pin-editor').forEach(p => p.remove());
@@ -807,6 +1094,7 @@
             document.getElementById('barra-pin-acoes').classList.remove('ativa');
 
             editor.classList.add('ativo');
+            editor.scrollIntoView({ behavior: 'smooth', block: 'start' });
             loading.style.display = 'block';
             img.style.display = 'none';
             titulo.textContent = `📄 ${nome}`;
@@ -852,7 +1140,7 @@
                 return;
             }
 
-            const numero = prompt('Digite o número da peça (ex: 99):');
+            const numero = prompt('Digite o número da peça:');
             if (!numero) return;
 
             const peca = pecas.find(p => String(p.numero) === String(numero));
@@ -861,19 +1149,16 @@
                 return;
             }
 
-            // 🔥 USA O NOME DO EXCEL SEMPRE
-            const novoHotspot = {
+            hotspots.push({
                 numero: String(peca.numero),
-                nome: peca.nome, // ← SEMPRE do Excel
+                nome: peca.nome,
                 x_percent: 50,
                 y_percent: 50
-            };
+            });
 
-            hotspots.push(novoHotspot);
             renderizarPinos();
             renderizarLista();
 
-            // Destaca o novo pin
             const pins = document.querySelectorAll(`.pin-editor[data-numero="${numero}"]`);
             const ultimoPin = pins[pins.length - 1];
             if (ultimoPin) {
@@ -889,17 +1174,14 @@
             document.querySelectorAll('.pin-editor').forEach(p => p.remove());
             const wrapper = document.getElementById('imagem-wrapper');
 
-            // Conta quantas vezes cada número aparece
             const contagem = {};
             hotspots.forEach(h => {
                 contagem[h.numero] = (contagem[h.numero] || 0) + 1;
             });
 
-            // Contador atual para mostrar badge
             const contadorAtual = {};
 
             hotspots.forEach((hotspot, index) => {
-                // 🔥 SEMPRE BUSCA O NOME DO EXCEL
                 const peca = pecas.find(p => String(p.numero) === String(hotspot.numero));
                 const nomePeca = peca ? peca.nome : 'Peça';
 
@@ -913,13 +1195,11 @@
                 pin.style.top = `${hotspot.y_percent}%`;
                 pin.innerText = hotspot.numero;
 
-                // 🔥 TOOLTIP: SÓ número + nome (SEM observação, SEM "(1ª ocorrência)")
                 const tooltip = document.createElement('span');
                 tooltip.className = 'tooltip';
                 tooltip.textContent = `#${hotspot.numero} - ${nomePeca}`;
                 pin.appendChild(tooltip);
 
-                // Badge se for duplicado
                 contadorAtual[hotspot.numero] = (contadorAtual[hotspot.numero] || 0) + 1;
                 if (contagem[hotspot.numero] > 1) {
                     const badge = document.createElement('span');
@@ -928,20 +1208,17 @@
                     pin.appendChild(badge);
                 }
 
-                // Eventos
                 pin.addEventListener('mousedown', (e) => iniciarDrag(e, pin));
                 pin.addEventListener('touchstart', (e) => iniciarDragTouch(e, pin), { passive: true });
-                pin.addEventListener('click', (e) => {
+                pin.addEventListener('click', () => {
                     if (!dragging) selecionarPin(pin);
                 });
 
                 wrapper.appendChild(pin);
             });
 
-            // Reaplica configurações visuais
             aplicarConfiguracoes();
 
-            // Reaplica seleção se havia
             if (pinSelecionado !== null) {
                 const pin = document.querySelector(`.pin-editor[data-index="${pinSelecionado}"]`);
                 if (pin) pin.classList.add('selecionado');
@@ -952,9 +1229,6 @@
             }
         }
 
-        // ============================================
-        // SELECIONAR PIN
-        // ============================================
         function selecionarPin(pin) {
             document.querySelectorAll('.pin-editor').forEach(p => p.classList.remove('selecionado'));
             pin.classList.add('selecionado');
@@ -964,7 +1238,7 @@
             const peca = pecas.find(p => String(p.numero) === String(numero));
             const nome = peca ? peca.nome : 'Peça';
 
-            document.getElementById('info-pin-selecionado').textContent = `🎯 Pin selecionado: #${numero} - ${nome}`;
+            document.getElementById('info-pin-selecionado').textContent = `🎯 Pin: #${numero} - ${nome}`;
             document.getElementById('barra-pin-acoes').classList.add('ativa');
         }
 
@@ -974,9 +1248,6 @@
             document.getElementById('barra-pin-acoes').classList.remove('ativa');
         }
 
-        // ============================================
-        // DUPLICAR PIN SELECIONADO
-        // ============================================
         function duplicarPinSelecionado() {
             if (pinSelecionado === null) {
                 alert('⚠️ Selecione um pin primeiro!');
@@ -984,19 +1255,14 @@
             }
 
             const pinOriginal = hotspots[pinSelecionado];
-            if (!pinOriginal) {
-                alert('⚠️ Pin não encontrado!');
-                return;
-            }
+            if (!pinOriginal) return;
 
-            // 🔥 USA O NOME DO EXCEL SEMPRE
             const peca = pecas.find(p => String(p.numero) === String(pinOriginal.numero));
             const nome = peca ? peca.nome : 'Peça';
 
-            // Cria cópia ligeiramente deslocada
             const novoHotspot = {
                 numero: String(pinOriginal.numero),
-                nome: nome, // ← SEMPRE do Excel
+                nome: nome,
                 x_percent: Math.min(100, Math.max(0, parseFloat(pinOriginal.x_percent) + 3)),
                 y_percent: Math.min(100, Math.max(0, parseFloat(pinOriginal.y_percent) + 3))
             };
@@ -1007,7 +1273,6 @@
             renderizarPinos();
             renderizarLista();
 
-            // Seleciona o novo pin
             setTimeout(() => {
                 const novoPin = document.querySelector(`.pin-editor[data-index="${novoIndex}"]`);
                 if (novoPin) {
@@ -1018,9 +1283,6 @@
             }, 100);
         }
 
-        // ============================================
-        // DELETAR PIN SELECIONADO
-        // ============================================
         function deletarPinSelecionado() {
             if (pinSelecionado === null) {
                 alert('⚠️ Selecione um pin primeiro!');
@@ -1045,23 +1307,11 @@
         // DRAG & DROP
         // ============================================
         let dragging = false;
-        let currentPin = null;
-        let dragData = null;
-        let mouseMoveuDistancia = 0;
 
         function iniciarDrag(e, pin) {
-            dragging = false; // ainda não é drag, só se mover
-            mouseMoveuDistancia = 0;
-            currentPin = pin;
-
+            dragging = false;
             const startX = e.clientX;
             const startY = e.clientY;
-
-            dragData = {
-                pin: pin,
-                startX: e.clientX,
-                startY: e.clientY
-            };
 
             const onMove = (moveEvent) => {
                 const dx = moveEvent.clientX - startX;
@@ -1094,17 +1344,13 @@
                 if (dragging) {
                     pin.classList.remove('dragging');
                     const index = parseInt(pin.dataset.index);
-                    const x = parseFloat(pin.dataset.x);
-                    const y = parseFloat(pin.dataset.y);
                     if (hotspots[index]) {
-                        hotspots[index].x_percent = x;
-                        hotspots[index].y_percent = y;
+                        hotspots[index].x_percent = parseFloat(pin.dataset.x);
+                        hotspots[index].y_percent = parseFloat(pin.dataset.y);
                     }
                 }
 
                 setTimeout(() => { dragging = false; }, 100);
-                currentPin = null;
-                dragData = null;
             };
 
             document.addEventListener('mousemove', onMove);
@@ -1116,15 +1362,8 @@
             if (!touch) return;
 
             dragging = false;
-            currentPin = pin;
             const startX = touch.clientX;
             const startY = touch.clientY;
-
-            dragData = {
-                pin: pin,
-                startX: touch.clientX,
-                startY: touch.clientY
-            };
 
             const onMove = (moveEvent) => {
                 const t = moveEvent.touches[0];
@@ -1160,17 +1399,13 @@
                 if (dragging) {
                     pin.classList.remove('dragging');
                     const index = parseInt(pin.dataset.index);
-                    const x = parseFloat(pin.dataset.x);
-                    const y = parseFloat(pin.dataset.y);
                     if (hotspots[index]) {
-                        hotspots[index].x_percent = x;
-                        hotspots[index].y_percent = y;
+                        hotspots[index].x_percent = parseFloat(pin.dataset.x);
+                        hotspots[index].y_percent = parseFloat(pin.dataset.y);
                     }
                 }
 
                 setTimeout(() => { dragging = false; }, 100);
-                currentPin = null;
-                dragData = null;
             };
 
             document.addEventListener('touchmove', onMove, { passive: false });
@@ -1178,7 +1413,7 @@
         }
 
         // ============================================
-        // RENDERIZAR LISTA DE PEÇAS
+        // LISTA DE PEÇAS
         // ============================================
         function renderizarLista() {
             const listaItens = document.getElementById('lista-itens');
@@ -1188,9 +1423,7 @@
             }
 
             const pecasOrdenadas = [...pecas].sort((a, b) => {
-                const nA = parseInt(a.numero) || 0;
-                const nB = parseInt(b.numero) || 0;
-                return nA - nB;
+                return (parseInt(a.numero) || 0) - (parseInt(b.numero) || 0);
             });
 
             let html = '';
@@ -1210,21 +1443,16 @@
             listaItens.innerHTML = html;
         }
 
-        // ============================================
-        // CLICAR NA PEÇA DA LISTA
-        // ============================================
         function clicarNaPeca(numero) {
             const pins = document.querySelectorAll(`.pin-editor[data-numero="${numero}"]`);
 
             if (pins.length > 0) {
-                // 🔥 EXISTE PIN → PISCA PARA LOCALIZAR
                 pins.forEach(pin => {
                     pin.classList.remove('destacado');
-                    void pin.offsetWidth; // reflow
+                    void pin.offsetWidth;
                     pin.classList.add('destacado');
                 });
 
-                // Scroll até o primeiro
                 const primeiroPin = pins[0];
                 const container = document.getElementById('zoom-container');
                 const rect = primeiroPin.getBoundingClientRect();
@@ -1243,20 +1471,17 @@
                 setTimeout(() => {
                     pins.forEach(pin => pin.classList.remove('destacado'));
                 }, 2500);
-
             } else {
-                // 🔥 NÃO EXISTE PIN → ADICIONA NO CENTRO
                 const peca = pecas.find(p => String(p.numero) === String(numero));
                 if (!peca) return;
 
-                const novoHotspot = {
+                hotspots.push({
                     numero: String(peca.numero),
                     nome: peca.nome,
                     x_percent: 50,
                     y_percent: 50
-                };
+                });
 
-                hotspots.push(novoHotspot);
                 renderizarPinos();
                 renderizarLista();
 
@@ -1270,9 +1495,6 @@
             }
         }
 
-        // ============================================
-        // OCULTAR LISTA
-        // ============================================
         function ocultarLista() {
             const lista = document.getElementById('lista-pecas');
             const btn = document.querySelector('.btn-ocultar-lista');
@@ -1312,9 +1534,6 @@
             document.getElementById('zoom-level').textContent = Math.round(zoomLevel * 100) + '%';
         }
 
-        // ============================================
-        // OLHO (MOSTRAR/ESCONDER)
-        // ============================================
         function toggleOlho() {
             olhoAberto = !olhoAberto;
             const btn = document.getElementById('btn-olho');
@@ -1343,12 +1562,11 @@
             statusMsg.textContent = '⏳ Salvando...';
             statusMsg.style.color = '#1a237e';
 
-            // 🔥 SEMPRE USA O NOME DO EXCEL
             const hotspotsParaSalvar = hotspots.map(h => {
                 const peca = pecas.find(p => String(p.numero) === String(h.numero));
                 return {
                     numero: String(h.numero),
-                    nome: peca ? peca.nome : 'Peça', // ← SEMPRE do Excel
+                    nome: peca ? peca.nome : 'Peça',
                     x_percent: Math.round(parseFloat(h.x_percent) * 100) / 100,
                     y_percent: Math.round(parseFloat(h.y_percent) * 100) / 100
                 };
