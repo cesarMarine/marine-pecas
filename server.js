@@ -376,7 +376,7 @@ app.get('/api/manuais-lista', async (req, res) => {
 // ============================================
 // ROTAS DE CONSULTA
 // ============================================
-
+/*
 app.get('/api/manuais', async (req, res) => {
     try {
         const { data: manuais, error } = await supabase
@@ -390,7 +390,7 @@ app.get('/api/manuais', async (req, res) => {
         res.status(500).json({ success: false, error: error.message });
     }
 });
-
+*/
 app.get('/api/esquemas/:nome', async (req, res) => {
     try {
         const nomeBase = decodeURIComponent(req.params.nome).trim();
