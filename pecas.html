@@ -19,7 +19,6 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* 🔥 TRAVA O SCROLL QUANDO ESTÁ EM ZOOM FULLSCREEN */
         body.zoom-fullscreen-mode {
             overflow: hidden;
         }
@@ -30,6 +29,7 @@
             padding: 0 24px 40px;
         }
 
+        /* ===== TOP BAR ===== */
         .top-bar {
             background: #0a2a4a;
             color: rgba(255, 255, 255, 0.8);
@@ -40,14 +40,12 @@
             overflow-x: auto;
             white-space: nowrap;
         }
-
         .top-bar span {
             display: inline-flex;
             align-items: center;
             gap: 6px;
             margin: 0 12px;
         }
-
         .top-bar i { color: #f8b81f; }
         .top-bar .divider {
             width: 4px;
@@ -59,6 +57,7 @@
             margin: 0 6px;
         }
 
+        /* ===== HEADER ===== */
         .main-header {
             background: #ffffff;
             box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
@@ -67,7 +66,6 @@
             z-index: 100;
             border-bottom: 1px solid #e8edf3;
         }
-
         .header-container {
             max-width: 1400px;
             margin: 0 auto;
@@ -78,20 +76,13 @@
             flex-wrap: wrap;
             gap: 16px;
         }
-
-        .logo-area {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
+        .logo-area { display: flex; align-items: center; gap: 16px; }
         .logo-img {
             height: 45px;
             width: auto;
             object-fit: contain;
             border-radius: 8px;
         }
-
         .logo-text {
             font-weight: 700;
             font-size: 1rem;
@@ -106,14 +97,12 @@
             display: block;
             letter-spacing: 0.3px;
         }
-
         .header-actions {
             display: flex;
             align-items: center;
             gap: 12px;
             flex-wrap: wrap;
         }
-
         .btn-header {
             padding: 8px 20px;
             border-radius: 30px;
@@ -147,6 +136,7 @@
             box-shadow: 0 4px 12px rgba(248, 184, 31, 0.3);
         }
 
+        /* ===== BREADCRUMB ===== */
         .breadcrumb {
             padding: 16px 0 8px;
             font-size: 0.85rem;
@@ -165,6 +155,7 @@
             font-weight: 600;
         }
 
+        /* ===== PRODUTO ATUAL ===== */
         .produto-atual {
             background: white;
             border-radius: 16px;
@@ -207,22 +198,11 @@
             font-size: 0.85rem;
             color: #6b7a8a;
         }
-        .produto-atual .info .detalhes .variacao-tag {
-            background: #e8eaf6;
-            color: #1a237e;
-            padding: 2px 12px;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            display: inline-block;
-        }
-
         .produto-atual .acoes {
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
         }
-
         .btn-acao {
             padding: 8px 18px;
             border-radius: 30px;
@@ -238,43 +218,12 @@
             text-decoration: none;
             touch-action: manipulation;
         }
-        .btn-acao.azul {
-            background: #0984e3;
-            color: white;
-        }
-        .btn-acao.azul:hover {
-            background: #0652DD;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(9, 132, 227, 0.3);
-        }
-        .btn-acao.verde {
-            background: #00b894;
-            color: white;
-        }
-        .btn-acao.verde:hover {
-            background: #00a381;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 184, 148, 0.3);
-        }
-        .btn-acao.vermelho {
-            background: #e94560;
-            color: white;
-        }
-        .btn-acao.vermelho:hover {
-            background: #c62828;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(233, 69, 96, 0.3);
-        }
-        .btn-acao.roxo {
-            background: #6c5ce7;
-            color: white;
-        }
-        .btn-acao.roxo:hover {
-            background: #5a4bd1;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
-        }
+        .btn-acao.azul { background: #0984e3; color: white; }
+        .btn-acao.azul:hover { background: #0652DD; transform: translateY(-2px); }
+        .btn-acao.vermelho { background: #e94560; color: white; }
+        .btn-acao.vermelho:hover { background: #c62828; }
 
+        /* ===== CARD MANUAL ===== */
         .card-manual {
             background: white;
             border-radius: 16px;
@@ -310,6 +259,7 @@
             border: 1px solid #e8edf3;
         }
 
+        /* ===== ABAS (só desktop) ===== */
         .aba-container {
             display: flex;
             gap: 4px;
@@ -330,20 +280,16 @@
             white-space: nowrap;
             touch-action: manipulation;
         }
-        .aba:hover {
-            color: #0a2a4a;
-            background: #f8fafc;
-        }
+        .aba:hover { color: #0a2a4a; background: #f8fafc; }
         .aba.ativo {
             color: #1a237e;
             border-bottom-color: #1a237e;
             font-weight: 600;
         }
-
         .aba-conteudo { display: none; }
         .aba-conteudo.ativo { display: block; }
 
-        /* ===== DIAGRAMA (NORMAL) ===== */
+        /* ===== DIAGRAMA ===== */
         .diagrama-wrapper {
             position: relative;
             width: 100%;
@@ -354,8 +300,6 @@
             min-height: 400px;
             touch-action: pan-x pan-y;
         }
-
-        /* 🔥 QUANDO ENTRA EM ZOOM FULLSCREEN */
         .diagrama-wrapper.zoom-fullscreen {
             position: fixed;
             top: 0;
@@ -378,8 +322,6 @@
             -webkit-overflow-scrolling: touch;
             touch-action: pan-x pan-y;
         }
-
-        /* 🔥 QUANDO ESTÁ EM ZOOM FULLSCREEN, O CONTAINER OCUPA TUDO */
         .zoom-container.zoom-fullscreen-scroll {
             max-height: 100vh;
             height: 100vh;
@@ -393,7 +335,6 @@
             transform-origin: top left;
             transition: transform 0.25s ease;
         }
-
         .imagem-wrapper img {
             width: 100%;
             height: auto;
@@ -403,11 +344,10 @@
             -webkit-backface-visibility: hidden;
             backface-visibility: hidden;
         }
-
         .imagem-wrapper.zoom-150 { transform: scale(1.5); }
         .imagem-wrapper.zoom-200 { transform: scale(2); }
 
-        /* 🔥 INSTRUÇÃO DE TOQUE (SEMPRE VISÍVEL) */
+        /* ===== INSTRUÇÃO DE TOQUE ===== */
         .instrucao-toque {
             background: #e8eaf6;
             border-radius: 8px;
@@ -421,7 +361,7 @@
             font-weight: 500;
         }
 
-        /* 🔥 CONTROLES DE ZOOM (SEMPRE VISÍVEIS) */
+        /* ===== ZOOM CONTROLS ===== */
         .zoom-controls {
             position: absolute;
             bottom: 16px;
@@ -465,7 +405,6 @@
             min-width: 40px;
             text-align: center;
         }
-
         .btn-olho {
             background: #ffffff;
             border: 1px solid #e8edf3;
@@ -488,7 +427,6 @@
             border-color: #1a237e;
         }
 
-        /* 🔥 BOTÃO DE FECHAR (QUANDO ESTÁ EM ZOOM) */
         .btn-fechar-zoom {
             display: none;
             position: absolute;
@@ -510,13 +448,10 @@
             transition: all 0.3s;
             touch-action: manipulation;
         }
-        .btn-fechar-zoom.ativo {
-            display: flex;
-        }
-        .btn-fechar-zoom:hover {
-            background: #c62828;
-        }
+        .btn-fechar-zoom.ativo { display: flex; }
+        .btn-fechar-zoom:hover { background: #c62828; }
 
+        /* ===== PINS ===== */
         .pin-peca {
             position: absolute;
             padding: 4px 8px;
@@ -541,7 +476,6 @@
             touch-action: manipulation;
             -webkit-tap-highlight-color: transparent;
         }
-
         .pin-peca.oculto {
             opacity: 0 !important;
             pointer-events: none !important;
@@ -552,7 +486,6 @@
             pointer-events: auto !important;
             transition: opacity 0.3s ease;
         }
-
         .pin-peca.estilo-1 {
             border-radius: 50%;
             border: 2px solid rgba(255, 255, 255, 0.9);
@@ -560,7 +493,6 @@
             box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
             padding: 2px 5px;
         }
-
         .pin-peca.estilo-2 {
             border-radius: 4px;
             border: 2px solid rgba(255, 255, 255, 0.9);
@@ -568,17 +500,15 @@
             box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
             padding: 2px 5px;
         }
-
         .pin-peca.estilo-3 {
             background: transparent !important;
             border: none !important;
             box-shadow: none !important;
-            text-shadow: -1px -1px 0 #ffffff, 1px -1px 0 #ffffff, -1px 1px 0 #ffffff, 1px 1px 0 #ffffff, 0 0 8px rgba(255, 255, 255, 0.8) !important;
+            text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff, 0 0 8px rgba(255,255,255,0.8) !important;
             padding: 0 2px !important;
             min-width: auto !important;
             min-height: auto !important;
         }
-
         .pin-peca.estilo-4 {
             background: transparent !important;
             border: 2px solid rgba(255, 255, 255, 0.9) !important;
@@ -586,7 +516,6 @@
             box-shadow: 0 0 12px rgba(255, 255, 255, 0.5) !important;
             padding: 1px 5px !important;
         }
-
         .pin-peca.estilo-5 {
             background: rgba(255, 255, 255, 0.6) !important;
             backdrop-filter: blur(2px) !important;
@@ -595,7 +524,6 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
             padding: 1px 5px !important;
         }
-
         .pin-peca.estilo-6 {
             border-radius: 4px;
             border: none;
@@ -608,7 +536,6 @@
             min-width: auto;
             min-height: auto;
         }
-
         .pin-peca.estilo-7 {
             border: 2px solid #2d3436;
             border-radius: 4px;
@@ -621,7 +548,6 @@
             min-width: auto;
             min-height: auto;
         }
-
         .pin-peca.estilo-8 {
             background: transparent !important;
             border: 2px dashed rgba(44, 62, 80, 0.6) !important;
@@ -633,13 +559,11 @@
             from { opacity: 0; transform: translate(-50%, -50%) scale(0); }
             to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
         }
-
         .pin-peca:hover {
             transform: translate(-50%, -50%) scale(1.5) !important;
             z-index: 100;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
         }
-
         .pin-peca .tooltip {
             display: none;
             position: absolute;
@@ -658,17 +582,9 @@
             pointer-events: none;
             z-index: 200;
         }
-        .pin-peca .tooltip::after {
-            content: '';
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            border: 6px solid transparent;
-            border-top-color: rgba(0, 0, 0, 0.9);
-        }
         .pin-peca:hover .tooltip { display: block; }
 
+        /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
             .pin-peca {
                 min-width: 44px !important;
@@ -708,10 +624,7 @@
                 max-height: 55vh;
                 min-height: 300px;
             }
-            .diagrama-wrapper {
-                min-height: 300px;
-                border-radius: 10px;
-            }
+            .diagrama-wrapper { min-height: 300px; border-radius: 10px; }
             .zoom-controls {
                 bottom: 12px;
                 right: 12px;
@@ -724,26 +637,12 @@
                 min-width: 40px;
                 min-height: 40px;
             }
-            .zoom-controls .zoom-level {
-                font-size: 0.7rem;
-                min-width: 30px;
-            }
-            .btn-olho {
-                min-width: 40px;
-                min-height: 40px;
-                font-size: 16px;
-            }
-            .btn-fechar-zoom {
-                padding: 10px 18px;
-                font-size: 0.8rem;
-            }
+            .zoom-controls .zoom-level { font-size: 0.7rem; min-width: 30px; }
+            .btn-olho { min-width: 40px; min-height: 40px; font-size: 16px; }
+            .btn-fechar-zoom { padding: 10px 18px; font-size: 0.8rem; }
             .card-manual { padding: 16px; }
             .produto-atual { padding: 12px 16px; }
-            .produto-atual .info .icone {
-                width: 40px;
-                height: 40px;
-                font-size: 1.2rem;
-            }
+            .produto-atual .info .icone { width: 40px; height: 40px; font-size: 1.2rem; }
             .produto-atual .info .nome { font-size: 1rem; }
             .instrucao-toque { font-size: 0.75rem; }
         }
@@ -754,7 +653,6 @@
                 min-height: 50px !important;
                 font-size: 18px !important;
                 padding: 8px 14px !important;
-                border-width: 3px !important;
             }
             .pin-peca.estilo-3,
             .pin-peca.estilo-4,
@@ -763,38 +661,13 @@
                 min-width: 44px !important;
                 min-height: 44px !important;
                 font-size: 16px !important;
-                padding: 2px 12px !important;
             }
-            .zoom-container {
-                max-height: 50vh;
-                min-height: 250px;
-            }
-            .diagrama-wrapper {
-                min-height: 250px;
-                border-radius: 8px;
-            }
-            .zoom-controls {
-                bottom: 8px;
-                right: 8px;
-                padding: 4px 6px;
-                gap: 3px;
-            }
-            .zoom-controls button {
-                padding: 4px 10px !important;
-                font-size: 14px !important;
-                min-width: 34px;
-                min-height: 34px;
-            }
-            .btn-olho {
-                min-width: 34px;
-                min-height: 34px;
-                font-size: 14px;
-                padding: 2px 8px;
-            }
-            .btn-fechar-zoom {
-                padding: 8px 14px;
-                font-size: 0.75rem;
-            }
+            .zoom-container { max-height: 50vh; min-height: 250px; }
+            .diagrama-wrapper { min-height: 250px; border-radius: 8px; }
+            .zoom-controls { bottom: 8px; right: 8px; padding: 4px 6px; gap: 3px; }
+            .zoom-controls button { padding: 4px 10px !important; font-size: 14px !important; min-width: 34px; min-height: 34px; }
+            .btn-olho { min-width: 34px; min-height: 34px; font-size: 14px; padding: 2px 8px; }
+            .btn-fechar-zoom { padding: 8px 14px; font-size: 0.75rem; }
             .container { padding: 0 12px 30px; }
             .header-container { padding: 10px 12px; }
             .logo-img { height: 32px; }
@@ -807,11 +680,12 @@
             .instrucao-toque { font-size: 0.7rem; padding: 6px 10px; }
         }
 
+        /* ===== GRID PEÇAS ===== */
         .grid-pecas {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
             gap: 8px;
-            max-height: 400px;
+            max-height: 500px;
             overflow-y: auto;
             padding: 4px;
             -webkit-overflow-scrolling: touch;
@@ -839,7 +713,6 @@
             border-color: #1a237e;
             background: #e8eaf6;
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
         }
         .btn-peca .numero-peca {
             font-weight: 700;
@@ -854,6 +727,7 @@
             word-break: break-word;
         }
 
+        /* ===== CARRINHO ===== */
         .card-carrinho {
             background: white;
             border-radius: 16px;
@@ -883,14 +757,12 @@
             font-size: 0.8rem;
             font-weight: 600;
         }
-
         .carrinho-vazio {
             text-align: center;
             padding: 40px 20px;
             color: #8a9aa8;
         }
         .carrinho-vazio .icone { font-size: 48px; margin-bottom: 16px; }
-
         .grupo-produto {
             background: #f8fafc;
             border-radius: 10px;
@@ -909,7 +781,6 @@
             font-size: 0.85rem;
         }
         .grupo-produto .grupo-itens { padding: 8px 16px; }
-
         table {
             width: 100%;
             border-collapse: collapse;
@@ -944,7 +815,6 @@
             border-color: #1a237e;
             outline: none;
         }
-
         .btn-remover {
             background: #e94560;
             color: white;
@@ -954,29 +824,14 @@
             cursor: pointer;
             font-size: 0.75rem;
             font-weight: 600;
-            transition: 0.2s;
-            font-family: inherit;
-            touch-action: manipulation;
         }
         .btn-remover:hover { background: #c62828; }
-
-        .variacao-tag {
-            background: #e8eaf6;
-            color: #1a237e;
-            padding: 2px 10px;
-            border-radius: 12px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            display: inline-block;
-        }
-
         .acoes-carrinho {
             display: flex;
             gap: 12px;
             flex-wrap: wrap;
             margin-top: 16px;
         }
-
         .btn-finalizar {
             background: #1a237e;
             color: white;
@@ -1002,6 +857,7 @@
             transform: none;
         }
 
+        /* ===== MODAL ===== */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -1017,7 +873,6 @@
             padding: 20px;
         }
         .modal-overlay.active { display: flex; }
-
         .modal {
             background: white;
             padding: 32px;
@@ -1033,7 +888,6 @@
             from { transform: scale(0.95) translateY(20px); opacity: 0; }
             to { transform: scale(1) translateY(0); opacity: 1; }
         }
-
         .modal h3 {
             font-size: 1.2rem;
             font-weight: 700;
@@ -1075,16 +929,6 @@
             border: 2px solid #e8edf3;
             border-radius: 8px;
             font-family: inherit;
-            -moz-appearance: textfield;
-        }
-        .modal input[type="number"]::-webkit-outer-spin-button,
-        .modal input[type="number"]::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-        .modal input[type="number"]:focus {
-            border-color: #1a237e;
-            outline: none;
         }
         .modal .modal-actions {
             display: flex;
@@ -1099,21 +943,14 @@
             font-size: 0.9rem;
             font-weight: 600;
             cursor: pointer;
-            transition: 0.2s;
             font-family: inherit;
-            touch-action: manipulation;
         }
-        .modal .btn-adicionar {
-            background: #2e7d32;
-            color: white;
-        }
+        .modal .btn-adicionar { background: #2e7d32; color: white; }
         .modal .btn-adicionar:hover { background: #1b5e20; }
-        .modal .btn-cancelar {
-            background: #e8edf3;
-            color: #333;
-        }
+        .modal .btn-cancelar { background: #e8edf3; color: #333; }
         .modal .btn-cancelar:hover { background: #d5dce4; }
 
+        /* ===== CLIENTE ===== */
         .card-cliente {
             display: none;
             border: 2px solid #1a237e;
@@ -1134,7 +971,6 @@
             font-size: 0.85rem;
             margin-bottom: 16px;
         }
-
         .cliente-grid {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
@@ -1158,7 +994,6 @@
             border-radius: 8px;
             font-size: 0.9rem;
             font-family: inherit;
-            transition: border-color 0.3s;
             background: #fafbfc;
             -webkit-appearance: none;
         }
@@ -1170,14 +1005,7 @@
             box-shadow: 0 0 0 3px rgba(26, 35, 126, 0.1);
             background: white;
         }
-        .cliente-grid textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-
-        .input-group {
-            position: relative;
-        }
+        .input-group { position: relative; }
         .input-group .input-icon {
             position: absolute;
             right: 12px;
@@ -1186,17 +1014,12 @@
             font-size: 1.1rem;
             color: #8a9aa8;
         }
-        .input-group .input-icon.loading {
-            animation: spin 1s linear infinite;
-        }
-
         .acoes-cliente {
             display: flex;
             gap: 12px;
             flex-wrap: wrap;
             margin-top: 20px;
         }
-
         .msg-sucesso {
             background: #d4edda;
             color: #155724;
@@ -1207,8 +1030,18 @@
             display: none;
         }
         .msg-sucesso.show { display: block; }
-        .msg-sucesso strong { font-size: 1rem; }
+        .cnpj-status {
+            font-size: 0.8rem;
+            margin-top: 4px;
+            padding: 4px 12px;
+            border-radius: 6px;
+            display: none;
+        }
+        .cnpj-status.loading { display: block; background: #fff3cd; color: #856404; }
+        .cnpj-status.success { display: block; background: #d4edda; color: #155724; }
+        .cnpj-status.error { display: block; background: #f8d7da; color: #721c24; }
 
+        /* ===== LOADING ===== */
         .loading {
             text-align: center;
             padding: 40px 20px;
@@ -1227,7 +1060,6 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-
         .erro-msg {
             color: #e94560;
             font-weight: 600;
@@ -1236,29 +1068,7 @@
             font-size: 1.1rem;
         }
 
-        .cnpj-status {
-            font-size: 0.8rem;
-            margin-top: 4px;
-            padding: 4px 12px;
-            border-radius: 6px;
-            display: none;
-        }
-        .cnpj-status.loading {
-            display: block;
-            background: #fff3cd;
-            color: #856404;
-        }
-        .cnpj-status.success {
-            display: block;
-            background: #d4edda;
-            color: #155724;
-        }
-        .cnpj-status.error {
-            display: block;
-            background: #f8d7da;
-            color: #721c24;
-        }
-
+        /* ===== FOOTER ===== */
         footer {
             background: #0a2a4a;
             color: rgba(255, 255, 255, 0.8);
@@ -1267,15 +1077,10 @@
             border-top: 2px solid rgba(248, 184, 31, 0.2);
             margin-top: 20px;
         }
-        footer p {
-            font-size: 0.8rem;
-            opacity: 0.7;
-        }
+        footer p { font-size: 0.8rem; opacity: 0.7; }
 
         @media (max-width: 768px) {
-            .cliente-grid {
-                grid-template-columns: 1fr;
-            }
+            .cliente-grid { grid-template-columns: 1fr; }
             .cliente-grid .double { grid-column: span 1; }
             .card-carrinho { padding: 16px; }
             .modal { padding: 24px; margin: 16px; }
@@ -1300,10 +1105,26 @@
             .grupo-produto .grupo-itens { padding: 4px 8px; }
             .grid-pecas { grid-template-columns: repeat(2, 1fr); }
         }
+
+        /* 🔥 LAYOUT VERTICAL MOBILE (SEM ABAS) */
+        @media (max-width: 768px) {
+            .aba-container { display: none !important; }
+            #aba-vista, #aba-lista {
+                display: block !important;
+            }
+            #aba-lista {
+                margin-top: 25px;
+                padding-top: 20px;
+                border-top: 2px dashed #e8edf3;
+            }
+            /* Esconde o botão de olho (já que no celular começa fechado) */
+            #btn-olho { display: none !important; }
+        }
     </style>
 </head>
 <body>
 
+    <!-- ===== TOP BAR ===== -->
     <div class="top-bar">
         <span><i class="fas fa-headset"></i> Suporte Técnico Marine</span>
         <span class="divider"></span>
@@ -1312,6 +1133,7 @@
         <span><i class="fas fa-envelope"></i> atendimento@marinefishing.com.br</span>
     </div>
 
+    <!-- ===== HEADER ===== -->
     <header class="main-header">
         <div class="header-container">
             <div class="logo-area">
@@ -1336,6 +1158,7 @@
 
     <div class="container">
 
+        <!-- ===== BREADCRUMB ===== -->
         <div class="breadcrumb">
             <a href="/"><i class="fas fa-home"></i> Início</a>
             <span> / </span>
@@ -1344,6 +1167,7 @@
             <span class="current" id="breadcrumb-manual">Peças</span>
         </div>
 
+        <!-- ===== PRODUTO ATUAL ===== -->
         <div class="produto-atual" id="barra-produto">
             <div class="info">
                 <div class="icone"><i class="fas fa-fish"></i></div>
@@ -1359,6 +1183,7 @@
             </div>
         </div>
 
+        <!-- ===== MANUAL ===== -->
         <div class="card-manual" id="card-manual" style="display: none;">
             <div class="header-manual">
                 <h2>🎣 <span id="nome-manual">Manual</span> <small id="info-manual2"></small></h2>
@@ -1374,10 +1199,11 @@
                 </div>
             </div>
 
+            <!-- ===== ABA VISTA ===== -->
             <div class="aba-conteudo ativo" id="aba-vista">
                 <div class="instrucao-toque">
                     <i class="fas fa-hand-pointer"></i> 
-                    <span><strong>Toque na imagem</strong> para abrir em tela cheia e dar zoom. Toque em "✕" para fechar.</span>
+                    <span><strong>Toque na imagem</strong> para abrir em tela cheia. Use 2 dedos para dar zoom e 1 dedo para mover. Toque em "✕" para fechar.</span>
                 </div>
                 
                 <div class="diagrama-wrapper" id="diagrama-wrapper">
@@ -1386,7 +1212,6 @@
                         <p>Carregando esquema...</p>
                     </div>
                     
-                    <!-- 🔥 BOTÃO DE FECHAR (SÓ APARECE NO ZOOM) -->
                     <button class="btn-fechar-zoom" id="btn-fechar-zoom" onclick="sairZoomFullscreen()">
                         <i class="fas fa-times"></i> Fechar
                     </button>
@@ -1408,6 +1233,7 @@
                 </div>
             </div>
 
+            <!-- ===== ABA LISTA ===== -->
             <div class="aba-conteudo" id="aba-lista">
                 <p style="color: #6b7a8a; margin-bottom: 16px; font-size: 0.85rem;">
                     💡 <strong>Toque em uma peça</strong> para adicionar ao carrinho.
@@ -1421,6 +1247,7 @@
             </div>
         </div>
 
+        <!-- ===== CARRINHO ===== -->
         <div class="card-carrinho">
             <div class="header-carrinho">
                 <h3><i class="fas fa-shopping-cart"></i> Peças Selecionadas</h3>
@@ -1450,6 +1277,7 @@
             </div>
         </div>
 
+        <!-- ===== FORMULÁRIO CLIENTE ===== -->
         <div class="card-cliente" id="card-cliente">
             <h3>👤 Identificação do Cliente</h3>
             <p class="sub">Preencha os dados para finalizar o pedido.</p>
@@ -1509,6 +1337,7 @@
         </div>
     </div>
 
+    <!-- ===== MODAL ADICIONAR PEÇA ===== -->
     <div class="modal-overlay" id="modal">
         <div class="modal">
             <h3>Adicionar ao Carrinho</h3>
@@ -1526,11 +1355,14 @@
         </div>
     </div>
 
+    <!-- ===== FOOTER ===== -->
     <footer>
         <p>© 2026 Marine Fishing - Todos os direitos reservados</p>
     </footer>
-
     <script>
+        // ============================================
+        // VARIÁVEIS GLOBAIS
+        // ============================================
         let carrinho = [];
         let hotspotAtual = null;
         let manualAtual = null;
@@ -1544,50 +1376,66 @@
         };
         let timeoutCNPJ = null;
 
+        // 🔥 DETECTA SE É MOBILE
+        const isMobile = window.matchMedia('(max-width: 768px)').matches;
+
         // ============================================
-        // ZOOM FULLSCREEN AUTOMÁTICO
+        // ZOOM FULLSCREEN
         // ============================================
         let isZoomFullscreen = false;
+        let pinchStartDistance = 0;
+        let pinchStartZoom = 1;
+        let initialTouchDistance = 0;
 
+        // 🔥 ENTRA EM FULLSCREEN
         function entrarZoomFullscreen(e) {
             if (isZoomFullscreen) return;
 
-            // Ignora se clicou em um PIN (hotspot)
+            // Ignora se clicou em um PIN
             if (e.target.classList.contains('pin-peca')) return;
+            if (e.target.closest('.pin-peca')) return;
+            if (e.target.closest('.zoom-controls')) return;
+            if (e.target.closest('.btn-fechar-zoom')) return;
 
             const diagrama = document.getElementById('diagrama-wrapper');
             const zoomContainer = document.getElementById('zoom-container');
             const btnFechar = document.getElementById('btn-fechar-zoom');
 
-            // Ativa modo fullscreen
             isZoomFullscreen = true;
             diagrama.classList.add('zoom-fullscreen');
             zoomContainer.classList.add('zoom-fullscreen-scroll');
             btnFechar.classList.add('ativo');
             document.body.classList.add('zoom-fullscreen-mode');
 
-            // Calcula posição do toque para centralizar
-            const rect = document.getElementById('imagem-wrapper').getBoundingClientRect();
-            const xRelativo = (e.clientX - rect.left) / rect.width;
-            const yRelativo = (e.clientY - rect.top) / rect.height;
+            // Calcula ponto do toque para centralizar
+            let clientX = e.clientX;
+            let clientY = e.clientY;
+            if (e.touches && e.touches[0]) {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            }
 
-            // Aplica zoom 200%
+            const rect = document.getElementById('imagem-wrapper').getBoundingClientRect();
+            const xRelativo = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+            const yRelativo = Math.max(0, Math.min(1, (clientY - rect.top) / rect.height));
+
             zoomLevel = 2;
             aplicarZoom();
 
-            // Centraliza o scroll no ponto tocado
+            // Centraliza no ponto tocado
             setTimeout(() => {
                 const novoScrollLeft = (xRelativo * zoomContainer.scrollWidth) - (zoomContainer.clientWidth / 2);
                 const novoScrollTop = (yRelativo * zoomContainer.scrollHeight) - (zoomContainer.clientHeight / 2);
                 
                 zoomContainer.scrollTo({
-                    left: novoScrollLeft,
-                    top: novoScrollTop,
+                    left: Math.max(0, novoScrollLeft),
+                    top: Math.max(0, novoScrollTop),
                     behavior: 'smooth'
                 });
             }, 300);
         }
 
+        // 🔥 SAI DO FULLSCREEN
         function sairZoomFullscreen() {
             if (!isZoomFullscreen) return;
 
@@ -1604,6 +1452,86 @@
             zoomReset();
         }
 
+        // 🔥 SETUP DOS GESTOS (PINCH + PAN)
+        function setupZoomGestures() {
+            const zoomContainer = document.getElementById('zoom-container');
+
+            if (!zoomContainer) return;
+
+            // Remove listeners antigos
+            zoomContainer.removeEventListener('touchstart', handleTouchStart);
+            zoomContainer.removeEventListener('touchmove', handleTouchMove);
+            zoomContainer.removeEventListener('touchend', handleTouchEnd);
+
+            // Adiciona novos
+            zoomContainer.addEventListener('touchstart', handleTouchStart, { passive: false });
+            zoomContainer.addEventListener('touchmove', handleTouchMove, { passive: false });
+            zoomContainer.addEventListener('touchend', handleTouchEnd, { passive: true });
+        }
+
+        function handleTouchStart(e) {
+            if (!isZoomFullscreen) return;
+
+            if (e.touches.length === 2) {
+                // 🔥 PINCH ZOOM
+                const touch1 = e.touches[0];
+                const touch2 = e.touches[1];
+                initialTouchDistance = Math.hypot(
+                    touch2.clientX - touch1.clientX,
+                    touch2.clientY - touch1.clientY
+                );
+                pinchStartZoom = zoomLevel;
+                e.preventDefault();
+            }
+        }
+
+        function handleTouchMove(e) {
+            if (!isZoomFullscreen) return;
+
+            if (e.touches.length === 2 && initialTouchDistance > 0) {
+                // 🔥 PINCH ZOOM
+                const touch1 = e.touches[0];
+                const touch2 = e.touches[1];
+                const currentDistance = Math.hypot(
+                    touch2.clientX - touch1.clientX,
+                    touch2.clientY - touch1.clientY
+                );
+
+                const scale = currentDistance / initialTouchDistance;
+                let newZoom = pinchStartZoom * scale;
+
+                // Limita zoom entre 1 e 5
+                newZoom = Math.max(1, Math.min(5, newZoom));
+
+                // Atualiza o zoom em tempo real
+                zoomLevel = newZoom;
+
+                const wrapper = document.getElementById('imagem-wrapper');
+                wrapper.style.transform = `scale(${zoomLevel})`;
+                wrapper.style.transition = 'none';
+
+                // Atualiza o display
+                const zoomDisplay = document.getElementById('zoom-level');
+                if (zoomDisplay) {
+                    zoomDisplay.textContent = Math.round(zoomLevel * 100) + '%';
+                }
+
+                e.preventDefault();
+            }
+        }
+
+        function handleTouchEnd(e) {
+            if (e.touches.length < 2) {
+                initialTouchDistance = 0;
+                // Reativa transição
+                const wrapper = document.getElementById('imagem-wrapper');
+                if (wrapper) {
+                    wrapper.style.transition = 'transform 0.25s ease';
+                }
+            }
+        }
+
+        // 🔥 CLIQUE SIMPLES NA IMAGEM (SÓ MOBILE)
         function setupToqueInteligente() {
             const diagrama = document.getElementById('diagrama-wrapper');
             
@@ -1612,19 +1540,20 @@
         }
 
         function toqueHandler(e) {
-            // Ignora se clicou em um PIN (hotspot)
             if (e.target.classList.contains('pin-peca')) return;
+            if (e.target.closest('.pin-peca')) return;
+            if (e.target.closest('.zoom-controls')) return;
+            if (e.target.closest('.btn-fechar-zoom')) return;
 
-            // Se já estiver em fullscreen, sai
-            if (isZoomFullscreen) {
-                sairZoomFullscreen();
-                return;
+            // 🔥 NO MOBILE: toque na imagem entra em fullscreen
+            if (isMobile && !isZoomFullscreen) {
+                entrarZoomFullscreen(e);
             }
-
-            // Entra em fullscreen com zoom
-            entrarZoomFullscreen(e);
         }
 
+        // ============================================
+        // PARÂMETROS DA URL
+        // ============================================
         function getManualFromURL() {
             const params = new URLSearchParams(window.location.search);
             return params.get('manual');
@@ -1640,6 +1569,9 @@
             return manual ? decodeURIComponent(manual) : 'Produto não identificado';
         }
 
+        // ============================================
+        // CONFIGURAÇÕES
+        // ============================================
         async function carregarConfig() {
             try {
                 const res = await fetch('/api/config-estilos');
@@ -1665,7 +1597,6 @@
         function aplicarEstilosPinos() {
             document.querySelectorAll('.pin-peca').forEach(pin => {
                 pin.classList.remove('estilo-1', 'estilo-2', 'estilo-3', 'estilo-4', 'estilo-5', 'estilo-6', 'estilo-7', 'estilo-8');
-                
                 pin.classList.add(`estilo-${configAtual.estilo}`);
                 pin.style.fontSize = `${configAtual.tamanhoFonte}px`;
                 
@@ -1697,6 +1628,7 @@
                 
                 pin._touchHandler = function(e) {
                     e.preventDefault();
+                    e.stopPropagation();
                     const clickEvent = new MouseEvent('click', {
                         view: window,
                         bubbles: true,
@@ -1709,6 +1641,9 @@
             });
         }
 
+        // ============================================
+        // VENDEDORES
+        // ============================================
         async function carregarVendedores() {
             try {
                 const res = await fetch('/api/vendedores');
@@ -1733,6 +1668,9 @@
             }
         }
 
+        // ============================================
+        // CNPJ
+        // ============================================
         function formatarCNPJ(input) {
             let valor = input.value.replace(/\D/g, '');
             if (valor.length <= 14) {
@@ -1816,7 +1754,6 @@
                     document.getElementById('cliente-nome').focus();
                 }
             } catch (error) {
-                console.error('Erro ao consultar CNPJ:', error);
                 statusDiv.className = 'cnpj-status error';
                 statusDiv.style.display = 'block';
                 statusDiv.textContent = '❌ Erro ao consultar CNPJ. Preencha os dados manualmente.';
@@ -1829,6 +1766,9 @@
             }
         }
 
+        // ============================================
+        // ABAS
+        // ============================================
         function trocarAba(aba) {
             document.querySelectorAll('.aba').forEach(a => a.classList.remove('ativo'));
             document.querySelectorAll('.aba-conteudo').forEach(c => c.classList.remove('ativo'));
@@ -1837,16 +1777,19 @@
             document.getElementById(`aba-${aba}`).classList.add('ativo');
         }
 
+        // ============================================
+        // ZOOM
+        // ============================================
         function zoomIn() {
-            if (zoomLevel < 2) {
-                zoomLevel = zoomLevel === 1 ? 1.5 : 2;
+            if (zoomLevel < 5) {
+                zoomLevel = Math.min(5, zoomLevel + 0.5);
                 aplicarZoom();
             }
         }
 
         function zoomOut() {
-            if (zoomLevel > 0.5) {
-                zoomLevel = zoomLevel === 2 ? 1.5 : 1;
+            if (zoomLevel > 1) {
+                zoomLevel = Math.max(1, zoomLevel - 0.5);
                 aplicarZoom();
             }
         }
@@ -1859,16 +1802,18 @@
         function aplicarZoom() {
             const wrapper = document.getElementById('imagem-wrapper');
             wrapper.classList.remove('zoom-150', 'zoom-200');
+            wrapper.style.transform = `scale(${zoomLevel})`;
+            wrapper.style.transition = 'transform 0.25s ease';
 
-            if (zoomLevel === 1.5) {
-                wrapper.classList.add('zoom-150');
-            } else if (zoomLevel === 2) {
-                wrapper.classList.add('zoom-200');
+            const zoomDisplay = document.getElementById('zoom-level');
+            if (zoomDisplay) {
+                zoomDisplay.textContent = Math.round(zoomLevel * 100) + '%';
             }
-
-            document.getElementById('zoom-level').textContent = Math.round(zoomLevel * 100) + '%';
         }
 
+        // ============================================
+        // TOGGLE OLHO
+        // ============================================
         function toggleOlho() {
             olhoAberto = !olhoAberto;
             const btn = document.getElementById('btn-olho');
@@ -1890,6 +1835,9 @@
             }
         }
 
+        // ============================================
+        // CARREGAR MANUAL
+        // ============================================
         async function carregarManual(nome) {
             const variacao = getVariacaoFromURL();
 
@@ -1925,7 +1873,7 @@
             `;
 
             zoomLevel = 1;
-            wrapper.classList.remove('zoom-150', 'zoom-200');
+            wrapper.style.transform = 'scale(1)';
             document.getElementById('zoom-level').textContent = '100%';
 
             try {
@@ -1962,20 +1910,28 @@
                 const hotspots = data.hotspots || [];
                 const pecasLista = data.pecas || [];
 
-                olhoAberto = true;
-                document.getElementById('btn-olho').textContent = '👁️';
-                document.getElementById('btn-olho').classList.add('ativo');
+                // 🔥 NO MOBILE, OLHO FECHADO (PINs INVISÍVEIS)
+                olhoAberto = !isMobile;
+
+                const btnOlho = document.getElementById('btn-olho');
+                if (olhoAberto) {
+                    btnOlho.textContent = '👁️';
+                    btnOlho.classList.add('ativo');
+                } else {
+                    btnOlho.textContent = '👁️‍🗨️';
+                    btnOlho.classList.remove('ativo');
+                }
 
                 hotspots.sort((a, b) => parseInt(a.numero) - parseInt(b.numero));
 
                 hotspots.forEach((item) => {
                     const pin = document.createElement('div');
-                    pin.className = 'pin-peca visivel';
+                    pin.className = isMobile ? 'pin-peca oculto' : 'pin-peca visivel';
                     pin.innerText = item.numero;
                     pin.style.left = `${item.x_percent}%`;
                     pin.style.top = `${item.y_percent}%`;
 
-                    const peca = pecasLista.find(p => p.numero === item.numero);
+                    const peca = pecasLista.find(p => String(p.numero) === String(item.numero));
                     const nomePeca = peca ? peca.nome : 'Peça';
 
                     const tooltip = document.createElement('span');
@@ -1983,7 +1939,8 @@
                     tooltip.textContent = `#${item.numero} - ${nomePeca}`;
                     pin.appendChild(tooltip);
 
-                    pin.onclick = () => {
+                    pin.onclick = (e) => {
+                        e.stopPropagation();
                         hotspotAtual = { numero: item.numero, nome: nomePeca };
                         abrirModal(hotspotAtual);
                     };
@@ -1996,11 +1953,17 @@
                 setTimeout(() => {
                     setupPinTouch();
                     setupToqueInteligente();
+                    setupZoomGestures();
                 }, 100);
 
+                // 🔥 LISTA ORDENADA POR NÚMERO
                 gridPecas.innerHTML = '';
                 if (pecasLista.length > 0) {
-                    pecasLista.forEach(peca => {
+                    const pecasOrdenadas = [...pecasLista].sort((a, b) => {
+                        return (parseInt(a.numero) || 0) - (parseInt(b.numero) || 0);
+                    });
+
+                    pecasOrdenadas.forEach(peca => {
                         const btn = document.createElement('div');
                         btn.className = 'btn-peca';
                         btn.dataset.numero = peca.numero;
@@ -2038,6 +2001,9 @@
             }
         }
 
+        // ============================================
+        // MODAL
+        // ============================================
         function abrirModal(hotspot) {
             hotspotAtual = hotspot;
             document.getElementById('modal-numero').textContent = `#${hotspot.numero}`;
@@ -2078,6 +2044,9 @@
             if (e.key === 'Enter') confirmarAdicao();
         });
 
+        // ============================================
+        // CARRINHO
+        // ============================================
         function adicionarItem(numero, nome, qtd = 1) {
             const variacao = getVariacaoFromURL() || 'N/A';
             const manualNome = getProdutoNome();
@@ -2212,6 +2181,9 @@
             atualizarBadge();
         }
 
+        // ============================================
+        // CLIENTE
+        // ============================================
         function abrirFormularioCliente() {
             if (carrinho.length === 0) {
                 alert('⚠️ Adicione pelo menos uma peça ao carrinho!');
@@ -2225,6 +2197,9 @@
             document.getElementById('card-cliente').style.display = 'none';
         }
 
+        // ============================================
+        // ENVIAR PEDIDO
+        // ============================================
         async function enviarPedido() {
             const nomeCliente = document.getElementById('cliente-nome').value.trim();
             const cnpj = document.getElementById('cliente-cnpj').value.replace(/\D/g, '');
@@ -2324,6 +2299,9 @@
             }
         }
 
+        // ============================================
+        // INICIALIZAÇÃO
+        // ============================================
         document.addEventListener('DOMContentLoaded', async () => {
             await carregarConfig();
             await carregarVendedores();
@@ -2351,6 +2329,20 @@
                 document.getElementById('card-manual').style.display = 'none';
             }
         });
+
+        // 🔥 ESC PARA SAIR DO ZOOM
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && isZoomFullscreen) {
+                sairZoomFullscreen();
+            }
+        });
+
+        // 🔥 PREVINE SCROLL DO BODY NO MOBILE QUANDO ESTIVER EM FULLSCREEN
+        document.addEventListener('touchmove', (e) => {
+            if (isZoomFullscreen && e.target.closest('#zoom-container')) {
+                return;
+            }
+        }, { passive: true });
     </script>
 </body>
 </html>
