@@ -60,7 +60,7 @@
             font-weight: 600;
         }
         .filtros button:hover { background: #0d1555; }
-        
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -77,7 +77,7 @@
             position: sticky;
             top: 0;
         }
-        
+
         .status {
             padding: 4px 12px;
             border-radius: 20px;
@@ -92,7 +92,7 @@
         .status-finalizado { background: #d4edda; color: #155724; }
         .status-cancelado { background: #f8d7da; color: #721c24; }
         .status-reprovado { background: #f8d7da; color: #721c24; }
-        
+
         .btn-acao {
             padding: 5px 12px;
             border: none;
@@ -106,8 +106,6 @@
         }
         .btn-analise { background: #0984e3; color: white; }
         .btn-analise:hover { background: #0652DD; }
-        .btn-cliente { background: #1a237e; color: white; }
-        .btn-cliente:hover { background: #0d1555; }
         .btn-detalhes { background: #6c5ce7; color: white; }
         .btn-detalhes:hover { background: #5a4bd1; }
         .btn-aprovar { background: #00b894; color: white; }
@@ -116,7 +114,42 @@
         .btn-reprovar:hover { background: #e67e22; }
         .btn-cancelar { background: #e94560; color: white; }
         .btn-cancelar:hover { background: #c62828; }
-        
+        .btn-devolver { background: #6c5ce7; color: white; }
+        .btn-devolver:hover { background: #5a4bd1; }
+        .btn-editar { background: #0984e3; color: white; }
+        .btn-editar:hover { background: #0652DD; }
+
+        /* 🔥 CHECKBOX RECEBIDO */
+        .check-recebido {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            accent-color: #00b894;
+        }
+        .td-check {
+            width: 50px;
+            text-align: center;
+        }
+        .tr-recebido {
+            background: #f0fdf8 !important;
+        }
+        .tr-recebido td {
+            opacity: 0.85;
+        }
+
+        /* 🔥 VALOR TOTAL */
+        .valor-total {
+            font-weight: 800;
+            font-size: 14px;
+            color: #1a237e;
+            white-space: nowrap;
+        }
+        .valor-total.sem-valor {
+            color: #999;
+            font-weight: 500;
+            font-size: 12px;
+        }
+
         .modal-overlay {
             display: none;
             position: fixed;
@@ -134,7 +167,7 @@
             background: white;
             padding: 30px;
             border-radius: 12px;
-            max-width: 900px;
+            max-width: 1000px;
             width: 95%;
             max-height: 90vh;
             overflow-y: auto;
@@ -176,7 +209,7 @@
             margin-left: 10px;
         }
         .modal .btn-enviar:hover { background: #0d1555; }
-        
+
         .empty {
             text-align: center;
             color: #888;
@@ -187,7 +220,7 @@
             max-height: 500px;
             overflow-y: auto;
         }
-        
+
         .produto-tag {
             background: #1a237e;
             color: white;
@@ -222,13 +255,57 @@
         .grupo-produto-modal .grupo-itens {
             padding: 5px 15px;
         }
-        
+
+        /* 🔥 MODAL DE EDITAR ORÇAMENTO */
+        .editar-item {
+            display: grid;
+            grid-template-columns: 80px 1fr 60px 100px 100px 50px;
+            gap: 8px;
+            align-items: center;
+            padding: 8px;
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            margin-bottom: 6px;
+        }
+        .editar-item input {
+            padding: 6px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 12px;
+            width: 100%;
+        }
+        .editar-item input:focus {
+            border-color: #1a237e;
+            outline: none;
+        }
+        .editar-item .num {
+            font-weight: 700;
+            color: #1a237e;
+            text-align: center;
+        }
+        .btn-remover-item {
+            background: #e94560;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 700;
+        }
+        .btn-remover-item:hover { background: #c62828; }
+
         @media (max-width: 768px) {
             .container { padding: 0; }
             .card { padding: 15px; }
             .filtros { flex-direction: column; }
             table { font-size: 11px; }
             th, td { padding: 6px; }
+            .editar-item {
+                grid-template-columns: 1fr;
+                gap: 4px;
+            }
         }
     </style>
 </head>
@@ -263,15 +340,17 @@
                 <table>
                     <thead>
                         <tr>
+                            <th class="td-check">✅</th>
                             <th>Chamado</th>
                             <th>Cliente</th>
+                            <th>Valor Total</th>
                             <th>Status</th>
                             <th>Data</th>
                             <th>Ações</th>
                         </tr>
                     </thead>
                     <tbody id="tabela-pedidos">
-                        <tr><td colspan="5" class="empty">Carregando pedidos...</td></tr>
+                        <tr><td colspan="7" class="empty">Carregando pedidos...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -283,17 +362,19 @@
             <div id="modal-body"></div>
         </div>
     </div>
-
     <script>
         let pedidos = [];
 
+        // ============================================
+        // CARREGAR PEDIDOS
+        // ============================================
         async function carregarPedidos() {
             const status = document.getElementById('filtro-status').value;
             const busca = document.getElementById('filtro-busca').value.trim();
             const tbody = document.getElementById('tabela-pedidos');
             const totalSpan = document.getElementById('total-pedidos');
 
-            tbody.innerHTML = '<tr><td colspan="5" class="empty">⏳ Carregando...</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="7" class="empty">⏳ Carregando...</td></tr>';
 
             try {
                 let url = '/api/pedidos';
@@ -306,7 +387,7 @@
                 const data = await res.json();
 
                 if (!data.success) {
-                    tbody.innerHTML = `<tr><td colspan="5" class="empty">❌ ${data.error}</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="7" class="empty">❌ ${data.error}</td></tr>`;
                     return;
                 }
 
@@ -314,7 +395,7 @@
                 totalSpan.textContent = `${pedidos.length} pedido(s)`;
 
                 if (pedidos.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="5" class="empty">📭 Nenhum pedido encontrado</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="7" class="empty">📭 Nenhum pedido encontrado</td></tr>';
                     return;
                 }
 
@@ -324,41 +405,103 @@
                     const statusClass = getStatusClass(p.status);
                     const statusLabel = getStatusLabel(p.status);
 
+                    // 🔥 VERIFICA SE FOI RECEBIDO
+                    if (p.recebido === true) {
+                        tr.classList.add('tr-recebido');
+                    }
+
+                    // 🔥 VALOR TOTAL
+                    const temValor = p.valor_total && parseFloat(p.valor_total) > 0;
+                    const valorFormatado = temValor 
+                        ? `R$ ${parseFloat(p.valor_total).toFixed(2).replace('.', ',')}` 
+                        : '-';
+
                     tr.innerHTML = `
-    <td><strong>${p.numero_chamado}</strong></td>
-    <td>
-        ${p.cliente_nome}
-        ${p.numero_cliente ? `<br><span style="background:#e8eaf6; color:#1a237e; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:700;">Nº ${p.numero_cliente}</span>` : ''}
-    </td>
-    <td>
-        <span class="status ${statusClass}">${statusLabel}</span>
-        ${p.status_separado ? `<br><span class="status" style="background:#6c5ce7; color:white; margin-top:4px;">📦 Separado</span>` : ''}
-    </td>
-    <td>${formatarData(p.data_pedido)}</td>
-    <td>
-        <button class="btn-acao btn-detalhes" onclick="verDetalhes(${p.id})">📄 Detalhes</button>
-        
-        ${p.status === 'AGUARDANDO' ? `<button class="btn-acao btn-analise" onclick="enviarParaTecnico(${p.id})">🔧 Enviar Técnico</button>` : ''}
-        
-        ${p.status === 'ORCAMENTO_FINALIZADO' ? `
-            <button class="btn-acao btn-aprovar" onclick="aprovarOrcamento(${p.id})">✅ Aprovar</button>
-            <button class="btn-acao btn-reprovar" onclick="reprovarOrcamento(${p.id})">❌ Reprovar</button>
-            <button class="btn-acao btn-cancelar" onclick="deletarPedido(${p.id})">🗑️ Deletar</button>
-        ` : ''}
-        
-        ${p.status === 'ENVIADO_CLIENTE' ? `<button class="btn-acao btn-aprovar" onclick="confirmarComTecnico(${p.id})">✅ OK Técnico</button>` : ''}
-        
-        ${p.status === 'CANCELADO' ? `<button class="btn-acao btn-cancelar" onclick="deletarPedido(${p.id})">🗑️ Deletar</button>` : ''}
-    </td>
-`;
+                        <td class="td-check">
+                            <input type="checkbox" 
+                                   class="check-recebido" 
+                                   ${p.recebido ? 'checked' : ''}
+                                   onchange="toggleRecebido(${p.id}, this.checked)"
+                                   title="Marcar como recebido">
+                        </td>
+                        <td><strong>${p.numero_chamado}</strong></td>
+                        <td>
+                            ${p.cliente_nome}
+                            ${p.numero_cliente ? `<br><span style="background:#e8eaf6; color:#1a237e; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:700;">Nº ${p.numero_cliente}</span>` : ''}
+                        </td>
+                        <td>
+                            <span class="valor-total ${temValor ? '' : 'sem-valor'}">
+                                ${valorFormatado}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="status ${statusClass}">${statusLabel}</span>
+                            ${p.status_separado ? `<br><span class="status" style="background:#6c5ce7; color:white; margin-top:4px;">📦 Separado</span>` : ''}
+                            ${p.recebido ? `<br><span class="status" style="background:#00b894; color:white; margin-top:4px;">✅ Recebido</span>` : ''}
+                        </td>
+                        <td>${formatarData(p.data_pedido)}</td>
+                        <td>
+                            <button class="btn-acao btn-detalhes" onclick="verDetalhes(${p.id})">📄 Detalhes</button>
+                            
+                            ${p.status === 'AGUARDANDO' ? `<button class="btn-acao btn-analise" onclick="enviarParaTecnico(${p.id})">🔧 Enviar Técnico</button>` : ''}
+                            
+                            ${p.status === 'ORCAMENTO_FINALIZADO' ? `
+                                <button class="btn-acao btn-aprovar" onclick="aprovarOrcamento(${p.id})">✅ Aprovar</button>
+                                <button class="btn-acao btn-editar" onclick="editarOrcamento(${p.id})">✏️ Editar</button>
+                                <button class="btn-acao btn-reprovar" onclick="reprovarOrcamento(${p.id})">❌ Reprovar</button>
+                            ` : ''}
+                            
+                            ${p.status === 'ENVIADO_CLIENTE' ? `<button class="btn-acao btn-aprovar" onclick="confirmarComTecnico(${p.id})">✅ OK Técnico</button>` : ''}
+                            
+                            ${p.status !== 'CANCELADO' && p.status !== 'FINALIZADO' ? `
+                                <button class="btn-acao btn-cancelar" onclick="cancelarPedido(${p.id})">🗑️ Deletar</button>
+                            ` : ''}
+                        </td>
+                    `;
                     tbody.appendChild(tr);
                 });
 
             } catch (error) {
-                tbody.innerHTML = `<tr><td colspan="5" class="empty">❌ Erro: ${error.message}</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" class="empty">❌ Erro: ${error.message}</td></tr>`;
             }
         }
 
+        // ============================================
+        // TOGGLE RECEBIDO
+        // ============================================
+        async function toggleRecebido(id, recebido) {
+            try {
+                const res = await fetch(`/api/pedidos/${id}/recebido`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ recebido })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    // Atualiza a linha visualmente
+                    const tr = event.target.closest('tr');
+                    if (recebido) {
+                        tr.classList.add('tr-recebido');
+                    } else {
+                        tr.classList.remove('tr-recebido');
+                    }
+                    // Recarrega para atualizar os badges
+                    carregarPedidos();
+                } else {
+                    alert('❌ Erro: ' + data.error);
+                    event.target.checked = !recebido;
+                }
+            } catch (error) {
+                alert('❌ Erro: ' + error.message);
+                event.target.checked = !recebido;
+            }
+        }
+
+        // ============================================
+        // STATUS
+        // ============================================
         function getStatusClass(status) {
             const map = {
                 'AGUARDANDO': 'status-aguardando',
@@ -374,19 +517,19 @@
         }
 
         function getStatusLabel(status) {
-    const map = {
-        'AGUARDANDO': '⏳ Aguardando',
-        'EM_ANALISE_TECNICA': '🔧 Em Análise',
-        'ORCAMENTO_FINALIZADO': '📊 Orçamento Pronto',
-        'ENVIADO_CLIENTE': '📨 Enviado ao Cliente',
-        'CONFIRMADO_TECNICO': '✅ Confirmado',
-        'ORCAMENTO_RECUSADO': '❌ Reprovado',
-        'FINALIZADO': '✅ Finalizado',
-        'CANCELADO': '❌ Cancelado',
-        'SEPARADO': '📦 Separado'
-    };
-    return map[status] || status;
-}
+            const map = {
+                'AGUARDANDO': '⏳ Aguardando',
+                'EM_ANALISE_TECNICA': '🔧 Em Análise',
+                'ORCAMENTO_FINALIZADO': '📊 Orçamento Pronto',
+                'ENVIADO_CLIENTE': '📨 Enviado ao Cliente',
+                'CONFIRMADO_TECNICO': '✅ Confirmado',
+                'ORCAMENTO_RECUSADO': '❌ Reprovado',
+                'FINALIZADO': '✅ Finalizado',
+                'CANCELADO': '❌ Cancelado',
+                'SEPARADO': '📦 Separado'
+            };
+            return map[status] || status;
+        }
 
         function formatarData(data) {
             if (!data) return '-';
@@ -394,6 +537,9 @@
             return d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
         }
 
+        // ============================================
+        // VER DETALHES
+        // ============================================
         async function verDetalhes(id) {
             const modal = document.getElementById('modal-detalhes');
             const body = document.getElementById('modal-body');
@@ -416,9 +562,9 @@
                     <h2>📄 Pedido #${p.numero_chamado}</h2>
                     
                     <div class="info-cliente">
-    <p><strong>Status:</strong> <span class="status ${getStatusClass(p.status)}">${statusLabel}</span>${p.status_separado ? ' <span class="status" style="background:#6c5ce7;color:white;">📦 Separado</span>' : ''}</p>
-    <p><strong>Cliente:</strong> ${p.cliente_nome}</p>
-    ${p.numero_cliente ? `<p><strong>🔢 Nº Cliente:</strong> <span style="background:#e8eaf6; color:#1a237e; padding:3px 10px; border-radius:10px; font-weight:700;">${p.numero_cliente}</span></p>` : ''}
+                        <p><strong>Status:</strong> <span class="status ${getStatusClass(p.status)}">${statusLabel}</span>${p.status_separado ? ' <span class="status" style="background:#6c5ce7;color:white;">📦 Separado</span>' : ''}${p.recebido ? ' <span class="status" style="background:#00b894;color:white;">✅ Recebido</span>' : ''}</p>
+                        <p><strong>Cliente:</strong> ${p.cliente_nome}</p>
+                        ${p.numero_cliente ? `<p><strong>🔢 Nº Cliente:</strong> <span style="background:#e8eaf6; color:#1a237e; padding:3px 10px; border-radius:10px; font-weight:700;">${p.numero_cliente}</span></p>` : ''}
                         <p><strong>CNPJ:</strong> ${p.cliente_cnpj}</p>
                         ${p.cliente_telefone ? `<p><strong>Telefone:</strong> ${p.cliente_telefone}</p>` : ''}
                         ${p.cliente_email ? `<p><strong>E-mail:</strong> ${p.cliente_email}</p>` : ''}
@@ -492,6 +638,7 @@
                                     <th style="text-align:center;">Qtd</th>
                                     <th style="text-align:right;">Preço Unit.</th>
                                     <th style="text-align:right;">Total</th>
+                                    <th style="text-align:center;">Status</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -500,6 +647,17 @@
                     p.orcamento.forEach(item => {
                         const total = (item.preco_unitario || 0) * (item.qtd || 0);
                         totalGeral += total;
+                        
+                        let statusIcon = '✅';
+                        let statusCor = '#00b894';
+                        if (item.status_item === 'EM FALTA') {
+                            statusIcon = '🔴';
+                            statusCor = '#e94560';
+                        } else if (item.status_item === 'DESCONTINUADO') {
+                            statusIcon = '⚫';
+                            statusCor = '#666';
+                        }
+                        
                         html += `
                             <tr>
                                 <td>${item.codigo || '-'}</td>
@@ -507,6 +665,7 @@
                                 <td style="text-align:center;">${item.qtd || 0}</td>
                                 <td style="text-align:right;">R$ ${(item.preco_unitario || 0).toFixed(2)}</td>
                                 <td style="text-align:right;">R$ ${total.toFixed(2)}</td>
+                                <td style="text-align:center; color:${statusCor}; font-weight:700;">${statusIcon} ${item.status_item || 'OK'}</td>
                             </tr>
                         `;
                     });
@@ -517,6 +676,7 @@
                                 <tr>
                                     <td colspan="4" style="text-align:right; font-weight:bold; font-size:16px;">TOTAL:</td>
                                     <td style="text-align:right; font-weight:bold; font-size:16px; color:#1a237e;">R$ ${totalGeral.toFixed(2)}</td>
+                                    <td></td>
                                 </tr>
                             </tfoot>
                         </table>
@@ -531,11 +691,15 @@
                         
                         ${p.status === 'ORCAMENTO_FINALIZADO' ? `
                             <button class="btn-enviar" style="background:#00b894;" onclick="aprovarOrcamento(${p.id})">✅ Aprovar</button>
+                            <button class="btn-enviar" style="background:#0984e3;" onclick="editarOrcamento(${p.id})">✏️ Editar</button>
                             <button class="btn-enviar" style="background:#f39c12;" onclick="reprovarOrcamento(${p.id})">❌ Reprovar</button>
-                            <button class="btn-enviar" style="background:#e94560;" onclick="deletarPedido(${p.id})">🗑️ Deletar</button>
                         ` : ''}
                         
                         ${p.status === 'ENVIADO_CLIENTE' ? `<button class="btn-enviar" style="background:#00b894;" onclick="confirmarComTecnico(${p.id})">✅ OK Técnico</button>` : ''}
+                        
+                        ${p.status !== 'CANCELADO' && p.status !== 'FINALIZADO' ? `
+                            <button class="btn-enviar" style="background:#e94560;" onclick="cancelarPedido(${p.id})">🗑️ Deletar Chamado</button>
+                        ` : ''}
                     </div>
                 `;
 
@@ -552,147 +716,325 @@
             document.getElementById('modal-detalhes').classList.remove('active');
         }
 
+        // ============================================
+        // ENVIAR PARA TÉCNICO (com número cliente)
+        // ============================================
         async function enviarParaTecnico(id) {
-    // Busca dados do pedido para mostrar
-    const pedido = pedidos.find(p => p.id === id);
-    const nomeCliente = pedido ? pedido.cliente_nome : 'Cliente';
-    const numeroAtual = pedido?.numero_cliente || '';
-    
-    // 🔥 MODAL CUSTOMIZADO
-    const modalHtml = `
-        <div style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:2000; display:flex; align-items:center; justify-content:center; padding:20px;" id="modal-numero-cliente">
-            <div style="background:white; padding:30px; border-radius:16px; max-width:450px; width:100%; box-shadow:0 20px 60px rgba(0,0,0,0.4);">
-                <h2 style="color:#1a237e; margin-bottom:10px;">📤 Enviar para Análise Técnica</h2>
-                <p style="color:#666; font-size:14px; margin-bottom:20px;">
-                    Cliente: <strong>${nomeCliente}</strong>
-                </p>
-                
-                <label style="display:block; font-weight:700; color:#1a237e; margin-bottom:8px;">
-                    🔢 Número do Cliente <span style="color:#e94560;">*</span>
-                </label>
-                <p style="font-size:12px; color:#888; margin-bottom:8px;">
-                    Este número é essencial para o técnico enviar as peças corretas.
-                </p>
-                <input type="number" 
-                       id="input-numero-cliente" 
-                       value="${numeroAtual}"
-                       placeholder="Ex: 4521"
-                       min="1"
-                       step="1"
-                       style="width:100%; padding:15px; font-size:22px; text-align:center; border:2px solid #ddd; border-radius:8px; font-weight:700; letter-spacing:2px; margin-bottom:10px;">
-                
-                <div id="erro-numero" style="color:#e94560; font-size:13px; font-weight:600; min-height:20px; text-align:center; margin-bottom:10px;"></div>
-                
-                <div style="display:flex; gap:10px;">
-                    <button onclick="fecharModalNumero()" 
-                            style="flex:1; padding:12px; background:#e0e0e0; color:#333; border:none; border-radius:8px; cursor:pointer; font-weight:700; font-size:14px; font-family:inherit;">
-                        ❌ Cancelar
-                    </button>
-                    <button onclick="confirmarEnvioTecnico(${id})" 
-                            style="flex:1; padding:12px; background:#1a237e; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:700; font-size:14px; font-family:inherit;">
-                        ✅ Confirmar
-                    </button>
+            const pedido = pedidos.find(p => p.id === id);
+            const nomeCliente = pedido ? pedido.cliente_nome : 'Cliente';
+            const numeroAtual = pedido?.numero_cliente || '';
+            
+            const modalHtml = `
+                <div style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:2000; display:flex; align-items:center; justify-content:center; padding:20px;" id="modal-numero-cliente">
+                    <div style="background:white; padding:30px; border-radius:16px; max-width:450px; width:100%; box-shadow:0 20px 60px rgba(0,0,0,0.4);">
+                        <h2 style="color:#1a237e; margin-bottom:10px;">📤 Enviar para Análise Técnica</h2>
+                        <p style="color:#666; font-size:14px; margin-bottom:20px;">
+                            Cliente: <strong>${nomeCliente}</strong>
+                        </p>
+                        
+                        <label style="display:block; font-weight:700; color:#1a237e; margin-bottom:8px;">
+                            🔢 Número do Cliente <span style="color:#e94560;">*</span>
+                        </label>
+                        <p style="font-size:12px; color:#888; margin-bottom:8px;">
+                            Este número é essencial para o técnico enviar as peças corretas.
+                        </p>
+                        <input type="number" 
+                               id="input-numero-cliente" 
+                               value="${numeroAtual}"
+                               placeholder="Ex: 4521"
+                               min="1"
+                               step="1"
+                               style="width:100%; padding:15px; font-size:22px; text-align:center; border:2px solid #ddd; border-radius:8px; font-weight:700; letter-spacing:2px; margin-bottom:10px;">
+                        
+                        <div id="erro-numero" style="color:#e94560; font-size:13px; font-weight:600; min-height:20px; text-align:center; margin-bottom:10px;"></div>
+                        
+                        <div style="display:flex; gap:10px;">
+                            <button onclick="fecharModalNumero()" 
+                                    style="flex:1; padding:12px; background:#e0e0e0; color:#333; border:none; border-radius:8px; cursor:pointer; font-weight:700; font-size:14px; font-family:inherit;">
+                                ❌ Cancelar
+                            </button>
+                            <button onclick="confirmarEnvioTecnico(${id})" 
+                                    style="flex:1; padding:12px; background:#1a237e; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:700; font-size:14px; font-family:inherit;">
+                                ✅ Confirmar
+                            </button>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
-    `;
-    
-    // Remove modal anterior se existir
-    const antigo = document.getElementById('modal-numero-cliente');
-    if (antigo) antigo.remove();
-    
-    document.body.insertAdjacentHTML('beforeend', modalHtml);
-    
-    // Foca no input
-    setTimeout(() => {
-        const input = document.getElementById('input-numero-cliente');
-        if (input) {
-            input.focus();
-            input.select();
+            `;
+            
+            const antigo = document.getElementById('modal-numero-cliente');
+            if (antigo) antigo.remove();
+            
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+            
+            setTimeout(() => {
+                const input = document.getElementById('input-numero-cliente');
+                if (input) {
+                    input.focus();
+                    input.select();
+                }
+            }, 200);
+            
+            setTimeout(() => {
+                const input = document.getElementById('input-numero-cliente');
+                if (input) {
+                    input.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter') confirmarEnvioTecnico(id);
+                    });
+                }
+            }, 300);
         }
-    }, 200);
-    
-    // Enter para confirmar
-    setTimeout(() => {
-        const input = document.getElementById('input-numero-cliente');
-        if (input) {
-            input.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') confirmarEnvioTecnico(id);
+
+        function fecharModalNumero() {
+            const modal = document.getElementById('modal-numero-cliente');
+            if (modal) modal.remove();
+        }
+
+        async function confirmarEnvioTecnico(id) {
+            const input = document.getElementById('input-numero-cliente');
+            const erroDiv = document.getElementById('erro-numero');
+            const numero = input.value.trim();
+            
+            if (!numero) {
+                erroDiv.textContent = '⚠️ Digite o número do cliente!';
+                input.focus();
+                return;
+            }
+            
+            if (!/^\d+$/.test(numero) || parseInt(numero) <= 0) {
+                erroDiv.textContent = '⚠️ Digite apenas números inteiros!';
+                input.focus();
+                input.select();
+                return;
+            }
+            
+            if (!confirm(`Confirma que o número do cliente é ${numero}?`)) {
+                input.focus();
+                input.select();
+                return;
+            }
+            
+            const numeroInt = parseInt(numero);
+            
+            try {
+                const resNum = await fetch(`/api/pedidos/${id}/numero-cliente`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ numero_cliente: numeroInt })
+                });
+                
+                const dataNum = await resNum.json();
+                if (!dataNum.success) {
+                    erroDiv.textContent = '❌ Erro ao salvar: ' + dataNum.error;
+                    return;
+                }
+                
+                const res = await fetch(`/api/pedidos/${id}/status`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'EM_ANALISE_TECNICA' })
+                });
+                
+                const data = await res.json();
+                if (data.success) {
+                    alert(`✅ Pedido enviado para o técnico!\nNº Cliente: ${numero}`);
+                    fecharModalNumero();
+                    fecharModal();
+                    carregarPedidos();
+                } else {
+                    erroDiv.textContent = '❌ ' + data.error;
+                }
+            } catch (error) {
+                erroDiv.textContent = '❌ Erro: ' + error.message;
+            }
+        }
+
+        // ============================================
+        // EDITAR ORÇAMENTO E DEVOLVER AO TÉCNICO
+        // ============================================
+        async function editarOrcamento(id) {
+            const modal = document.getElementById('modal-detalhes');
+            const body = document.getElementById('modal-body');
+
+            try {
+                const res = await fetch(`/api/pedidos/${id}`);
+                const data = await res.json();
+
+                if (!data.success) {
+                    alert('❌ Erro: ' + data.error);
+                    return;
+                }
+
+                const p = data.pedido;
+                const orcamento = p.orcamento || [];
+
+                let html = `
+                    <h2>✏️ Editar Orçamento - #${p.numero_chamado}</h2>
+                    
+                    <div style="background:#fff3cd; border:2px solid #ffc107; padding:12px; border-radius:8px; margin-bottom:15px; color:#856404;">
+                        <strong>⚠️ ATENÇÃO:</strong> Ao confirmar, o pedido voltará para o técnico com as alterações.
+                    </div>
+
+                    <div class="info-cliente">
+                        <p><strong>Cliente:</strong> ${p.cliente_nome}</p>
+                        <p><strong>Vendedor:</strong> ${p.vendedor_nome || '-'}</p>
+                    </div>
+
+                    <h3 style="margin-top:20px;">📊 Peças do Orçamento</h3>
+                    <p style="font-size:12px; color:#666; margin-bottom:10px;">
+                        💡 Altere a quantidade, remova peças ou ajuste o preço unitário.
+                    </p>
+
+                    <div id="lista-editar-orcamento">
+                `;
+
+                orcamento.forEach((item, index) => {
+                    html += `
+                        <div class="editar-item" data-index="${index}">
+                            <div class="num">#${index + 1}</div>
+                            <input type="text" 
+                                   class="edit-codigo" 
+                                   value="${item.codigo || ''}" 
+                                   placeholder="Código"
+                                   readonly
+                                   style="background:#f0f0f0; cursor:not-allowed;">
+                            <input type="number" 
+                                   class="edit-qtd" 
+                                   value="${item.qtd || 1}" 
+                                   min="0"
+                                   step="1"
+                                   placeholder="Qtd">
+                            <input type="text" 
+                                   class="edit-descricao" 
+                                   value="${item.descricao || ''}" 
+                                   placeholder="Descrição">
+                            <input type="number" 
+                                   class="edit-preco" 
+                                   value="${item.preco_unitario || 0}" 
+                                   min="0"
+                                   step="0.01"
+                                   placeholder="Preço">
+                            <button class="btn-remover-item" onclick="removerItemEditar(${index})">✕</button>
+                        </div>
+                    `;
+                });
+
+                html += `
+                    </div>
+
+                    <div style="margin-top:15px;">
+                        <label style="font-weight:600; display:block; margin-bottom:5px;">
+                            📝 Observação para o Técnico
+                        </label>
+                        <textarea id="obs-vendedor" 
+                                  rows="3" 
+                                  placeholder="Ex: Cliente quer apenas 1 das peças em falta..."
+                                  style="width:100%; padding:10px; border:2px solid #ddd; border-radius:8px; font-size:14px; font-family:inherit;"></textarea>
+                    </div>
+
+                    <div id="total-editado" style="text-align:right; font-size:18px; font-weight:800; color:#1a237e; padding:15px 0; border-top:2px solid #e0e0e0; margin-top:15px;">
+                        TOTAL: R$ 0,00
+                    </div>
+
+                    <div style="margin-top:20px; display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap;">
+                        <button class="btn-fechar" onclick="fecharModal()">🔙 Cancelar</button>
+                        <button class="btn-enviar" style="background:#6c5ce7;" onclick="confirmarDevolucaoTecnico(${p.id})">
+                            📤 Devolver ao Técnico
+                        </button>
+                    </div>
+                `;
+
+                body.innerHTML = html;
+                modal.classList.add('active');
+
+                // Recalcula total quando muda
+                document.querySelectorAll('#lista-editar-orcamento input').forEach(inp => {
+                    inp.addEventListener('input', recalcularTotalEdicao);
+                });
+
+                recalcularTotalEdicao();
+
+            } catch (error) {
+                alert('❌ Erro: ' + error.message);
+            }
+        }
+
+        function recalcularTotalEdicao() {
+            let total = 0;
+            document.querySelectorAll('#lista-editar-orcamento .editar-item').forEach(item => {
+                const qtd = parseFloat(item.querySelector('.edit-qtd').value) || 0;
+                const preco = parseFloat(item.querySelector('.edit-preco').value) || 0;
+                total += qtd * preco;
             });
-        }
-    }, 300);
-}
 
-function fecharModalNumero() {
-    const modal = document.getElementById('modal-numero-cliente');
-    if (modal) modal.remove();
-}
-
-async function confirmarEnvioTecnico(id) {
-    const input = document.getElementById('input-numero-cliente');
-    const erroDiv = document.getElementById('erro-numero');
-    const numero = input.value.trim();
-    
-    // 🔥 VALIDAÇÃO
-    if (!numero) {
-        erroDiv.textContent = '⚠️ Digite o número do cliente!';
-        input.focus();
-        return;
-    }
-    
-    if (!/^\d+$/.test(numero) || parseInt(numero) <= 0) {
-        erroDiv.textContent = '⚠️ Digite apenas números inteiros!';
-        input.focus();
-        input.select();
-        return;
-    }
-    
-    // 🔥 CONFIRMAÇÃO
-    if (!confirm(`Confirma que o número do cliente é ${numero}?`)) {
-        input.focus();
-        input.select();
-        return;
-    }
-    
-    const numeroInt = parseInt(numero);
-    
-    try {
-        // 1. Salva o número do cliente
-        const resNum = await fetch(`/api/pedidos/${id}/numero-cliente`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ numero_cliente: numeroInt })
-        });
-        
-        const dataNum = await resNum.json();
-        if (!dataNum.success) {
-            erroDiv.textContent = '❌ Erro ao salvar: ' + dataNum.error;
-            return;
+            document.getElementById('total-editado').textContent = `TOTAL: R$ ${total.toFixed(2).replace('.', ',')}`;
         }
-        
-        // 2. Envia para análise técnica
-        const res = await fetch(`/api/pedidos/${id}/status`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ status: 'EM_ANALISE_TECNICA' })
-        });
-        
-        const data = await res.json();
-        if (data.success) {
-            alert(`✅ Pedido enviado para o técnico!\nNº Cliente: ${numero}`);
-            fecharModalNumero();
-            fecharModal();
-            carregarPedidos();
-        } else {
-            erroDiv.textContent = '❌ ' + data.error;
-        }
-    } catch (error) {
-        erroDiv.textContent = '❌ Erro: ' + error.message;
-    }
-}
 
+        function removerItemEditar(index) {
+            if (!confirm('🗑️ Remover esta peça do orçamento?')) return;
+
+            const item = document.querySelector(`#lista-editar-orcamento .editar-item[data-index="${index}"]`);
+            if (item) {
+                item.remove();
+                recalcularTotalEdicao();
+            }
+        }
+
+        async function confirmarDevolucaoTecnico(id) {
+            const itens = [];
+            const itensOriginais = pedidos.find(p => p.id === id);
+
+            // Pega os itens que sobraram
+            document.querySelectorAll('#lista-editar-orcamento .editar-item').forEach(item => {
+                const qtd = parseInt(item.querySelector('.edit-qtd').value) || 0;
+                if (qtd <= 0) return; // Pula itens com qtd 0
+
+                itens.push({
+                    codigo: item.querySelector('.edit-codigo').value,
+                    qtd: qtd,
+                    descricao: item.querySelector('.edit-descricao').value,
+                    preco_unitario: parseFloat(item.querySelector('.edit-preco').value) || 0
+                });
+            });
+
+            if (itens.length === 0) {
+                alert('⚠️ Adicione pelo menos uma peça ao orçamento!');
+                return;
+            }
+
+            const observacao = document.getElementById('obs-vendedor')?.value || '';
+
+            if (!confirm(`📤 Devolver ao técnico com ${itens.length} peça(s)?\n\nO técnico será notificado para refazer o orçamento.`)) return;
+
+            try {
+                const res = await fetch(`/api/pedidos/${id}/devolver-tecnico`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        orcamento: itens,
+                        observacao_vendedor: observacao
+                    })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    alert('✅ Pedido devolvido ao técnico com sucesso!');
+                    fecharModal();
+                    carregarPedidos();
+                } else {
+                    alert('❌ Erro: ' + data.error);
+                }
+            } catch (error) {
+                alert('❌ Erro: ' + error.message);
+            }
+        }
+
+        // ============================================
+        // APROVAR / REPROVAR
+        // ============================================
         async function aprovarOrcamento(id) {
-            if (!confirm('Aprovar este orçamento?')) return;
+            if (!confirm('Aprovar este orçamento e enviar para o cliente?')) return;
 
             try {
                 const res = await fetch(`/api/pedidos/${id}/status`, {
@@ -740,27 +1082,6 @@ async function confirmarEnvioTecnico(id) {
             }
         }
 
-        async function deletarPedido(id) {
-            if (!confirm('🗑️ Tem certeza que deseja DELETAR este pedido permanentemente?')) return;
-
-            try {
-                const res = await fetch(`/api/pedidos/${id}`, {
-                    method: 'DELETE'
-                });
-
-                const data = await res.json();
-                if (data.success) {
-                    alert('✅ Pedido deletado com sucesso!');
-                    fecharModal();
-                    carregarPedidos();
-                } else {
-                    alert('❌ ' + data.error);
-                }
-            } catch (error) {
-                alert('❌ Erro: ' + error.message);
-            }
-        }
-
         async function confirmarComTecnico(id) {
             if (!confirm('Confirmar com o técnico que este orçamento foi enviado ao cliente?')) return;
 
@@ -784,6 +1105,87 @@ async function confirmarEnvioTecnico(id) {
             }
         }
 
+        // ============================================
+        // CANCELAR / DELETAR CHAMADO (com aviso ao técnico)
+        // ============================================
+        async function cancelarPedido(id) {
+            const pedido = pedidos.find(p => p.id === id);
+            const nomeCliente = pedido ? pedido.cliente_nome : 'este cliente';
+
+            const modalHtml = `
+                <div style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:2000; display:flex; align-items:center; justify-content:center; padding:20px;" id="modal-cancelar">
+                    <div style="background:white; padding:30px; border-radius:16px; max-width:500px; width:100%; box-shadow:0 20px 60px rgba(0,0,0,0.4);">
+                        <h2 style="color:#e94560; margin-bottom:15px;">🗑️ Cancelar Chamado</h2>
+                        
+                        <div style="background:#f8d7da; border:2px solid #e94560; padding:15px; border-radius:8px; margin-bottom:20px; color:#721c24;">
+                            <strong>⚠️ ATENÇÃO!</strong><br>
+                            <p style="margin-top:8px; font-size:13px;">
+                                O chamado <strong>${pedido?.numero_chamado || ''}</strong> será <strong>DELETADO</strong> permanentemente.
+                                O técnico será avisado por e-mail que o orçamento foi cancelado.
+                            </p>
+                        </div>
+                        
+                        <label style="display:block; font-weight:700; color:#1a237e; margin-bottom:8px;">
+                            📝 Motivo (opcional)
+                        </label>
+                        <textarea id="motivo-cancelamento" 
+                                  rows="3" 
+                                  placeholder="Ex: Cliente desistiu da compra..."
+                                  style="width:100%; padding:10px; border:2px solid #ddd; border-radius:8px; font-size:14px; font-family:inherit; margin-bottom:15px;"></textarea>
+                        
+                        <div style="display:flex; gap:10px;">
+                            <button onclick="fecharModalCancelar()" 
+                                    style="flex:1; padding:12px; background:#e0e0e0; color:#333; border:none; border-radius:8px; cursor:pointer; font-weight:700; font-size:14px; font-family:inherit;">
+                                ↩️ Voltar
+                            </button>
+                            <button onclick="confirmarCancelamento(${id})" 
+                                    style="flex:1; padding:12px; background:#e94560; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:700; font-size:14px; font-family:inherit;">
+                                🗑️ Cancelar Chamado
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            const antigo = document.getElementById('modal-cancelar');
+            if (antigo) antigo.remove();
+            
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+        }
+
+        function fecharModalCancelar() {
+            const modal = document.getElementById('modal-cancelar');
+            if (modal) modal.remove();
+        }
+
+        async function confirmarCancelamento(id) {
+            const motivo = document.getElementById('motivo-cancelamento')?.value || '';
+
+            try {
+                const res = await fetch(`/api/pedidos/${id}/cancelar-vendedor`, {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ motivo: motivo })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    alert('✅ Chamado cancelado e técnico notificado!');
+                    fecharModalCancelar();
+                    fecharModal();
+                    carregarPedidos();
+                } else {
+                    alert('❌ Erro: ' + data.error);
+                }
+            } catch (error) {
+                alert('❌ Erro: ' + error.message);
+            }
+        }
+
+        // ============================================
+        // INICIALIZAÇÃO
+        // ============================================
         document.getElementById('modal-detalhes').addEventListener('click', (e) => {
             if (e.target === e.currentTarget) fecharModal();
         });

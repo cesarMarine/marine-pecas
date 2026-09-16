@@ -2107,6 +2107,139 @@ app.get('/api/pecas-codigos/:manualId', async (req, res) => {
         res.status(500).json({ success: false, error: error.message });
     }
 });
+// ============================================
+// MARCAR PEDIDO COMO RECEBIDO
+// ============================================
+app.put('/api/pedidos/:id/recebido', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { recebido } = req.body;
+
+        const updates = {
+            recebido: recebido === true,
+            data_recebimento: recebido === true ? new Date().toISOString() : null,
+            atualizado_em: new Date().toISOString()
+        };
+
+        const { data, error } = await supabase
+            .from('orcamentos')
+            .update(updates)
+            .eq('id', id)
+            .select();
+
+        if (error) throw error;
+        res.json({ success: true, pedido: data[0] });
+    } catch (error) {
+        console.error('❌ Erro ao marcar como recebido:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// ============================================
+// VENDEDOR EDITA ORÇAMENTO E DEVOLVE AO TÉCNICO
+// ============================================
+app.put('/api/pedidos/:id/devolver-tecnico', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { orcamento, observacao_vendedor } = req.body;
+
+        if (!orcamento || !Array.isArray(orcamento)) {
+            return res.status(400).json({ success: false, error: 'Orçamento inválido' });
+        }
+
+        // Recalcula valor total
+        const valor_total = orcamento.reduce((sum, item) => {
+            return sum + ((parseFloat(item.preco_unitario) || 0) * (parseInt(item.qtd) || 0));
+        }, 0);
+
+        // Salva histórico da alteração
+        const { data: pedidoAtual } = await supabase
+            .from('orcamentos')
+            .select('orcamento, historico_alteracoes')
+            .eq('id', id)
+            .single();
+
+        const historico = pedidoAtual?.historico_alteracoes || [];
+        historico.push({
+            tipo: 'DEVOLVIDO_AO_TECNICO',
+            data: new Date().toISOString(),
+            por: 'Vendedor',
+            observacao: observacao_vendedor || '',
+            orcamento_anterior: pedidoAtual?.orcamento || []
+        });
+
+        const { data, error } = await supabase
+            .from('orcamentos')
+            .update({
+                orcamento: orcamento,
+                valor_total: valor_total,
+                status: 'EM_ANALISE_TECNICA',
+                historico_alteracoes: historico,
+                observacao_vendedor: observacao_vendedor || null,
+                atualizado_em: new Date().toISOString()
+            })
+            .eq('id', id)
+            .select();
+
+        if (error) throw error;
+        res.json({ success: true, pedido: data[0] });
+    } catch (error) {
+        console.error('❌ Erro ao devolver ao técnico:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// ============================================
+// DELETAR CHAMADO COM AVISO AO TÉCNICO
+// ============================================
+app.delete('/api/pedidos/:id/cancelar-vendedor', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { motivo } = req.body;
+
+        // Busca o pedido para pegar o email do técnico (se houver)
+        const { data: pedido } = await supabase
+            .from('orcamentos')
+            .select('numero_chamado, cliente_nome, vendedor_nome')
+            .eq('id', id)
+            .single();
+
+        // Deleta o pedido
+        const { error } = await supabase
+            .from('orcamentos')
+            .delete()
+            .eq('id', id);
+
+        if (error) throw error;
+
+        // Envia email avisando o técnico
+        if (pedido) {
+            const assunto = `❌ Chamado CANCELADO PELO VENDEDOR - ${pedido.numero_chamado}`;
+            const mensagem = `
+                <div style="font-family: Arial, sans-serif; padding: 20px; background: #f8f9fa;">
+                    <div style="background: #e94560; color: white; padding: 20px; border-radius: 8px 8px 0 0; text-align: center;">
+                        <h2>❌ Chamado Cancelado pelo Vendedor</h2>
+                    </div>
+                    <div style="background: white; padding: 20px; border-radius: 0 0 8px 8px;">
+                        <p><strong>Chamado:</strong> ${pedido.numero_chamado}</p>
+                        <p><strong>Cliente:</strong> ${pedido.cliente_nome}</p>
+                        <p><strong>Vendedor:</strong> ${pedido.vendedor_nome || '-'}</p>
+                        ${motivo ? `<p><strong>Motivo:</strong> ${motivo}</p>` : ''}
+                        <p style="color: #e94560; font-weight: bold; margin-top: 20px;">
+                            ⚠️ Este orçamento foi CANCELADO pelo vendedor. Não é mais necessário processá-lo.
+                        </p>
+                    </div>
+                </div>
+            `;
+            await enviarEmail('anderson@marinefishing.com.br', assunto, mensagem);
+        }
+
+        res.json({ success: true, message: 'Chamado cancelado e técnico notificado' });
+    } catch (error) {
+        console.error('❌ Erro ao cancelar chamado:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
 
 // ============================================
 // SERVIDOR DE IMAGENS LOCAL
