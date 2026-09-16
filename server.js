@@ -1280,12 +1280,12 @@ app.get('/api/manuais', async (req, res) => {
 app.put('/api/pedidos/:id/orcamento', async (req, res) => {
     try {
         const id = req.params.id;
-        const { orcamento, observacoes_tecnico } = req.body;
+        const { orcamento, observacoes_tecnico, limpar_reeditado } = req.body;
 
         if (!orcamento || orcamento.length === 0) {
             return res.status(400).json({ 
                 success: false, 
-                error: 'Orçamento vazio. Adicione pelo menos um item.' 
+                error: 'Orçamento vazio.' 
             });
         }
 
@@ -1298,24 +1298,28 @@ app.put('/api/pedidos/:id/orcamento', async (req, res) => {
             return sum + ((parseFloat(item.preco_unitario) || 0) * (parseInt(item.qtd) || 0));
         }, 0);
 
-        console.log(`📊 Salvando orçamento para pedido ${id}: R$ ${valor_total.toFixed(2)}`);
+        const updates = {
+            orcamento: orcamentoComVariacao,
+            valor_total,
+            observacoes_tecnico: observacoes_tecnico || null,
+            status: 'ORCAMENTO_FINALIZADO',
+            data_orcamento_finalizado: new Date().toISOString(),
+            atualizado_em: new Date().toISOString()
+        };
+
+        // 🔥 LIMPA A FLAG DE REEDITADO
+        if (limpar_reeditado === true) {
+            updates.reeditado_pelo_vendedor = false;
+            updates.motivo_reedicao = null;
+        }
 
         const { data, error } = await supabase
             .from('orcamentos')
-            .update({
-                orcamento: orcamentoComVariacao,
-                valor_total,
-                observacoes_tecnico: observacoes_tecnico || null,
-                status: 'ORCAMENTO_FINALIZADO',
-                data_orcamento_finalizado: new Date().toISOString(),
-                atualizado_em: new Date().toISOString()
-            })
+            .update(updates)
             .eq('id', id)
             .select();
 
         if (error) throw error;
-
-        // 🔥 NÃO ENVIAR E-MAIL AQUI! O cliente só será avisado quando o vendedor mandar (ENVIADO_CLIENTE)
 
         res.json({ success: true, pedido: data[0] });
     } catch (error) {
@@ -2141,7 +2145,7 @@ app.put('/api/pedidos/:id/recebido', async (req, res) => {
 app.put('/api/pedidos/:id/devolver-tecnico', async (req, res) => {
     try {
         const { id } = req.params;
-        const { orcamento, observacao_vendedor } = req.body;
+        const { orcamento, observacao_vendedor, reeditado_pelo_vendedor, motivo_reedicao } = req.body;
 
         if (!orcamento || !Array.isArray(orcamento)) {
             return res.status(400).json({ success: false, error: 'Orçamento inválido' });
@@ -2168,14 +2172,15 @@ app.put('/api/pedidos/:id/devolver-tecnico', async (req, res) => {
             orcamento_anterior: pedidoAtual?.orcamento || []
         });
 
-        const { data, error } = await supabase
+const { data, error } = await supabase
             .from('orcamentos')
             .update({
                 orcamento: orcamento,
                 valor_total: valor_total,
                 status: 'EM_ANALISE_TECNICA',
+                reeditado_pelo_vendedor: reeditado_pelo_vendedor === true,
+                motivo_reedicao: motivo_reedicao || observacao_vendedor || null,
                 historico_alteracoes: historico,
-                observacao_vendedor: observacao_vendedor || null,
                 atualizado_em: new Date().toISOString()
             })
             .eq('id', id)
@@ -2237,6 +2242,34 @@ app.delete('/api/pedidos/:id/cancelar-vendedor', async (req, res) => {
         res.json({ success: true, message: 'Chamado cancelado e técnico notificado' });
     } catch (error) {
         console.error('❌ Erro ao cancelar chamado:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// ============================================
+// BUSCAR PREÇO DE UMA PEÇA PELO CÓDIGO (TÉCNICO ADICIONA MANUAL)
+// ============================================
+app.get('/api/precos/buscar/:codigo', async (req, res) => {
+    try {
+        const codigo = decodeURIComponent(req.params.codigo).trim().toUpperCase();
+        
+        console.log(`🔍 Técnico buscando código: ${codigo}`);
+        
+        const { data, error } = await supabase
+            .from('precos_referencia')
+            .select('*')
+            .eq('codigo', codigo)
+            .maybeSingle();
+
+        if (error) throw error;
+        
+        if (data) {
+            res.json({ success: true, preco: data });
+        } else {
+            res.json({ success: false, error: 'Código não encontrado na base' });
+        }
+    } catch (error) {
+        console.error('❌ Erro ao buscar preço:', error);
         res.status(500).json({ success: false, error: error.message });
     }
 });

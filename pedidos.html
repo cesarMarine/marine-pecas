@@ -1007,14 +1007,16 @@
             if (!confirm(`📤 Devolver ao técnico com ${itens.length} peça(s)?\n\nO técnico será notificado para refazer o orçamento.`)) return;
 
             try {
-                const res = await fetch(`/api/pedidos/${id}/devolver-tecnico`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        orcamento: itens,
-                        observacao_vendedor: observacao
-                    })
-                });
+const res = await fetch(`/api/pedidos/${id}/devolver-tecnico`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+        orcamento: itens,
+        observacao_vendedor: observacao,
+        reeditado_pelo_vendedor: true,
+        motivo_reedicao: observacao || 'Orçamento ajustado pelo vendedor'
+    })
+});
 
                 const data = await res.json();
 
