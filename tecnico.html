@@ -5,6 +5,327 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel do Técnico</title>
     <style>
+        /* ===== MODAL VISUALIZAR MANUAL ===== */
+.modal-manual-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 2500;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    backdrop-filter: blur(6px);
+}
+
+.modal-manual-overlay.active {
+    display: flex;
+}
+
+.modal-manual-content {
+    background: #fff;
+    border-radius: 16px;
+    max-width: 95vw;
+    max-height: 95vh;
+    width: 1100px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5);
+    animation: modalManualIn 0.3s ease;
+}
+
+@keyframes modalManualIn {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.modal-manual-header {
+    background: linear-gradient(135deg, #1a237e, #3949ab);
+    color: white;
+    padding: 16px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    border-bottom: 3px solid #f8b81f;
+}
+
+.modal-manual-header .titulo {
+    font-size: 16px;
+    font-weight: 700;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.modal-manual-header .subtitulo {
+    font-size: 12px;
+    opacity: 0.85;
+    font-weight: 400;
+}
+
+.modal-manual-header .acoes {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.modal-manual-header .btn-acao-modal {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    border: 1.5px solid rgba(255, 255, 255, 0.3);
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    transition: 0.2s;
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.modal-manual-header .btn-acao-modal:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: white;
+}
+
+.modal-manual-header .btn-fechar {
+    background: #e94560;
+    border-color: #e94560;
+    font-size: 14px;
+    padding: 8px 14px;
+}
+
+.modal-manual-header .btn-fechar:hover {
+    background: #c62828;
+}
+
+.modal-manual-body {
+    flex: 1;
+    overflow: auto;
+    background: #f0f4f8;
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 20px;
+    min-height: 400px;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x pan-y;
+}
+
+.modal-manual-body .manual-imagem-wrapper {
+    position: relative;
+    max-width: 100%;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+}
+
+.modal-manual-body .manual-imagem-wrapper img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+.modal-manual-body .manual-imagem-wrapper .pin-visualizar {
+    position: absolute;
+    padding: 4px 8px;
+    font-weight: bold;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    z-index: 10;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    line-height: 1;
+    transform: translate(-50%, -50%);
+    min-width: 26px;
+    min-height: 26px;
+    font-size: 11px;
+    pointer-events: none;
+    cursor: default;
+}
+
+.modal-manual-body .manual-imagem-wrapper .pin-visualizar.destacado {
+    animation: pulsoManual 1s infinite;
+    z-index: 50;
+    transform: translate(-50%, -50%) scale(1.8);
+    box-shadow: 0 0 0 4px #f8b81f, 0 0 30px rgba(248, 184, 31, 0.9);
+}
+
+@keyframes pulsoManual {
+    0%, 100% { 
+        box-shadow: 0 0 0 4px #f8b81f, 0 0 20px rgba(248, 184, 31, 0.6);
+    }
+    50% { 
+        box-shadow: 0 0 0 8px #f8b81f, 0 0 40px rgba(248, 184, 31, 1);
+    }
+}
+
+.modal-manual-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    color: #666;
+    gap: 16px;
+    width: 100%;
+}
+
+.modal-manual-loading .spinner-modal {
+    border: 4px solid #e0e0e0;
+    border-top: 4px solid #1a237e;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+}
+
+.modal-manual-erro {
+    text-align: center;
+    padding: 60px 20px;
+    color: #e94560;
+    font-size: 15px;
+    font-weight: 600;
+    width: 100%;
+}
+
+.modal-manual-info {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    background: rgba(26, 35, 126, 0.95);
+    color: white;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    z-index: 100;
+    max-width: 80%;
+}
+
+/* CONTROLES DE ZOOM NO MODAL */
+.modal-manual-zoom {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.98);
+    padding: 8px 12px;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    z-index: 100;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.modal-manual-zoom button {
+    background: white;
+    border: 1.5px solid #dce1e8;
+    border-radius: 6px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 700;
+    color: #2d3436;
+    transition: 0.2s;
+    font-family: inherit;
+    min-width: 36px;
+    min-height: 36px;
+}
+
+.modal-manual-zoom button:hover {
+    background: #1a237e;
+    color: white;
+    border-color: #1a237e;
+}
+
+.modal-manual-zoom .zoom-nivel {
+    font-size: 12px;
+    font-weight: 700;
+    color: #6b7a8a;
+    min-width: 45px;
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .modal-manual-overlay {
+        padding: 10px;
+    }
+
+    .modal-manual-content {
+        max-height: 98vh;
+        width: 100%;
+    }
+
+    .modal-manual-header {
+        padding: 12px 16px;
+    }
+
+    .modal-manual-header .titulo {
+        font-size: 14px;
+    }
+
+    .modal-manual-header .subtitulo {
+        font-size: 11px;
+    }
+
+    .modal-manual-header .btn-acao-modal {
+        padding: 6px 12px;
+        font-size: 11px;
+    }
+
+    .modal-manual-body {
+        padding: 10px;
+    }
+
+    .modal-manual-body .manual-imagem-wrapper .pin-visualizar {
+        min-width: 36px;
+        min-height: 36px;
+        font-size: 13px;
+    }
+
+    .modal-manual-zoom {
+        bottom: 12px;
+        right: 12px;
+        padding: 6px 10px;
+        gap: 4px;
+    }
+
+    .modal-manual-zoom button {
+        padding: 6px 10px;
+        font-size: 14px;
+        min-width: 40px;
+        min-height: 40px;
+    }
+
+    .modal-manual-info {
+        bottom: 12px;
+        left: 12px;
+        font-size: 11px;
+        padding: 8px 12px;
+    }
+}
+
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
@@ -753,6 +1074,43 @@
     </style>
 </head>
 <body>
+    <!-- ===== MODAL VISUALIZAR MANUAL ===== -->
+<div class="modal-manual-overlay" id="modal-manual">
+    <div class="modal-manual-content">
+        <div class="modal-manual-header">
+            <div class="titulo">
+                📖 <span id="modal-manual-titulo">Manual</span>
+                <span class="subtitulo" id="modal-manual-subtitulo"></span>
+            </div>
+            <div class="acoes">
+                <button class="btn-acao-modal" onclick="abrirManualNovaAba()" title="Abrir em nova aba">
+                    🔗 Nova Aba
+                </button>
+                <button class="btn-acao-modal btn-fechar" onclick="fecharModalManual()">
+                    ✕ Fechar
+                </button>
+            </div>
+        </div>
+        <div class="modal-manual-body" id="modal-manual-body">
+            <div class="modal-manual-loading">
+                <div class="spinner-modal"></div>
+                <div>Carregando manual...</div>
+            </div>
+        </div>
+
+        <!-- CONTROLES DE ZOOM -->
+        <div class="modal-manual-zoom" id="modal-manual-zoom" style="display: none;">
+            <button onclick="zoomManualModal('out')" title="Diminuir zoom">−</button>
+            <span class="zoom-nivel" id="zoom-manual-nivel">100%</span>
+            <button onclick="zoomManualModal('in')" title="Aumentar zoom">+</button>
+            <button onclick="zoomManualModal('reset')" title="Resetar zoom" style="font-size:11px;">⟲</button>
+        </div>
+
+        <!-- INFO -->
+        <div class="modal-manual-info" id="modal-manual-info" style="display: none;"></div>
+    </div>
+</div> 
+
     <div class="container">
         <div class="header-top">
             <h1>🔧 Painel do Técnico</h1>
@@ -912,6 +1270,186 @@
         let acaoPosSenha = null;
 
         // ============================================
+// MODAL DE VISUALIZAÇÃO DE MANUAL (NA MESMA PÁGINA)
+// ============================================
+let manualModalAtual = null;
+let manualModalZoom = 1;
+let manualModalUrl = '';
+
+async function abrirManualModal(nomeProduto, variacao, numeroPeca = null) {
+    // 🔥 Limpa o nome do produto
+    let nomeLimpo = (nomeProduto || '').trim();
+
+    if (nomeLimpo.includes('|')) {
+        nomeLimpo = nomeLimpo.split('|')[0].trim();
+    }
+
+    nomeLimpo = nomeLimpo.replace(/\s*\([^)]*\)\s*$/g, '').trim();
+    nomeLimpo = nomeLimpo.replace(/\s*[-–]\s*(MANIVELA|CARRETILHA).*$/i, '').trim();
+    nomeLimpo = nomeLimpo.replace(/\s+/g, ' ').trim();
+
+    // Guarda a URL para "Nova Aba"
+    manualModalUrl = `/pecas.html?manual=${encodeURIComponent(nomeLimpo)}`;
+    if (variacao && variacao !== 'N/A') {
+        manualModalUrl += `&variacao=${encodeURIComponent(variacao)}`;
+    }
+
+    // Abre o modal
+    const modal = document.getElementById('modal-manual');
+    modal.classList.add('active');
+
+    // Título
+    document.getElementById('modal-manual-titulo').textContent = nomeLimpo;
+    document.getElementById('modal-manual-subtitulo').textContent = 
+        (variacao && variacao !== 'N/A' ? `Variação: ${variacao} · ` : '') + 
+        (numeroPeca ? `Peça: #${numeroPeca}` : '');
+
+    // Reset zoom
+    manualModalZoom = 1;
+    document.getElementById('zoom-manual-nivel').textContent = '100%';
+    document.getElementById('modal-manual-zoom').style.display = 'none';
+    document.getElementById('modal-manual-info').style.display = 'none';
+
+    // Body - loading
+    const body = document.getElementById('modal-manual-body');
+    body.innerHTML = `
+        <div class="modal-manual-loading">
+            <div class="spinner-modal"></div>
+            <div>Carregando manual...</div>
+        </div>
+    `;
+
+    try {
+        // 🔥 Busca dados do manual
+        const res = await fetch(`/api/esquemas/${encodeURIComponent(nomeLimpo)}`);
+        const data = await res.json();
+
+        if (!data.success) {
+            body.innerHTML = `
+                <div class="modal-manual-erro">
+                    ❌ ${data.error}<br>
+                    <small style="font-weight:400; color:#999; margin-top:10px; display:block;">
+                        Manual: ${nomeLimpo}
+                    </small>
+                </div>
+            `;
+            return;
+        }
+
+        manualModalAtual = data;
+
+        // Filtra hotspots por variação se aplicável
+        let hotspots = data.hotspots || [];
+        // (se quiser filtrar por variação, adicione aqui)
+
+        // Monta a imagem + pins
+        let pinsHtml = '';
+        hotspots.forEach(h => {
+            const peca = (data.pecas || []).find(p => String(p.numero) === String(h.numero));
+            const nomePeca = peca ? peca.nome : 'Peça';
+            
+            // 🔥 Destaca a peça pesquisada
+            const destacado = numeroPeca && String(h.numero) === String(numeroPeca);
+            
+            pinsHtml += `
+                <div class="pin-visualizar ${destacado ? 'destacado' : ''}" 
+                     style="left: ${h.x_percent}%; top: ${h.y_percent}%;"
+                     title="#${h.numero} - ${nomePeca}">
+                    ${h.numero}
+                </div>
+            `;
+        });
+
+        body.innerHTML = `
+            <div class="manual-imagem-wrapper" id="manual-imagem-wrapper" style="transform-origin: top center; transition: transform 0.25s ease;">
+                <img src="${data.imagemUrl}" alt="Manual ${nomeLimpo}" 
+                     onerror="this.src='https://via.placeholder.com/800x600?text=Imagem+não+encontrada'">
+                ${pinsHtml}
+            </div>
+        `;
+
+        // Aplica o zoom inicial se tiver peça destacada
+        if (numeroPeca) {
+            setTimeout(() => {
+                const pinDestacado = document.querySelector('.pin-visualizar.destacado');
+                if (pinDestacado) {
+                    pinDestacado.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+                }
+            }, 500);
+
+            // Mostra info
+            const info = document.getElementById('modal-manual-info');
+            const pecaEncontrada = (data.pecas || []).find(p => String(p.numero) === String(numeroPeca));
+            if (pecaEncontrada) {
+                info.innerHTML = `🎯 Buscando peça: <strong>#${numeroPeca} - ${pecaEncontrada.nome}</strong>`;
+                info.style.display = 'block';
+            }
+        }
+
+        // Mostra controles de zoom
+        document.getElementById('modal-manual-zoom').style.display = 'flex';
+
+    } catch (error) {
+        body.innerHTML = `
+            <div class="modal-manual-erro">
+                ❌ Erro ao carregar manual: ${error.message}
+            </div>
+        `;
+    }
+}
+
+function fecharModalManual() {
+    const modal = document.getElementById('modal-manual');
+    modal.classList.remove('active');
+    manualModalAtual = null;
+    manualModalZoom = 1;
+}
+
+function abrirManualNovaAba() {
+    if (manualModalUrl) {
+        window.open(manualModalUrl, '_blank');
+    }
+}
+
+function zoomManualModal(acao) {
+    const wrapper = document.getElementById('manual-imagem-wrapper');
+    if (!wrapper) return;
+
+    if (acao === 'in') {
+        manualModalZoom = Math.min(3, manualModalZoom + 0.25);
+    } else if (acao === 'out') {
+        manualModalZoom = Math.max(0.5, manualModalZoom - 0.25);
+    } else {
+        manualModalZoom = 1;
+    }
+
+    wrapper.style.transform = `scale(${manualModalZoom})`;
+    document.getElementById('zoom-manual-nivel').textContent = Math.round(manualModalZoom * 100) + '%';
+}
+
+// Fecha modal com ESC
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        const modal = document.getElementById('modal-manual');
+        if (modal && modal.classList.contains('active')) {
+            fecharModalManual();
+        }
+    }
+});
+
+// Fecha modal clicando fora
+document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('modal-manual');
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                fecharModalManual();
+            }
+        });
+    }
+});
+
+        // ============================================
         // SELEÇÃO E DELEÇÃO
         // ============================================
         function toggleSelecionarTodos(checkbox) {
@@ -1018,34 +1556,8 @@
 // ============================================
 // ABRIR MANUAL COM VARIAÇÃO CORRETA (VERSÃO MELHORADA)
 // ============================================
-function abrirManual(nomeProduto, variacao) {
-    let nomeLimpo = (nomeProduto || '').trim();
-
-    // 🔥 Se tem "|" (múltiplos produtos), pega só o PRIMEIRO
-    if (nomeLimpo.includes('|')) {
-        nomeLimpo = nomeLimpo.split('|')[0].trim();
-    }
-
-    // 🔥 Remove variação entre parênteses no final
-    // Ex: "CARRETILHA TITAN PRO 2 12000 (MANIVELA DIREITA)" → "CARRETILHA TITAN PRO 2 12000"
-    nomeLimpo = nomeLimpo.replace(/\s*\([^)]*\)\s*$/g, '').trim();
-
-    // 🔥 Remove " - MANIVELA..." ou " – CARRETILHA..." no final
-    nomeLimpo = nomeLimpo.replace(/\s*[-–]\s*(MANIVELA|CARRETILHA).*$/i, '').trim();
-
-    // 🔥 Remove espaços duplicados
-    nomeLimpo = nomeLimpo.replace(/\s+/g, ' ').trim();
-
-    const nomeEncoded = encodeURIComponent(nomeLimpo);
-    let url = `/pecas.html?manual=${nomeEncoded}`;
-
-    // Adiciona variação se existir
-    if (variacao && variacao !== 'N/A' && variacao.trim() !== '') {
-        url += `&variacao=${encodeURIComponent(variacao.trim())}`;
-    }
-
-    console.log('🔗 Abrindo manual:', url);
-    window.open(url, '_blank');
+function abrirManual(nomeProduto, variacao, numeroPeca = null) {
+    abrirManualModal(nomeProduto, variacao, numeroPeca);
 }
 
         function verImagemEsquema(imagemUrl) {
@@ -1484,6 +1996,9 @@ function abrirManual(nomeProduto, variacao) {
 // ============================================
 // GERAR LINHAS UNIFICADAS (COM PRODUTO E VARIAÇÃO)
 // ============================================
+
+
+
 function gerarLinhasUnificadas(podeEditar = true) {
     let html = '';
 
@@ -1558,7 +2073,7 @@ function gerarLinhasUnificadas(podeEditar = true) {
                         ` : ''}
                     </td>
                     <td style="text-align:center;">
-                        <button class="btn-manual-linha" onclick="abrirManual('${produtoNomeItem}', '${variacao}')" title="Ver Manual">📖</button>
+                        <button class="btn-manual-linha" onclick="abrirManual('${produtoNomeItem}', '${variacao}', '${item.numero}')" title="Ver Peça #${item.numero} no Manual">📖</button>
                     </td>
                     <td style="text-align:center;">
                         <button class="btn-remove-linha" onclick="removerLinhaOrcamento(${index})" title="Remover">✕</button>
@@ -1606,7 +2121,7 @@ function gerarLinhasUnificadas(podeEditar = true) {
                         ` : '-'}
                     </td>
                     <td style="text-align:center;">
-                        <button class="btn-manual-linha" onclick="abrirManual('${produtoNomeItem}', '${variacao}')" title="Ver Manual">📖</button>
+                        <button class="btn-manual-linha" onclick="abrirManual('${produtoNomeItem}', '${variacao}', '${item.numero}')" title="Ver Peça #${item.numero} no Manual">📖</button>
                     </td>
                 </tr>
             `;
@@ -1614,6 +2129,31 @@ function gerarLinhasUnificadas(podeEditar = true) {
     });
 
     return html;
+}
+
+
+// ============================================
+// ATUALIZAR TABELA ORÇAMENTO
+// ============================================
+function atualizarTabelaOrcamento() {
+    const tbody = document.getElementById('tabela-orcamento');
+    if (!tbody) return;
+
+    // Verifica se está em modo edição (procura inputs na tabela)
+    const estaEditando = tbody.querySelector('input') !== null;
+    
+    // Redesenha a tabela
+    tbody.innerHTML = gerarLinhasUnificadas(estaEditando);
+
+    // Recalcula o total
+    const totalGeral = orcamentoAtual.reduce((sum, item) => {
+        return sum + ((item.preco_unitario || 0) * (item.qtd || 0));
+    }, 0);
+
+    const totalDiv = document.querySelector('.total-orcamento');
+    if (totalDiv) {
+        totalDiv.textContent = `TOTAL: R$ ${totalGeral.toFixed(2)}`;
+    }
 }
 // ============================================
 // ABRIR ORÇAMENTO (TUDO EM UMA LINHA SÓ)
