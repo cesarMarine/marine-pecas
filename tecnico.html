@@ -1015,19 +1015,36 @@
         // ============================================
 // ABRIR MANUAL COM VARIAÇÃO CORRETA
 // ============================================
+// ============================================
+// ABRIR MANUAL COM VARIAÇÃO CORRETA (VERSÃO MELHORADA)
+// ============================================
 function abrirManual(nomeProduto, variacao) {
-    // Remove "(MANIVELA DIREITA)" ou " - MANIVELA DIREITA" do final do nome
-    let nomeLimpo = nomeProduto || '';
+    let nomeLimpo = (nomeProduto || '').trim();
+
+    // 🔥 Se tem "|" (múltiplos produtos), pega só o PRIMEIRO
+    if (nomeLimpo.includes('|')) {
+        nomeLimpo = nomeLimpo.split('|')[0].trim();
+    }
+
+    // 🔥 Remove variação entre parênteses no final
+    // Ex: "CARRETILHA TITAN PRO 2 12000 (MANIVELA DIREITA)" → "CARRETILHA TITAN PRO 2 12000"
     nomeLimpo = nomeLimpo.replace(/\s*\([^)]*\)\s*$/g, '').trim();
+
+    // 🔥 Remove " - MANIVELA..." ou " – CARRETILHA..." no final
     nomeLimpo = nomeLimpo.replace(/\s*[-–]\s*(MANIVELA|CARRETILHA).*$/i, '').trim();
+
+    // 🔥 Remove espaços duplicados
+    nomeLimpo = nomeLimpo.replace(/\s+/g, ' ').trim();
 
     const nomeEncoded = encodeURIComponent(nomeLimpo);
     let url = `/pecas.html?manual=${nomeEncoded}`;
-    
+
+    // Adiciona variação se existir
     if (variacao && variacao !== 'N/A' && variacao.trim() !== '') {
-        url += `&variacao=${encodeURIComponent(variacao)}`;
+        url += `&variacao=${encodeURIComponent(variacao.trim())}`;
     }
-    
+
+    console.log('🔗 Abrindo manual:', url);
     window.open(url, '_blank');
 }
 
