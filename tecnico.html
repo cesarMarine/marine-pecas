@@ -1999,6 +1999,9 @@ function abrirManual(nomeProduto, variacao, numeroPeca = null) {
 
 
 
+// ============================================
+// GERAR LINHAS UNIFICADAS (LAYOUT COMPACTO)
+// ============================================
 function gerarLinhasUnificadas(podeEditar = true) {
     let html = '';
 
@@ -2020,108 +2023,139 @@ function gerarLinhasUnificadas(podeEditar = true) {
             statusIcon = '⚫';
         }
 
+        // 🔥 Tem observação?
+        const temObs = observacao && observacao.trim() !== '';
+        const obsIcone = temObs ? '📝✅' : '📝';
+        const obsCor = temObs ? '#00b894' : '#6c5ce7';
+        const obsTitulo = temObs ? `Ver observação: "${observacao.substring(0, 40)}${observacao.length > 40 ? '...' : ''}"` : 'Adicionar observação';
+
         if (podeEditar) {
-            // 🔥 MODO EDIÇÃO
+            // 🔥 MODO EDIÇÃO - LAYOUT COMPACTO
             html += `
                 <tr id="linha-${index}">
-                    <td style="text-align:center;">
-                        <strong style="color:#e94560;">#${item.numero}</strong>
+                    <td style="text-align:center; padding:4px;">
+                        <strong style="color:#e94560; font-size:11px;">#${item.numero}</strong>
                     </td>
-                    <td style="font-size:12px;">
+                    <td style="font-size:11px; padding:4px; max-width:120px;">
                         <strong>${item.nome_solicitado}</strong>
-                        ${item.nome_solicitado === '(adicionado manual)' ? `<br><span style="font-size:10px; color:#6c5ce7; font-weight:700;">➕ ADICIONADO</span>` : ''}
+                        ${item.nome_solicitado === '(adicionado manual)' ? `<br><span style="font-size:9px; color:#6c5ce7; font-weight:700;">➕ ADD</span>` : ''}
                     </td>
-                    <td style="font-size:11px;">
-                        <span class="produto-tag" style="font-size:10px; padding:2px 8px;">${produtoNomeItem}</span>
+                    <td style="font-size:10px; padding:4px; max-width:110px;">
+                        <span class="produto-tag" style="font-size:9px; padding:2px 6px;">${produtoNomeItem}</span>
                     </td>
-                    <td style="text-align:center;">
-                        <span class="variacao-tag" style="font-size:10px;">${variacao}</span>
+                    <td style="text-align:center; padding:4px;">
+                        <span class="variacao-tag" style="font-size:9px;">${variacao}</span>
                     </td>
-                    <td style="text-align:center;">
-                        <input type="number" min="1" value="${item.qtd || 1}" style="width:50px;text-align:center;padding:4px;" onchange="atualizarOrcamento(${index}, 'qtd', parseInt(this.value) || 1)">
+                    <td style="text-align:center; padding:4px;">
+                        <button class="btn-manual-linha" onclick="abrirManual('${produtoNomeItem}', '${variacao}', '${item.numero}')" 
+                                title="Ver Peça #${item.numero} no Manual"
+                                style="padding:3px 7px; font-size:11px;">📖</button>
                     </td>
-                    <td>
-                        <input type="text" value="${item.codigo || ''}" onchange="buscarPreco(this, ${index})" placeholder="Código" style="text-transform:uppercase;padding:4px;font-size:11px;">
+                    <td style="text-align:center; padding:4px;">
+                        <input type="number" min="1" value="${item.qtd || 1}" 
+                               style="width:45px;text-align:center;padding:3px;font-size:11px;" 
+                               onchange="atualizarOrcamento(${index}, 'qtd', parseInt(this.value) || 1)">
                     </td>
-                    <td>
-                        <input type="text" value="${item.descricao || ''}" onchange="atualizarOrcamento(${index}, 'descricao', this.value)" placeholder="Descrição" style="padding:4px;font-size:11px;">
+                    <td style="padding:4px;">
+                        <input type="text" value="${item.codigo || ''}" 
+                               onblur="buscarPreco(this, ${index})"
+                               onkeydown="if(event.key==='Enter') buscarPreco(this, ${index})"
+                               placeholder="Código" 
+                               style="text-transform:uppercase;padding:3px;font-size:11px;width:100%;">
                     </td>
-                    <td style="text-align:right;">
-                        <input type="number" step="0.01" min="0" value="${item.preco_unitario || 0}" style="width:80px;text-align:right;padding:4px;font-size:11px;" onchange="atualizarOrcamento(${index}, 'preco_unitario', parseFloat(this.value) || 0)">
+                    <td style="padding:4px;">
+                        <input type="text" value="${item.descricao || ''}" 
+                               onchange="atualizarOrcamento(${index}, 'descricao', this.value)" 
+                               placeholder="Descrição" 
+                               style="padding:3px;font-size:11px;width:100%;">
                     </td>
-                    <td style="text-align:right;font-weight:bold;font-size:12px;">R$ ${total.toFixed(2)}</td>
-                    <td>
-                        <textarea placeholder="Anotação..." style="width:100%; min-height:36px; padding:4px; border:1px solid #ddd; border-radius:4px; font-size:11px; resize:vertical; font-family:inherit;" onchange="atualizarOrcamento(${index}, 'observacao', this.value)">${observacao}</textarea>
+                    <td style="text-align:right; padding:4px;">
+                        <input type="number" step="0.01" min="0" value="${item.preco_unitario || 0}" 
+                               style="width:70px;text-align:right;padding:3px;font-size:11px;" 
+                               onchange="atualizarOrcamento(${index}, 'preco_unitario', parseFloat(this.value) || 0)">
                     </td>
-                    <td>
-                        <select onchange="atualizarOrcamento(${index}, 'status_item', this.value)" style="width:100%; padding:4px; border:2px solid ${statusColor}; border-radius:4px; font-size:10px; font-weight:700; color:${statusColor}; background:#fff; cursor:pointer;">
+                    <td style="text-align:right;font-weight:bold;font-size:11px;padding:4px;">R$ ${total.toFixed(2)}</td>
+                    <td style="text-align:center; padding:4px;">
+                        <button onclick="abrirModalObs(${index})" 
+                                title="${obsTitulo}"
+                                style="background:${obsCor}; color:white; border:none; padding:3px 7px; border-radius:4px; cursor:pointer; font-size:11px; font-weight:600;">
+                            ${obsIcone}
+                        </button>
+                    </td>
+                    <td style="padding:4px;">
+                        <select onchange="atualizarOrcamento(${index}, 'status_item', this.value)" 
+                                style="width:100%; padding:3px; border:2px solid ${statusColor}; border-radius:4px; font-size:10px; font-weight:700; color:${statusColor}; background:#fff; cursor:pointer;">
                             <option value="OK" ${statusItem === 'OK' ? 'selected' : ''}>✅ OK</option>
                             <option value="EM FALTA" ${statusItem === 'EM FALTA' ? 'selected' : ''}>🔴 FALTA</option>
-                            <option value="DESCONTINUADO" ${statusItem === 'DESCONTINUADO' ? 'selected' : ''}>⚫ DESC.</option>
+                            <option value="DESCONTINUADO" ${statusItem === 'DESCONTINUADO' ? 'selected' : ''}>⚫ DESC</option>
                         </select>
                     </td>
-                    <td style="text-align:center;">
+                    <td style="text-align:center; padding:4px;">
                         <input type="file" id="foto-input-${index}" accept="image/*" capture="environment" style="display:none;" onchange="uploadFotoOrcamento(event, ${index})">
-                        <button type="button" onclick="document.getElementById('foto-input-${index}').click()" style="background:${fotoUrl ? '#00b894' : '#0984e3'}; color:white; border:none; padding:5px 8px; border-radius:4px; cursor:pointer; font-size:11px; font-weight:600;">
+                        <button type="button" onclick="document.getElementById('foto-input-${index}').click()" 
+                                style="background:${fotoUrl ? '#00b894' : '#0984e3'}; color:white; border:none; padding:3px 6px; border-radius:4px; cursor:pointer; font-size:10px; font-weight:600;">
                             ${fotoUrl ? '✅' : '📷'}
                         </button>
                         ${fotoUrl ? `
-                            <div style="margin-top:4px; position:relative; display:inline-block;">
-                                <img src="${fotoUrl}" style="max-width:45px; max-height:45px; border-radius:4px; border:2px solid #00b894; cursor:pointer;" onclick="window.open('${fotoUrl}', '_blank')">
-                                <button type="button" onclick="removerFoto(${index})" style="position:absolute; top:-5px; right:-5px; background:#e94560; color:white; border:2px solid white; border-radius:50%; width:16px; height:16px; cursor:pointer; font-size:9px; font-weight:700; display:flex; align-items:center; justify-content:center; padding:0;">✕</button>
+                            <div style="margin-top:3px; position:relative; display:inline-block;">
+                                <img src="${fotoUrl}" 
+                                     style="max-width:36px; max-height:36px; border-radius:4px; border:2px solid #00b894; cursor:pointer;" 
+                                     onclick="window.open('${fotoUrl}', '_blank')">
+                                <button type="button" onclick="removerFoto(${index})" 
+                                        style="position:absolute; top:-5px; right:-5px; background:#e94560; color:white; border:2px solid white; border-radius:50%; width:14px; height:14px; cursor:pointer; font-size:8px; font-weight:700; display:flex; align-items:center; justify-content:center; padding:0;">✕</button>
                             </div>
                         ` : ''}
                     </td>
-                    <td style="text-align:center;">
-                        <button class="btn-manual-linha" onclick="abrirManual('${produtoNomeItem}', '${variacao}', '${item.numero}')" title="Ver Peça #${item.numero} no Manual">📖</button>
-                    </td>
-                    <td style="text-align:center;">
-                        <button class="btn-remove-linha" onclick="removerLinhaOrcamento(${index})" title="Remover">✕</button>
+                    <td style="text-align:center; padding:4px;">
+                        <button class="btn-remove-linha" onclick="removerLinhaOrcamento(${index})" 
+                                title="Remover" style="padding:3px 7px; font-size:11px;">✕</button>
                     </td>
                 </tr>
             `;
         } else {
-            // 🔥 MODO VISUALIZAÇÃO
+            // 🔥 MODO VISUALIZAÇÃO - LAYOUT COMPACTO
             html += `
                 <tr>
-                    <td style="text-align:center;">
-                        <strong style="color:#e94560;">#${item.numero}</strong>
+                    <td style="text-align:center; padding:4px;">
+                        <strong style="color:#e94560; font-size:11px;">#${item.numero}</strong>
                     </td>
-                    <td style="font-size:12px;">
+                    <td style="font-size:11px; padding:4px; max-width:120px;">
                         <strong>${item.nome_solicitado}</strong>
-                        ${item.nome_solicitado === '(adicionado manual)' ? `<br><span style="font-size:10px; color:#6c5ce7; font-weight:700;">➕ ADICIONADO</span>` : ''}
+                        ${item.nome_solicitado === '(adicionado manual)' ? `<br><span style="font-size:9px; color:#6c5ce7; font-weight:700;">➕ ADD</span>` : ''}
                     </td>
-                    <td style="font-size:11px;">
-                        <span class="produto-tag" style="font-size:10px; padding:2px 8px;">${produtoNomeItem}</span>
+                    <td style="font-size:10px; padding:4px; max-width:110px;">
+                        <span class="produto-tag" style="font-size:9px; padding:2px 6px;">${produtoNomeItem}</span>
                     </td>
-                    <td style="text-align:center;">
-                        <span class="variacao-tag" style="font-size:10px;">${variacao}</span>
+                    <td style="text-align:center; padding:4px;">
+                        <span class="variacao-tag" style="font-size:9px;">${variacao}</span>
                     </td>
-                    <td style="text-align:center;"><strong>${item.qtd || 0}</strong></td>
-                    <td><strong>${item.codigo || '-'}</strong></td>
-                    <td>${item.descricao || '-'}</td>
-                    <td style="text-align:right;">R$ ${(item.preco_unitario || 0).toFixed(2)}</td>
-                    <td style="text-align:right;font-weight:bold;">R$ ${total.toFixed(2)}</td>
-                    <td style="font-size:11px;">
-                        ${item.observacao ? `
-                            <div style="background:#fff3cd; padding:4px; border-radius:4px; border-left:3px solid #f8b81f;">
-                                ${item.observacao}
-                            </div>
-                        ` : '-'}
+                    <td style="text-align:center; padding:4px;">
+                        <button class="btn-manual-linha" onclick="abrirManual('${produtoNomeItem}', '${variacao}', '${item.numero}')" 
+                                title="Ver Peça #${item.numero} no Manual"
+                                style="padding:3px 7px; font-size:11px;">📖</button>
                     </td>
-                    <td style="text-align:center; font-weight:700; color:${statusColor}; font-size:11px;">
+                    <td style="text-align:center; padding:4px;"><strong style="font-size:11px;">${item.qtd || 0}</strong></td>
+                    <td style="padding:4px;"><strong style="font-size:11px;">${item.codigo || '-'}</strong></td>
+                    <td style="font-size:11px; padding:4px; max-width:120px;">${item.descricao || '-'}</td>
+                    <td style="text-align:right; padding:4px; font-size:11px;">R$ ${(item.preco_unitario || 0).toFixed(2)}</td>
+                    <td style="text-align:right;font-weight:bold;font-size:11px;padding:4px;">R$ ${total.toFixed(2)}</td>
+                    <td style="text-align:center; padding:4px;">
+                        <button onclick="abrirModalObs(${index})" 
+                                title="${obsTitulo}"
+                                style="background:${obsCor}; color:white; border:none; padding:3px 7px; border-radius:4px; cursor:pointer; font-size:11px; font-weight:600;">
+                            ${obsIcone}
+                        </button>
+                    </td>
+                    <td style="text-align:center; font-weight:700; color:${statusColor}; font-size:10px; padding:4px;">
                         ${statusIcon} ${statusItem}
                     </td>
-                    <td style="text-align:center;">
+                    <td style="text-align:center; padding:4px;">
                         ${item.foto_url ? `
                             <img src="${item.foto_url}" 
-                                 style="max-width:45px; max-height:45px; border-radius:4px; border:2px solid #1a237e; cursor:pointer;"
+                                 style="max-width:36px; max-height:36px; border-radius:4px; border:2px solid #1a237e; cursor:pointer;" 
                                  onclick="window.open('${item.foto_url}', '_blank')"
                                  title="Clique para ampliar">
                         ` : '-'}
-                    </td>
-                    <td style="text-align:center;">
-                        <button class="btn-manual-linha" onclick="abrirManual('${produtoNomeItem}', '${variacao}', '${item.numero}')" title="Ver Peça #${item.numero} no Manual">📖</button>
                     </td>
                 </tr>
             `;
@@ -2130,7 +2164,90 @@ function gerarLinhasUnificadas(podeEditar = true) {
 
     return html;
 }
+// ============================================
+// MODAL DE OBSERVAÇÃO (campo compacto)
+// ============================================
+function abrirModalObs(index) {
+    const item = orcamentoAtual[index];
+    if (!item) return;
 
+    const valorAtual = item.observacao || '';
+
+    const modalHtml = `
+        <div style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:2200; display:flex; align-items:center; justify-content:center; padding:20px;" id="modal-obs-linha">
+            <div style="background:white; padding:25px; border-radius:12px; max-width:500px; width:100%; box-shadow:0 20px 60px rgba(0,0,0,0.4);">
+                <h3 style="color:#1a237e; margin-bottom:8px;">📝 Observação da Peça</h3>
+                <p style="color:#666; font-size:13px; margin-bottom:15px;">
+                    <strong>#${item.numero}</strong> - ${item.nome_solicitado}
+                </p>
+                
+                <textarea id="obs-linha-textarea" 
+                          rows="5" 
+                          placeholder="Digite a observação sobre esta peça..."
+                          style="width:100%; padding:12px; border:2px solid #ddd; border-radius:8px; font-size:14px; font-family:inherit; resize:vertical; margin-bottom:15px;">${valorAtual}</textarea>
+                
+                <div style="display:flex; gap:10px;">
+                    <button onclick="fecharModalObs()" 
+                            style="flex:1; padding:10px; background:#e0e0e0; color:#333; border:none; border-radius:8px; cursor:pointer; font-weight:600; font-size:14px; font-family:inherit;">
+                        ❌ Cancelar
+                    </button>
+                    <button onclick="limparObsLinha(${index})" 
+                            style="padding:10px 16px; background:#e94560; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:600; font-size:14px; font-family:inherit;">
+                        🗑️ Limpar
+                    </button>
+                    <button onclick="salvarObsLinha(${index})" 
+                            style="flex:1; padding:10px; background:#00b894; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:600; font-size:14px; font-family:inherit;">
+                        ✅ Salvar
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    const antigo = document.getElementById('modal-obs-linha');
+    if (antigo) antigo.remove();
+
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+    setTimeout(() => {
+        const ta = document.getElementById('obs-linha-textarea');
+        if (ta) {
+            ta.focus();
+            ta.setSelectionRange(ta.value.length, ta.value.length);
+        }
+    }, 150);
+
+    // ESC para fechar
+    setTimeout(() => {
+        const handler = (e) => {
+            if (e.key === 'Escape') {
+                fecharModalObs();
+                document.removeEventListener('keydown', handler);
+            }
+        };
+        document.addEventListener('keydown', handler);
+    }, 200);
+}
+
+function fecharModalObs() {
+    const modal = document.getElementById('modal-obs-linha');
+    if (modal) modal.remove();
+}
+
+function salvarObsLinha(index) {
+    const ta = document.getElementById('obs-linha-textarea');
+    if (!ta) return;
+
+    const texto = ta.value.trim();
+    orcamentoAtual[index].observacao = texto;
+    fecharModalObs();
+    atualizarTabelaOrcamento();
+}
+
+function limparObsLinha(index) {
+    const ta = document.getElementById('obs-linha-textarea');
+    if (ta) ta.value = '';
+}
 
 // ============================================
 // ATUALIZAR TABELA ORÇAMENTO
@@ -2379,24 +2496,24 @@ orcamentoSalvo.forEach(o => {
         // TABELA UNIFICADA (UMA LINHA POR PEÇA)
         // ============================================
         html += `
-            <div style="overflow-x:auto;">
+            <div style="overflow-x:auto; overflow-y:auto; max-height:500px; border-radius:8px; border:1px solid #e0e0e0;">
             <table>
 <thead>
     <tr>
-        <th style="min-width:55px;text-align:center;">Pos.</th>
-        <th style="min-width:160px;">Peça Solicitada</th>
-        <th style="min-width:140px;">Produto</th>
-        <th style="min-width:100px;text-align:center;">Variação</th>
-        <th style="min-width:55px;text-align:center;">Qtd</th>
-        <th style="min-width:100px;">Código</th>
-        <th style="min-width:120px;">Descrição</th>
-        <th style="min-width:90px;text-align:right;">Preço</th>
-        <th style="min-width:70px;text-align:right;">Total</th>
-        <th style="min-width:130px;">📝 OBS</th>
-        <th style="min-width:100px;">📋 Status</th>
-        <th style="min-width:60px;text-align:center;">📷</th>
-        <th style="min-width:50px;text-align:center;">📖</th>
-        ${podeEditar ? '<th style="min-width:45px;text-align:center;">✕</th>' : ''}
+        <th style="min-width:50px;text-align:center; padding:6px 4px;">Pos.</th>
+        <th style="min-width:130px; padding:6px 4px;">Peça Solicitada</th>
+        <th style="min-width:110px; padding:6px 4px;">Produto</th>
+        <th style="min-width:90px;text-align:center; padding:6px 4px;">Variação</th>
+        <th style="min-width:50px;text-align:center; padding:6px 4px;">📖</th>
+        <th style="min-width:50px;text-align:center; padding:6px 4px;">Qtd</th>
+        <th style="min-width:100px; padding:6px 4px;">Código</th>
+        <th style="min-width:110px; padding:6px 4px;">Descrição</th>
+        <th style="min-width:80px;text-align:right; padding:6px 4px;">Preço</th>
+        <th style="min-width:70px;text-align:right; padding:6px 4px;">Total</th>
+        <th style="min-width:50px;text-align:center; padding:6px 4px;">📝</th>
+        <th style="min-width:90px; padding:6px 4px;">📋 Status</th>
+        <th style="min-width:55px;text-align:center; padding:6px 4px;">📷</th>
+        ${podeEditar ? '<th style="min-width:45px;text-align:center; padding:6px 4px;">✕</th>' : ''}
     </tr>
 </thead>
                 <tbody id="tabela-orcamento">
