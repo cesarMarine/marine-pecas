@@ -1215,22 +1215,22 @@
                         </td>
                         <td>${formatarData(p.data_pedido)}</td>
                         <td>
-                            <button class="btn-acao btn-detalhes" onclick="verDetalhes(${p.id})">📄 Detalhes</button>
-                            
-                            ${p.status === 'EM_ANALISE_TECNICA' ? `<button class="btn-acao btn-orcamento" onclick="abrirOrcamento(${p.id})">📊 ${p.reeditado_pelo_vendedor ? 'REVISAR' : 'Orçamento'}</button>` : ''}
-                            
-                            ${p.status === 'ORCAMENTO_FINALIZADO' ? `<span style="font-size:11px; color:#666;">Enviado ao Vendedor...</span>` : ''}
-                            
-                            ${p.status === 'CONFIRMADO_TECNICO' ? `<button class="btn-acao btn-confirmar" onclick="finalizarPedido(${p.id})">✅ Finalizar</button>` : ''}
-                            
-                            ${p.status === 'FINALIZADO' && !p.status_separado ? `
-                                <button class="btn-acao" style="background:#6c5ce7; color:white;" onclick="marcarSeparado(${p.id})">📦 SEPARADO</button>
-                            ` : ''}
+    <button class="btn-acao btn-orcamento" onclick="abrirOrcamento(${p.id})">
+        📊 ${p.status === 'EM_ANALISE_TECNICA' ? (p.reeditado_pelo_vendedor ? 'REVISAR' : 'Orçamento') : 'Ver Orçamento'}
+    </button>
+    
+    ${p.status === 'ORCAMENTO_FINALIZADO' ? `<br><span style="font-size:11px; color:#666;">Enviado ao Vendedor...</span>` : ''}
+    
+    ${p.status === 'CONFIRMADO_TECNICO' ? `<button class="btn-acao btn-confirmar" onclick="finalizarPedido(${p.id})">✅ Finalizar</button>` : ''}
+    
+    ${p.status === 'FINALIZADO' && !p.status_separado ? `
+        <button class="btn-acao" style="background:#6c5ce7; color:white;" onclick="marcarSeparado(${p.id})">📦 SEPARADO</button>
+    ` : ''}
 
-                            ${p.status === 'ORCAMENTO_RECUSADO' ? `<button class="btn-acao btn-corrigir" onclick="abrirOrcamento(${p.id})">🛠️ Corrigir</button>` : ''}
-                            
-                            <button class="btn-deletar-linha" onclick="confirmarDeletarPedido(${p.id}, '${p.numero_chamado}')">🗑️</button>
-                        </td>
+    ${p.status === 'ORCAMENTO_RECUSADO' ? `<button class="btn-acao btn-corrigir" onclick="abrirOrcamento(${p.id})">🛠️ Corrigir</button>` : ''}
+    
+    <button class="btn-deletar-linha" onclick="confirmarDeletarPedido(${p.id}, '${p.numero_chamado}')">🗑️</button>
+</td>
                     `;
                     tbody.appendChild(tr);
                 });
@@ -1289,166 +1289,372 @@
         // ============================================
         // ABRIR ORÇAMENTO
         // ============================================
-        async function abrirOrcamento(id) {
-            const modal = document.getElementById('modal-orcamento');
-            const body = document.getElementById('modal-body');
+        // ============================================
+// ABRIR ORÇAMENTO (COM TUDO: PEÇAS SOLICITADAS + ORÇAMENTO + OBS + STATUS + FOTO)
+// ============================================
+async function abrirOrcamento(id) {
+    const modal = document.getElementById('modal-orcamento');
+    const body = document.getElementById('modal-body');
 
-            try {
-                const res = await fetch(`/api/pedidos/${id}`);
-                const data = await res.json();
+    try {
+        const res = await fetch(`/api/pedidos/${id}`);
+        const data = await res.json();
 
-                if (!data.success) {
-                    body.innerHTML = `<p class="empty">❌ ${data.error}</p>`;
-                    modal.classList.add('active');
-                    return;
-                }
+        if (!data.success) {
+            body.innerHTML = `<p class="empty">❌ ${data.error}</p>`;
+            modal.classList.add('active');
+            return;
+        }
 
-                pedidoAtual = data.pedido;
-                const p = pedidoAtual;
-                const itens = p.itens || [];
-                const orcamentoSalvo = p.orcamento || [];
-                const nomeProduto = p.manual_nome || 'Produto não identificado';
-                const variacaoPrincipal = p.itens?.[0]?.variacao || 'N/A';
+        pedidoAtual = data.pedido;
+        const p = pedidoAtual;
+        const itens = p.itens || [];
+        const orcamentoSalvo = p.orcamento || [];
+        const nomeProduto = p.manual_nome || 'Produto não identificado';
+        const variacaoPrincipal = p.itens?.[0]?.variacao || 'N/A';
+        const statusLabel = getStatusLabel(p.status);
 
-                const cambio = globalCambio;
-                const coeficiente = globalCoeficiente;
+        const cambio = globalCambio;
+        const coeficiente = globalCoeficiente;
 
-                if (orcamentoSalvo.length > 0) {
-                    orcamentoAtual = orcamentoSalvo.map(item => ({
-                        codigo: item.codigo || '',
-                        descricao: item.descricao || '',
-                        qtd: item.qtd || 1,
-                        preco_base: item.preco_base || item.preco_unitario || 0,
-                        preco_unitario: item.preco_unitario || 0,
-                        total: item.total || 0,
-                        codigo_manual: item.codigo_manual || '',
-                        descricao_manual: item.descricao_manual || '',
-                        compatibilidade: item.compatibilidade || '',
-                        variacao: item.variacao || 'N/A',
-                        manual_nome: item.manual_nome || nomeProduto,
-                        observacao: item.observacao || '',
-                        status_item: item.status_item || 'OK',
-                        foto_url: item.foto_url || ''
-                    }));
-                } else {
-                    orcamentoAtual = itens.map(item => ({
-                        codigo: '',
-                        descricao: item.nome || '',
-                        qtd: item.qtd || 1,
-                        preco_unitario: 0,
-                        preco_base: 0,
-                        total: 0,
-                        codigo_manual: item.numero || '',
-                        descricao_manual: item.nome || '',
-                        compatibilidade: '',
-                        variacao: item.variacao || 'N/A',
-                        manual_nome: item.manual_nome || nomeProduto,
-                        observacao: '',
-                        status_item: 'OK',
-                        foto_url: ''
-                    }));
-                }
+        // 🔥 Verifica se é modo VISUALIZAÇÃO (pedido fechado/aprovado)
+        const modoVisualizacao = ['ORCAMENTO_FINALIZADO', 'CONFIRMADO_TECNICO', 'ENVIADO_CLIENTE', 'FINALIZADO'].includes(p.status);
+        const mostrarComparacao = p.status === 'FINALIZADO' || p.status_separado === true;
+        const podeEditar = p.status === 'EM_ANALISE_TECNICA' || p.status === 'ORCAMENTO_RECUSADO';
 
-                let html = `
-                    <h2>📊 Orçamento - #${p.numero_chamado}</h2>
-                    ${p.reeditado_pelo_vendedor && p.status === 'EM_ANALISE_TECNICA' ? `
-                        <div style="background:#f8d7da; border:2px solid #e94560; padding:15px; border-radius:8px; margin-bottom:15px;">
-                            <strong style="color:#721c24; font-size:15px;">⚠️ ESTE PEDIDO FOI REEDITADO PELO VENDEDOR</strong>
-                            ${p.motivo_reedicao ? `<p style="margin-top:8px; color:#721c24; font-size:13px;"><strong>Motivo:</strong> ${p.motivo_reedicao}</p>` : ''}
-                            <p style="margin-top:8px; color:#721c24; font-size:12px;">Verifique as alterações antes de salvar novamente.</p>
-                        </div>
-                    ` : ''}
-                    <div style="background:#1a237e; color:white; padding:12px; border-radius:8px; margin-bottom:15px; font-size:15px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-                        <span>🎣 <strong>${nomeProduto}</strong> 
-                        ${variacaoPrincipal !== 'N/A' ? `| 📏 Variação: <strong>${variacaoPrincipal}</strong>` : ''}</span>
-                        <button onclick="abrirManual('${nomeProduto}', '${variacaoPrincipal}')" class="btn-manual">
-                            📖 Ver Manual
-                        </button>
-                    </div>
-                    <div style="background:#e8eaf6; padding:10px; border-radius:8px; margin-bottom:15px; font-size:13px; color:#1a237e;">
-                        ⚙️ Câmbio: <strong>${cambio}</strong> | Coeficiente: <strong>${coeficiente}</strong>
-                    </div>
-                    
-                    <div class="info-cliente">
-                        <p><strong>Cliente:</strong> ${p.cliente_nome}</p>
-                        <p><strong>CNPJ:</strong> ${p.cliente_cnpj}</p>
-                        <p><strong>Vendedor:</strong> ${p.vendedor_nome || '-'}</p>
-                    </div>
-                `;
+        // ============================================
+        // PREPARA ORÇAMENTO
+        // ============================================
+        if (orcamentoSalvo.length > 0) {
+            orcamentoAtual = orcamentoSalvo.map(item => ({
+                codigo: item.codigo || '',
+                descricao: item.descricao || '',
+                qtd: item.qtd || 1,
+                preco_base: item.preco_base || item.preco_unitario || 0,
+                preco_unitario: item.preco_unitario || 0,
+                total: item.total || 0,
+                codigo_manual: item.codigo_manual || '',
+                descricao_manual: item.descricao_manual || '',
+                compatibilidade: item.compatibilidade || '',
+                variacao: item.variacao || 'N/A',
+                manual_nome: item.manual_nome || nomeProduto,
+                observacao: item.observacao || '',
+                status_item: item.status_item || 'OK',
+                foto_url: item.foto_url || ''
+            }));
 
-                if (p.imagem_url) {
-                    html += `
-                        <div class="imagem-esquema">
-                            <h3>📷 Esquema do Produto</h3>
-                            <img src="${p.imagem_url}" alt="Esquema" onerror="this.style.display='none'">
-                            <button onclick="verImagemEsquema('${p.imagem_url}')" 
-                                    style="position:absolute; top:10px; right:10px; background:#1a237e; color:white; border:none; padding:5px 15px; border-radius:6px; cursor:pointer; font-weight:600; font-size:12px;">
-                                🔍 Ampliar
-                            </button>
-                        </div>
-                    `;
-                }
+            if (podeEditar) {
+                orcamentoAtual.forEach(item => {
+                    const precoBase = item.preco_base || item.preco_unitario || 0;
+                    const novoPreco = precoBase * cambio * coeficiente;
+                    item.preco_unitario = parseFloat(novoPreco.toFixed(2));
+                    item.total = item.preco_unitario * item.qtd;
+                });
+            }
+        } else {
+            orcamentoAtual = itens.map(item => ({
+                codigo: '',
+                descricao: item.nome || '',
+                qtd: item.qtd || 1,
+                preco_unitario: 0,
+                preco_base: 0,
+                total: 0,
+                codigo_manual: item.numero || '',
+                descricao_manual: item.nome || '',
+                compatibilidade: '',
+                variacao: item.variacao || 'N/A',
+                manual_nome: item.manual_nome || nomeProduto,
+                observacao: '',
+                status_item: 'OK',
+                foto_url: ''
+            }));
+        }
 
+        // ============================================
+        // MONTA O HTML
+        // ============================================
+        let html = `
+            <h2>📊 ${modoVisualizacao ? 'Orçamento Final' : 'Orçamento'} - #${p.numero_chamado}</h2>
+            
+            ${p.reeditado_pelo_vendedor && p.status === 'EM_ANALISE_TECNICA' ? `
+                <div style="background:#f8d7da; border:2px solid #e94560; padding:15px; border-radius:8px; margin-bottom:15px;">
+                    <strong style="color:#721c24; font-size:15px;">⚠️ ESTE PEDIDO FOI REEDITADO PELO VENDEDOR</strong>
+                    ${p.motivo_reedicao ? `<p style="margin-top:8px; color:#721c24; font-size:13px;"><strong>Motivo:</strong> ${p.motivo_reedicao}</p>` : ''}
+                </div>
+            ` : ''}
+            
+            <div style="background:#1a237e; color:white; padding:12px; border-radius:8px; margin-bottom:15px; font-size:15px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                <span>🎣 <strong>${nomeProduto}</strong> 
+                ${variacaoPrincipal !== 'N/A' ? `| 📏 <strong>${variacaoPrincipal}</strong>` : ''}</span>
+                <button onclick="abrirManual('${nomeProduto}', '${variacaoPrincipal}')" class="btn-manual">
+                    📖 Ver Manual
+                </button>
+            </div>
+            
+            <div style="background:#e8eaf6; padding:10px; border-radius:8px; margin-bottom:15px; font-size:13px; color:#1a237e;">
+                ⚙️ Câmbio: <strong>${cambio}</strong> | Coeficiente: <strong>${coeficiente}</strong>
+            </div>
+            
+            <div class="info-cliente">
+                <p><strong>Status:</strong> <span class="status ${getStatusClass(p.status)}">${statusLabel}</span>${p.status_separado ? ' <span class="status" style="background:#6c5ce7;color:white;">📦 Separado</span>' : ''}</p>
+                <p><strong>Cliente:</strong> ${p.cliente_nome}${p.numero_cliente ? ` <span style="background:#e8eaf6; color:#1a237e; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:700;">Nº ${p.numero_cliente}</span>` : ''}</p>
+                <p><strong>CNPJ:</strong> ${p.cliente_cnpj}</p>
+                <p><strong>Vendedor:</strong> ${p.vendedor_nome || '-'}</p>
+                <p><strong>Data:</strong> ${formatarData(p.data_pedido)}</p>
+            </div>
+        `;
+
+        // Motivo de recusa
+        if (p.status === 'ORCAMENTO_RECUSADO') {
+            html += `
+                <div style="background:#f8d7da; color:#721c24; padding:10px; border-radius:8px; margin-bottom:15px;">
+                    <strong>❌ Motivo da recusa:</strong> ${p.motivo_recusa || 'Não informado'}
+                </div>
+            `;
+        }
+
+        // ============================================
+        // SEÇÃO: PEÇAS SOLICITADAS (ORIGINAL DO CLIENTE)
+        // ============================================
+        html += `
+            <div style="background:#e3f2fd; border:2px solid #0984e3; padding:12px; border-radius:8px; margin-bottom:15px;">
+                <strong>📋 PEÇAS SOLICITADAS (Original do Cliente)</strong>
+                <span style="font-size:13px; color:#666; margin-left:10px;">(${itens.length} peça(s))</span>
+            </div>
+
+            <div style="overflow-x:auto; margin-bottom:25px;">
+            <table style="background:#f8fbff;">
+                <thead>
+                    <tr>
+                        <th style="min-width:70px;text-align:center;">Posição</th>
+                        <th style="min-width:200px;">Descrição</th>
+                        <th style="min-width:100px;">Produto</th>
+                        <th style="min-width:80px;text-align:center;">Variação</th>
+                        <th style="min-width:60px;text-align:center;">Qtd</th>
+                        <th style="min-width:70px;text-align:center;">Manual</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+        if (itens.length === 0) {
+            html += `<tr><td colspan="6" class="empty">Nenhuma peça solicitada</td></tr>`;
+        } else {
+            itens.forEach(item => {
+                const variacao = item.variacao || 'N/A';
+                const produtoItem = item.manual_nome || nomeProduto;
                 html += `
-                    <div style="margin: 15px 0;">
-                        <button class="btn-add-linha" onclick="adicionarLinhaOrcamento()">➕ Adicionar Linha</button>
-                        <button class="btn-add-manual" onclick="abrirModalBuscarCodigo()">🔍 Adicionar Peça por Código</button>
-                    </div>
-
-                    <div style="overflow-x:auto;">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th style="min-width:70px;">Código</th>
-                                <th style="min-width:100px;">Descrição</th>
-                                <th style="min-width:50px;text-align:center;">Qtd</th>
-                                <th style="min-width:70px;text-align:center;">Variação</th>
-                                <th style="min-width:80px;text-align:right;">Preço Unit.</th>
-                                <th style="min-width:70px;text-align:right;">Total</th>
-                                <th style="min-width:150px;">📝 OBS Técnico</th>
-                                <th style="min-width:130px;">📋 Status</th>
-                                <th style="min-width:80px;text-align:center;">📷 Foto</th>
-                                <th style="min-width:50px;text-align:center;">Ação</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabela-orcamento">
+                    <tr>
+                        <td style="text-align:center;"><strong>#${item.numero}</strong></td>
+                        <td>${item.nome}</td>
+                        <td><span class="produto-tag">${produtoItem}</span></td>
+                        <td style="text-align:center;"><span class="variacao-tag">${variacao}</span></td>
+                        <td style="text-align:center;"><strong>${item.qtd}</strong></td>
+                        <td style="text-align:center;">
+                            <button class="btn-manual-linha" onclick="abrirManual('${produtoItem}', '${variacao}')">📖</button>
+                        </td>
+                    </tr>
                 `;
+            });
+        }
 
-                html += gerarLinhasOrcamento();
+        html += `</tbody></table></div>`;
 
-                const totalGeral = orcamentoAtual.reduce((sum, item) => {
-                    return sum + ((item.preco_unitario || 0) * (item.qtd || 0));
-                }, 0);
+        // ============================================
+        // COMPARAÇÃO (se finalizado/separado)
+        // ============================================
+        if (mostrarComparacao && orcamentoAtual.length > 0) {
+            const numerosOrcados = orcamentoAtual.map(o => String(o.codigo_manual || '')).filter(n => n);
+            const itensNaoOrcados = itens.filter(i => !numerosOrcados.includes(String(i.numero)));
+            const emFalta = orcamentoAtual.filter(i => i.status_item === 'EM FALTA');
+            const descontinuados = orcamentoAtual.filter(i => i.status_item === 'DESCONTINUADO');
 
+            if (itensNaoOrcados.length > 0) {
                 html += `
-                        </tbody>
-                    </table>
-                    </div>
-
-                    <div class="total-orcamento">
-                        TOTAL: R$ ${totalGeral.toFixed(2)}
-                    </div>
-
-                    <div>
-                        <label style="font-weight:600;display:block;margin-bottom:5px;">Observações Gerais do Técnico</label>
-                        <textarea class="textarea-obs" id="obs-tecnico" rows="3" placeholder="Observações...">${p.observacoes_tecnico || ''}</textarea>
-                    </div>
-
-                    <div style="margin-top:20px; display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap;">
-                        <button class="btn-fechar" onclick="fecharModal()">🔙 Cancelar</button>
-                        <button class="btn-salvar" onclick="salvarOrcamento(${p.id})">💾 Salvar Orçamento</button>
+                    <div style="background:#f8d7da; border:2px solid #e94560; padding:15px; border-radius:8px; margin-bottom:15px;">
+                        <strong style="color:#721c24; font-size:15px;">⚠️ ATENÇÃO — ${itensNaoOrcados.length} peça(s) solicitada(s) NÃO estão no orçamento:</strong>
+                        <ul style="margin:10px 0 0 20px; color:#721c24; font-size:13px;">
+                            ${itensNaoOrcados.map(i => `<li><strong>#${i.numero}</strong> - ${i.nome} (Qtd: ${i.qtd})</li>`).join('')}
+                        </ul>
                     </div>
                 `;
+            } else {
+                html += `
+                    <div style="background:#d4edda; border:2px solid #00b894; padding:12px; border-radius:8px; margin-bottom:15px;">
+                        <strong style="color:#155724;">✅ Todas as peças solicitadas estão no orçamento!</strong>
+                    </div>
+                `;
+            }
 
-                body.innerHTML = html;
-                modal.classList.add('active');
-
-            } catch (error) {
-                body.innerHTML = `<p class="empty">❌ Erro: ${error.message}</p>`;
-                modal.classList.add('active');
+            if (emFalta.length > 0 || descontinuados.length > 0) {
+                html += `
+                    <div style="background:#fff3cd; border:2px solid #ffc107; padding:15px; border-radius:8px; margin-bottom:15px;">
+                        <strong style="color:#856404; font-size:15px;">⚠️ Itens com pendência:</strong>
+                        <ul style="margin:10px 0 0 20px; color:#856404; font-size:13px;">
+                            ${emFalta.map(i => `<li>🔴 <strong>${i.codigo}</strong> - ${i.descricao} (Qtd: ${i.qtd}) — <strong>EM FALTA</strong></li>`).join('')}
+                            ${descontinuados.map(i => `<li>⚫ <strong>${i.codigo}</strong> - ${i.descricao} (Qtd: ${i.qtd}) — <strong>DESCONTINUADO</strong></li>`).join('')}
+                        </ul>
+                    </div>
+                `;
             }
         }
 
+        // ============================================
+        // SEÇÃO: ORÇAMENTO TÉCNICO (EDITÁVEL OU VISUALIZAÇÃO)
+        // ============================================
+        html += `
+            <div style="background:#d4edda; border:2px solid #00b894; padding:12px; border-radius:8px; margin-bottom:15px;">
+                <strong>📊 ORÇAMENTO TÉCNICO ${modoVisualizacao ? '(Final)' : ''}</strong>
+                <span style="font-size:13px; color:#666; margin-left:10px;">(${orcamentoAtual.length} item(ns))</span>
+            </div>
+        `;
+
+        if (podeEditar) {
+            html += `
+                <div style="margin: 15px 0;">
+                    <button class="btn-add-linha" onclick="adicionarLinhaOrcamento()">➕ Adicionar Linha</button>
+                    <button class="btn-add-manual" onclick="abrirModalBuscarCodigo()">🔍 Adicionar Peça por Código</button>
+                </div>
+            `;
+        }
+
+        html += `
+            <div style="overflow-x:auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="min-width:70px;">Código</th>
+                        <th style="min-width:100px;">Descrição</th>
+                        <th style="min-width:50px;text-align:center;">Qtd</th>
+                        <th style="min-width:70px;text-align:center;">Posição</th>
+                        <th style="min-width:80px;text-align:right;">Preço</th>
+                        <th style="min-width:150px;">📝 OBS</th>
+                        <th style="min-width:120px;">📋 Status</th>
+                        <th style="min-width:80px;text-align:center;">📷 Foto</th>
+                        ${podeEditar ? '<th style="min-width:50px;text-align:center;">Ação</th>' : ''}
+                    </tr>
+                </thead>
+                <tbody id="tabela-orcamento">
+        `;
+
+        html += gerarLinhasOrcamento(podeEditar);
+
+        const totalGeral = orcamentoAtual.reduce((sum, item) => {
+            return sum + ((item.preco_unitario || 0) * (item.qtd || 0));
+        }, 0);
+
+        html += `
+                </tbody>
+            </table>
+            </div>
+
+            <div class="total-orcamento">
+                TOTAL: R$ ${totalGeral.toFixed(2)}
+            </div>
+        `;
+
+        // ============================================
+        // RESUMO DE CONFERÊNCIA (se finalizado/separado)
+        // ============================================
+        if (mostrarComparacao && orcamentoAtual.length > 0) {
+            const totalSolicitado = itens.reduce((sum, item) => sum + (parseInt(item.qtd) || 0), 0);
+            const totalOrcado = orcamentoAtual.reduce((sum, item) => sum + (parseInt(item.qtd) || 0), 0);
+            const emFalta = orcamentoAtual.filter(i => i.status_item === 'EM FALTA').length;
+            const descontinuados = orcamentoAtual.filter(i => i.status_item === 'DESCONTINUADO').length;
+
+            html += `
+                <div style="background:#e8eaf6; padding:15px; border-radius:8px; margin-top:15px; display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:15px;">
+                    <div style="text-align:center;">
+                        <div style="font-size:12px; color:#666; font-weight:600;">PEÇAS SOLICITADAS</div>
+                        <div style="font-size:24px; font-weight:800; color:#0984e3;">${itens.length}</div>
+                        <div style="font-size:11px; color:#888;">${totalSolicitado} unidades</div>
+                    </div>
+                    <div style="text-align:center;">
+                        <div style="font-size:12px; color:#666; font-weight:600;">ITENS NO ORÇAMENTO</div>
+                        <div style="font-size:24px; font-weight:800; color:#00b894;">${orcamentoAtual.length}</div>
+                        <div style="font-size:11px; color:#888;">${totalOrcado} unidades</div>
+                    </div>
+                    <div style="text-align:center;">
+                        <div style="font-size:12px; color:#666; font-weight:600;">EM FALTA</div>
+                        <div style="font-size:24px; font-weight:800; color:${emFalta > 0 ? '#e94560' : '#ccc'};">${emFalta}</div>
+                    </div>
+                    <div style="text-align:center;">
+                        <div style="font-size:12px; color:#666; font-weight:600;">DESCONTINUADO</div>
+                        <div style="font-size:24px; font-weight:800; color:${descontinuados > 0 ? '#666' : '#ccc'};">${descontinuados}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // OBSERVAÇÕES
+        if (podeEditar) {
+            html += `
+                <div style="margin-top:20px;">
+                    <label style="font-weight:600;display:block;margin-bottom:5px;">Observações Gerais do Técnico</label>
+                    <textarea class="textarea-obs" id="obs-tecnico" rows="3" placeholder="Observações...">${p.observacoes_tecnico || ''}</textarea>
+                </div>
+            `;
+        } else if (p.observacoes_tecnico) {
+            html += `
+                <div style="background:#fff3cd; padding:12px; border-radius:8px; margin-top:15px; border-left:4px solid #f8b81f;">
+                    <strong>📝 Observações Gerais do Técnico:</strong><br>
+                    <span style="font-size:13px;">${p.observacoes_tecnico}</span>
+                </div>
+            `;
+        }
+
+        // IMAGEM ESQUEMA
+        if (p.imagem_url) {
+            html += `
+                <div class="imagem-esquema">
+                    <h3>📷 Esquema do Produto</h3>
+                    <img src="${p.imagem_url}" alt="Esquema" onerror="this.style.display='none'">
+                    <button onclick="verImagemEsquema('${p.imagem_url}')" 
+                            style="position:absolute; top:10px; right:10px; background:#1a237e; color:white; border:none; padding:5px 15px; border-radius:6px; cursor:pointer; font-weight:600; font-size:12px;">
+                        🔍 Ampliar
+                    </button>
+                </div>
+            `;
+        }
+
+        // ============================================
+        // BOTÕES DE AÇÃO
+        // ============================================
+        html += `<div style="margin-top:20px; display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap;">`;
+
+        html += `<button class="btn-fechar" onclick="fecharModal()">🔙 Fechar</button>`;
+
+        if (modoVisualizacao && orcamentoAtual.length > 0) {
+            html += `
+                <button onclick="imprimirPedido(${p.id})" 
+                        style="background:#00b894; color:white; border:none; padding:10px 30px; border-radius:8px; cursor:pointer; font-weight:600;">
+                    🖨️ Imprimir Orçamento
+                </button>
+            `;
+        }
+
+        if (podeEditar) {
+            html += `<button class="btn-salvar" onclick="salvarOrcamento(${p.id})">💾 Salvar Orçamento</button>`;
+        }
+
+        if (p.status === 'CONFIRMADO_TECNICO') {
+            html += `<button class="btn-enviar" onclick="finalizarPedido(${p.id})">✅ Finalizar</button>`;
+        }
+
+        if (p.status === 'FINALIZADO' && !p.status_separado) {
+            html += `<button class="btn-enviar" style="background:#6c5ce7;" onclick="fecharModal(); marcarSeparado(${p.id})">📦 MARCAR COMO SEPARADO</button>`;
+        }
+
+        html += `</div>`;
+
+        body.innerHTML = html;
+        modal.classList.add('active');
+
+    } catch (error) {
+        body.innerHTML = `<p class="empty">❌ Erro: ${error.message}</p>`;
+        modal.classList.add('active');
+    }
+}
         // ============================================
         // MODAL BUSCAR CÓDIGO (TÉCNICO ADICIONA MANUAL)
         // ============================================
@@ -1612,78 +1818,120 @@
         // ============================================
         // GERAR LINHAS DO ORÇAMENTO
         // ============================================
-        function gerarLinhasOrcamento() {
-            let html = '';
-            const nomeProduto = pedidoAtual?.manual_nome || 'Produto';
+        // ============================================
+// GERAR LINHAS DA TABELA DE ORÇAMENTO
+// ============================================
+function gerarLinhasOrcamento(podeEditar = true) {
+    let html = '';
+    const nomeProduto = pedidoAtual?.manual_nome || 'Produto';
 
-            orcamentoAtual.forEach((item, index) => {
-                const total = (item.preco_unitario || 0) * (item.qtd || 0);
-                const variacao = item.variacao || 'N/A';
-                const produtoNomeItem = item.manual_nome || nomeProduto;
-                const observacao = item.observacao || '';
-                const statusItem = item.status_item || 'OK';
-                const fotoUrl = item.foto_url || '';
+    orcamentoAtual.forEach((item, index) => {
+        const total = (item.preco_unitario || 0) * (item.qtd || 0);
+        const variacao = item.variacao || 'N/A';
+        const produtoNomeItem = item.manual_nome || nomeProduto;
+        const observacao = item.observacao || '';
+        const statusItem = item.status_item || 'OK';
+        const fotoUrl = item.foto_url || '';
 
-                let statusColor = '#00b894';
-                let statusIcon = '✅';
-                if (statusItem === 'EM FALTA') {
-                    statusColor = '#e94560';
-                    statusIcon = '🔴';
-                } else if (statusItem === 'DESCONTINUADO') {
-                    statusColor = '#666';
-                    statusIcon = '⚫';
-                }
-
-                html += `
-                    <tr id="linha-${index}">
-                        <td><input type="text" value="${item.codigo || ''}" onchange="buscarPreco(this, ${index})" placeholder="Código"></td>
-                        <td><input type="text" value="${item.descricao || ''}" onchange="atualizarOrcamento(${index}, 'descricao', this.value)"></td>
-                        <td style="text-align:center;"><input type="number" min="1" value="${item.qtd || 1}" style="width:55px;text-align:center;" onchange="atualizarOrcamento(${index}, 'qtd', parseInt(this.value) || 1)"></td>
-                        <td style="text-align:center;"><span class="variacao-tag">${variacao}</span></td>
-                        <td style="text-align:right;"><input type="number" step="0.01" min="0" value="${item.preco_unitario || 0}" style="width:90px;text-align:right;" onchange="atualizarOrcamento(${index}, 'preco_unitario', parseFloat(this.value) || 0)"></td>
-                        <td style="text-align:right;font-weight:bold;">R$ ${total.toFixed(2)}</td>
-                        <td>
-                            <textarea placeholder="Anotação..." style="width:100%; min-height:50px; padding:5px; border:1px solid #ddd; border-radius:4px; font-size:11px; resize:vertical; font-family:inherit;" onchange="atualizarOrcamento(${index}, 'observacao', this.value)">${observacao}</textarea>
-                        </td>
-                        <td>
-                            <select onchange="atualizarOrcamento(${index}, 'status_item', this.value)" style="width:100%; padding:6px; border:2px solid ${statusColor}; border-radius:4px; font-size:11px; font-weight:700; color:${statusColor}; background:#fff; cursor:pointer;">
-                                <option value="OK" ${statusItem === 'OK' ? 'selected' : ''}>✅ OK</option>
-                                <option value="EM FALTA" ${statusItem === 'EM FALTA' ? 'selected' : ''}>🔴 EM FALTA</option>
-                                <option value="DESCONTINUADO" ${statusItem === 'DESCONTINUADO' ? 'selected' : ''}>⚫ DESCONTINUADO</option>
-                            </select>
-                        </td>
-                        <td style="text-align:center;">
-                            <input type="file" id="foto-input-${index}" accept="image/*" capture="environment" style="display:none;" onchange="uploadFotoOrcamento(event, ${index})">
-                            <button type="button" onclick="document.getElementById('foto-input-${index}').click()" style="background:${fotoUrl ? '#00b894' : '#0984e3'}; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; font-size:11px; font-weight:600; white-space:nowrap;">
-                                ${fotoUrl ? '✅ Foto' : '📷 Anexar'}
-                            </button>
-                            ${fotoUrl ? `
-                                <div style="margin-top:5px; position:relative;">
-                                    <img src="${fotoUrl}" style="max-width:60px; max-height:60px; border-radius:4px; border:2px solid #00b894; cursor:pointer;" onclick="window.open('${fotoUrl}', '_blank')">
-                                    <button type="button" onclick="removerFoto(${index})" style="position:absolute; top:-5px; right:-5px; background:#e94560; color:white; border:2px solid white; border-radius:50%; width:20px; height:20px; cursor:pointer; font-size:10px; font-weight:700; display:flex; align-items:center; justify-content:center; padding:0;">✕</button>
-                                </div>
-                            ` : ''}
-                        </td>
-                        <td style="text-align:center;">
-                            <button class="btn-remove-linha" onclick="removerLinhaOrcamento(${index})">✕</button>
-                        </td>
-                    </tr>
-                `;
-            });
-
-            return html;
+        let statusColor = '#00b894';
+        let statusIcon = '✅';
+        if (statusItem === 'EM FALTA') {
+            statusColor = '#e94560';
+            statusIcon = '🔴';
+        } else if (statusItem === 'DESCONTINUADO') {
+            statusColor = '#666';
+            statusIcon = '⚫';
         }
 
+        if (podeEditar) {
+            // MODO EDIÇÃO
+            html += `
+                <tr id="linha-${index}">
+                    <td><input type="text" value="${item.codigo || ''}" onchange="buscarPreco(this, ${index})" placeholder="Código"></td>
+                    <td><input type="text" value="${item.descricao || ''}" onchange="atualizarOrcamento(${index}, 'descricao', this.value)"></td>
+                    <td style="text-align:center;"><input type="number" min="1" value="${item.qtd || 1}" style="width:55px;text-align:center;" onchange="atualizarOrcamento(${index}, 'qtd', parseInt(this.value) || 1)"></td>
+                    <td style="text-align:center;"><span class="variacao-tag">${variacao}</span></td>
+                    <td style="text-align:right;"><input type="number" step="0.01" min="0" value="${item.preco_unitario || 0}" style="width:90px;text-align:right;" onchange="atualizarOrcamento(${index}, 'preco_unitario', parseFloat(this.value) || 0)"></td>
+                    <td style="text-align:right;font-weight:bold;">R$ ${total.toFixed(2)}</td>
+                    <td>
+                        <textarea placeholder="Anotação..." style="width:100%; min-height:50px; padding:5px; border:1px solid #ddd; border-radius:4px; font-size:11px; resize:vertical; font-family:inherit;" onchange="atualizarOrcamento(${index}, 'observacao', this.value)">${observacao}</textarea>
+                    </td>
+                    <td>
+                        <select onchange="atualizarOrcamento(${index}, 'status_item', this.value)" style="width:100%; padding:6px; border:2px solid ${statusColor}; border-radius:4px; font-size:11px; font-weight:700; color:${statusColor}; background:#fff; cursor:pointer;">
+                            <option value="OK" ${statusItem === 'OK' ? 'selected' : ''}>✅ OK</option>
+                            <option value="EM FALTA" ${statusItem === 'EM FALTA' ? 'selected' : ''}>🔴 EM FALTA</option>
+                            <option value="DESCONTINUADO" ${statusItem === 'DESCONTINUADO' ? 'selected' : ''}>⚫ DESCONTINUADO</option>
+                        </select>
+                    </td>
+                    <td style="text-align:center;">
+                        <input type="file" id="foto-input-${index}" accept="image/*" capture="environment" style="display:none;" onchange="uploadFotoOrcamento(event, ${index})">
+                        <button type="button" onclick="document.getElementById('foto-input-${index}').click()" style="background:${fotoUrl ? '#00b894' : '#0984e3'}; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; font-size:11px; font-weight:600; white-space:nowrap;">
+                            ${fotoUrl ? '✅ Foto' : '📷 Anexar'}
+                        </button>
+                        ${fotoUrl ? `
+                            <div style="margin-top:5px; position:relative;">
+                                <img src="${fotoUrl}" style="max-width:60px; max-height:60px; border-radius:4px; border:2px solid #00b894; cursor:pointer;" onclick="window.open('${fotoUrl}', '_blank')">
+                                <button type="button" onclick="removerFoto(${index})" style="position:absolute; top:-5px; right:-5px; background:#e94560; color:white; border:2px solid white; border-radius:50%; width:20px; height:20px; cursor:pointer; font-size:10px; font-weight:700; display:flex; align-items:center; justify-content:center; padding:0;">✕</button>
+                            </div>
+                        ` : ''}
+                    </td>
+                    <td style="text-align:center;">
+                        <button class="btn-remove-linha" onclick="removerLinhaOrcamento(${index})">✕</button>
+                    </td>
+                </tr>
+            `;
+        } else {
+            // MODO VISUALIZAÇÃO (somente leitura)
+            html += `
+                <tr>
+                    <td><strong>${item.codigo || '-'}</strong></td>
+                    <td>${item.descricao || '-'}</td>
+                    <td style="text-align:center;"><strong>${item.qtd || 0}</strong></td>
+                    <td style="text-align:center;"><strong>#${item.codigo_manual || '-'}</strong></td>
+                    <td style="text-align:right;">R$ ${(item.preco_unitario || 0).toFixed(2)}</td>
+                    <td style="font-size:11px;">
+                        ${item.observacao ? `
+                            <div style="background:#fff3cd; padding:5px; border-radius:4px; border-left:3px solid #f8b81f;">
+                                ${item.observacao}
+                            </div>
+                        ` : '-'}
+                    </td>
+                    <td style="text-align:center; font-weight:700; color:${statusColor};">
+                        ${statusIcon} ${statusItem}
+                    </td>
+                    <td style="text-align:center;">
+                        ${item.foto_url ? `
+                            <img src="${item.foto_url}" 
+                                 style="max-width:60px; max-height:60px; border-radius:4px; border:2px solid #1a237e; cursor:pointer;"
+                                 onclick="window.open('${item.foto_url}', '_blank')"
+                                 title="Clique para ampliar">
+                        ` : '-'}
+                    </td>
+                </tr>
+            `;
+        }
+    });
+
+    return html;
+}
         function atualizarTabelaOrcamento() {
-            const tbody = document.getElementById('tabela-orcamento');
-            if (!tbody) return;
-            tbody.innerHTML = gerarLinhasOrcamento();
-            const totalGeral = orcamentoAtual.reduce((sum, item) => {
-                return sum + ((item.preco_unitario || 0) * (item.qtd || 0));
-            }, 0);
-            const totalDiv = document.querySelector('.total-orcamento');
-            if (totalDiv) totalDiv.textContent = `TOTAL: R$ ${totalGeral.toFixed(2)}`;
-        }
+    const tbody = document.getElementById('tabela-orcamento');
+    if (!tbody) return;
+
+    // Verifica se está em modo edição (procura inputs na tabela)
+    const estaEditando = tbody.querySelector('input') !== null;
+    
+    tbody.innerHTML = gerarLinhasOrcamento(estaEditando);
+
+    const totalGeral = orcamentoAtual.reduce((sum, item) => {
+        return sum + ((item.preco_unitario || 0) * (item.qtd || 0));
+    }, 0);
+
+    const totalDiv = document.querySelector('.total-orcamento');
+    if (totalDiv) {
+        totalDiv.textContent = `TOTAL: R$ ${totalGeral.toFixed(2)}`;
+    }
+}
 
         async function uploadFotoOrcamento(event, index) {
             const file = event.target.files[0];
@@ -1873,474 +2121,8 @@
         // ============================================
         // ============================================
 // VER DETALHES (COM OBS, STATUS, FOTO E COMPARAÇÃO)
-// ============================================
-async function verDetalhes(id) {
-    const modal = document.getElementById('modal-orcamento');
-    const body = document.getElementById('modal-body');
+// ============================================/*
 
-    try {
-        const res = await fetch(`/api/pedidos/${id}`);
-        const data = await res.json();
-
-        if (!data.success) {
-            body.innerHTML = `<p class="empty">❌ ${data.error}</p>`;
-            modal.classList.add('active');
-            return;
-        }
-
-        const p = data.pedido;
-        const itens = p.itens || [];
-        const orcamento = p.orcamento || [];
-        const statusLabel = getStatusLabel(p.status);
-        const nomeProduto = p.manual_nome || 'Produto não identificado';
-        const variacaoPrincipal = p.itens?.[0]?.variacao || 'N/A';
-        const temOrcamento = orcamento.length > 0;
-        const mostrarOrcamento = ['CONFIRMADO_TECNICO', 'ORCAMENTO_FINALIZADO', 'ENVIADO_CLIENTE', 'FINALIZADO'].includes(p.status);
-        const mostrarComparacao = p.status === 'FINALIZADO' || p.status_separado === true;
-
-        let html = `
-            <h2>📄 Pedido #${p.numero_chamado}</h2>
-            
-            <div style="background:#1a237e; color:white; padding:12px; border-radius:8px; margin-bottom:15px; font-size:14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-                <span>🎣 <strong>${nomeProduto}</strong></span>
-                <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                    <button onclick="abrirManual('${nomeProduto}', '${variacaoPrincipal}')" class="btn-manual" style="font-size:12px; padding:4px 14px;">
-                        📖 Ver Manual
-                    </button>
-                    ${mostrarOrcamento && temOrcamento ? `
-                        <button onclick="imprimirPedido(${p.id})" class="btn-manual" style="background:#00b894; font-size:12px; padding:4px 14px;">
-                            🖨️ Imprimir
-                        </button>
-                    ` : ''}
-                </div>
-            </div>
-            
-            <div class="info-cliente">
-                <p><strong>Status:</strong> <span class="status ${getStatusClass(p.status)}">${statusLabel}</span>${p.status_separado ? ' <span class="status" style="background:#6c5ce7;color:white;">📦 Separado</span>' : ''}</p>
-                <p><strong>Cliente:</strong> ${p.cliente_nome}${p.numero_cliente ? ` <span style="background:#e8eaf6; color:#1a237e; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:700;">Nº ${p.numero_cliente}</span>` : ''}</p>
-                <p><strong>CNPJ:</strong> ${p.cliente_cnpj}</p>
-                ${p.cliente_telefone ? `<p><strong>Telefone:</strong> ${p.cliente_telefone}</p>` : ''}
-                ${p.cliente_email ? `<p><strong>E-mail:</strong> ${p.cliente_email}</p>` : ''}
-                <p><strong>Vendedor:</strong> ${p.vendedor_nome || '-'}</p>
-                <p><strong>Data:</strong> ${formatarData(p.data_pedido)}</p>
-            </div>
-        `;
-
-        if (p.status === 'ORCAMENTO_RECUSADO') {
-            html += `
-                <div style="background:#f8d7da; color:#721c24; padding:10px; border-radius:8px; margin-bottom:15px;">
-                    <strong>❌ Motivo da recusa:</strong> ${p.motivo_recusa || 'Não informado'}
-                </div>
-            `;
-        }
-
-        // 🔥 COMPARAÇÃO (FINALIZADO/SEPARADO)
-        if (mostrarComparacao && mostrarOrcamento && temOrcamento) {
-            
-            // ============================================
-            // SEÇÃO 1: PEÇAS SOLICITADAS (ORIGINAL)
-            // ============================================
-            html += `
-                <div style="background:#e3f2fd; border:2px solid #0984e3; padding:12px; border-radius:8px; margin-bottom:15px;">
-                    <strong>📋 PEÇAS SOLICITADAS (Original do Cliente)</strong>
-                    <span style="font-size:13px; color:#666; margin-left:10px;">(${itens.length} peça(s))</span>
-                </div>
-
-                <div style="overflow-x:auto; margin-bottom:25px;">
-                <table style="background:#f8fbff;">
-                    <thead>
-                        <tr>
-                            <th style="min-width:70px;text-align:center;">Posição</th>
-                            <th style="min-width:200px;">Descrição</th>
-                            <th style="min-width:100px;">Produto</th>
-                            <th style="min-width:80px;text-align:center;">Variação</th>
-                            <th style="min-width:60px;text-align:center;">Qtd</th>
-                            <th style="min-width:70px;text-align:center;">Manual</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
-
-            if (itens.length === 0) {
-                html += `<tr><td colspan="6" class="empty">Nenhuma peça solicitada</td></tr>`;
-            } else {
-                itens.forEach(item => {
-                    const variacao = item.variacao || 'N/A';
-                    const produtoItem = item.manual_nome || nomeProduto;
-                    html += `
-                        <tr>
-                            <td style="text-align:center;"><strong>#${item.numero}</strong></td>
-                            <td>${item.nome}</td>
-                            <td><span class="produto-tag">${produtoItem}</span></td>
-                            <td style="text-align:center;"><span class="variacao-tag">${variacao}</span></td>
-                            <td style="text-align:center;"><strong>${item.qtd}</strong></td>
-                            <td style="text-align:center;">
-                                <button class="btn-manual-linha" onclick="abrirManual('${produtoItem}', '${variacao}')">📖</button>
-                            </td>
-                        </tr>
-                    `;
-                });
-            }
-
-            html += `</tbody></table></div>`;
-
-            // ============================================
-            // SEÇÃO 2: ALERTA DE DIVERGÊNCIA
-            // ============================================
-            const totalSolicitado = itens.reduce((sum, item) => sum + (parseInt(item.qtd) || 0), 0);
-            const totalOrcado = orcamento.reduce((sum, item) => sum + (parseInt(item.qtd) || 0), 0);
-            const totalItensSolicitados = itens.length;
-            const totalItensOrcados = orcamento.length;
-
-            const numerosOrcados = orcamento.map(o => String(o.codigo_manual || '')).filter(n => n);
-            const itensNaoOrcados = itens.filter(i => !numerosOrcados.includes(String(i.numero)));
-
-            const emFalta = orcamento.filter(i => i.status_item === 'EM FALTA');
-            const descontinuados = orcamento.filter(i => i.status_item === 'DESCONTINUADO');
-
-            if (itensNaoOrcados.length > 0) {
-                html += `
-                    <div style="background:#f8d7da; border:2px solid #e94560; padding:15px; border-radius:8px; margin-bottom:15px;">
-                        <strong style="color:#721c24; font-size:15px;">⚠️ ATENÇÃO — ${itensNaoOrcados.length} peça(s) solicitada(s) NÃO estão no orçamento:</strong>
-                        <ul style="margin:10px 0 0 20px; color:#721c24; font-size:13px;">
-                            ${itensNaoOrcados.map(i => `<li><strong>#${i.numero}</strong> - ${i.nome} (Qtd: ${i.qtd})</li>`).join('')}
-                        </ul>
-                    </div>
-                `;
-            } else {
-                html += `
-                    <div style="background:#d4edda; border:2px solid #00b894; padding:12px; border-radius:8px; margin-bottom:15px;">
-                        <strong style="color:#155724;">✅ Todas as peças solicitadas estão no orçamento!</strong>
-                    </div>
-                `;
-            }
-
-            if (emFalta.length > 0 || descontinuados.length > 0) {
-                html += `
-                    <div style="background:#fff3cd; border:2px solid #ffc107; padding:15px; border-radius:8px; margin-bottom:15px;">
-                        <strong style="color:#856404; font-size:15px;">⚠️ Itens com pendência no orçamento:</strong>
-                        <ul style="margin:10px 0 0 20px; color:#856404; font-size:13px;">
-                            ${emFalta.map(i => `<li>🔴 <strong>${i.codigo}</strong> - ${i.descricao} (Qtd: ${i.qtd}) — <strong>EM FALTA</strong></li>`).join('')}
-                            ${descontinuados.map(i => `<li>⚫ <strong>${i.codigo}</strong> - ${i.descricao} (Qtd: ${i.qtd}) — <strong>DESCONTINUADO</strong></li>`).join('')}
-                        </ul>
-                    </div>
-                `;
-            }
-
-            // ============================================
-            // SEÇÃO 3: ORÇAMENTO TÉCNICO (FINAL)
-            // ============================================
-            html += `
-                <div style="background:#d4edda; border:2px solid #00b894; padding:12px; border-radius:8px; margin-bottom:15px;">
-                    <strong>📊 ORÇAMENTO TÉCNICO (Final)</strong>
-                    <span style="font-size:13px; color:#666; margin-left:10px;">(${orcamento.length} item(ns))</span>
-                </div>
-
-                <div style="overflow-x:auto;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th style="min-width:70px;">Código</th>
-                            <th style="min-width:100px;">Descrição</th>
-                            <th style="min-width:50px;text-align:center;">Qtd</th>
-                            <th style="min-width:70px;text-align:center;">Posição</th>
-                            <th style="min-width:80px;text-align:right;">Preço</th>
-                            <th style="min-width:150px;">📝 OBS</th>
-                            <th style="min-width:120px;">📋 Status</th>
-                            <th style="min-width:80px;text-align:center;">📷 Foto</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
-
-            orcamento.forEach(item => {
-                const statusItem = item.status_item || 'OK';
-                let statusColor = '#00b894';
-                let statusIcon = '✅';
-                let rowBg = '';
-                if (statusItem === 'EM FALTA') {
-                    statusColor = '#e94560';
-                    statusIcon = '🔴';
-                    rowBg = 'background:#fff5f5;';
-                } else if (statusItem === 'DESCONTINUADO') {
-                    statusColor = '#666';
-                    statusIcon = '⚫';
-                    rowBg = 'background:#f5f5f5;';
-                }
-
-                html += `
-                    <tr style="${rowBg}">
-                        <td><strong>${item.codigo || '-'}</strong></td>
-                        <td>${item.descricao || '-'}</td>
-                        <td style="text-align:center;"><strong>${item.qtd || 0}</strong></td>
-                        <td style="text-align:center;"><strong>#${item.codigo_manual || '-'}</strong></td>
-                        <td style="text-align:right;">R$ ${(item.preco_unitario || 0).toFixed(2)}</td>
-                        <td style="font-size:11px;">
-                            ${item.observacao ? `
-                                <div style="background:#fff3cd; padding:5px; border-radius:4px; border-left:3px solid #f8b81f;">
-                                    ${item.observacao}
-                                </div>
-                            ` : '-'}
-                        </td>
-                        <td style="text-align:center; font-weight:700; color:${statusColor};">
-                            ${statusIcon} ${statusItem}
-                        </td>
-                        <td style="text-align:center;">
-                            ${item.foto_url ? `
-                                <img src="${item.foto_url}" 
-                                     style="max-width:60px; max-height:60px; border-radius:4px; border:2px solid #1a237e; cursor:pointer;"
-                                     onclick="window.open('${item.foto_url}', '_blank')"
-                                     title="Clique para ampliar">
-                            ` : '-'}
-                        </td>
-                    </tr>
-                `;
-            });
-
-            const totalGeral = orcamento.reduce((sum, item) => {
-                return sum + ((item.preco_unitario || 0) * (item.qtd || 0));
-            }, 0);
-
-            html += `
-                    </tbody>
-                </table>
-                </div>
-                
-                <div class="total-orcamento" style="border-top:2px solid #00b894; color:#00b894;">
-                    TOTAL: R$ ${totalGeral.toFixed(2)}
-                </div>
-            `;
-
-            // Resumo de conferência
-            html += `
-                <div style="background:#e8eaf6; padding:15px; border-radius:8px; margin-top:15px; display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:15px;">
-                    <div style="text-align:center;">
-                        <div style="font-size:12px; color:#666; font-weight:600;">PEÇAS SOLICITADAS</div>
-                        <div style="font-size:24px; font-weight:800; color:#0984e3;">${totalItensSolicitados}</div>
-                        <div style="font-size:11px; color:#888;">${totalSolicitado} unidades</div>
-                    </div>
-                    <div style="text-align:center;">
-                        <div style="font-size:12px; color:#666; font-weight:600;">ITENS NO ORÇAMENTO</div>
-                        <div style="font-size:24px; font-weight:800; color:#00b894;">${totalItensOrcados}</div>
-                        <div style="font-size:11px; color:#888;">${totalOrcado} unidades</div>
-                    </div>
-                    <div style="text-align:center;">
-                        <div style="font-size:12px; color:#666; font-weight:600;">EM FALTA</div>
-                        <div style="font-size:24px; font-weight:800; color:${emFalta.length > 0 ? '#e94560' : '#ccc'};">${emFalta.length}</div>
-                        <div style="font-size:11px; color:#888;">item(ns)</div>
-                    </div>
-                    <div style="text-align:center;">
-                        <div style="font-size:12px; color:#666; font-weight:600;">DESCONTINUADO</div>
-                        <div style="font-size:24px; font-weight:800; color:${descontinuados.length > 0 ? '#666' : '#ccc'};">${descontinuados.length}</div>
-                        <div style="font-size:11px; color:#888;">item(ns)</div>
-                    </div>
-                </div>
-            `;
-
-            if (p.observacoes_tecnico) {
-                html += `
-                    <div style="background:#fff3cd; padding:12px; border-radius:8px; margin-top:15px; border-left:4px solid #f8b81f;">
-                        <strong>📝 Observações Gerais do Técnico:</strong><br>
-                        <span style="font-size:13px;">${p.observacoes_tecnico}</span>
-                    </div>
-                `;
-            }
-
-        } else if (mostrarOrcamento && temOrcamento) {
-            // Só orçamento normal (sem comparação)
-            const totalGeral = orcamento.reduce((sum, item) => {
-                return sum + ((item.preco_unitario || 0) * (item.qtd || 0));
-            }, 0);
-
-            const emFalta = orcamento.filter(i => i.status_item === 'EM FALTA').length;
-            const descontinuados = orcamento.filter(i => i.status_item === 'DESCONTINUADO').length;
-            const ok = orcamento.filter(i => (i.status_item || 'OK') === 'OK').length;
-
-            html += `
-                <div style="background:#d4edda; border:2px solid #00b894; padding:12px; border-radius:8px; margin-bottom:15px;">
-                    <strong>✅ Orçamento Aprovado pelo Vendedor</strong>
-                    <span style="font-size:13px; color:#666; margin-left:10px;">(${orcamento.length} item(ns))</span>
-                </div>
-
-                <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:15px;">
-                    <span style="background:#d4edda; color:#155724; padding:6px 14px; border-radius:20px; font-size:12px; font-weight:600;">
-                        ✅ OK: ${ok}
-                    </span>
-                    ${emFalta > 0 ? `
-                        <span style="background:#f8d7da; color:#721c24; padding:6px 14px; border-radius:20px; font-size:12px; font-weight:600;">
-                            🔴 EM FALTA: ${emFalta}
-                        </span>
-                    ` : ''}
-                    ${descontinuados > 0 ? `
-                        <span style="background:#e0e0e0; color:#333; padding:6px 14px; border-radius:20px; font-size:12px; font-weight:600;">
-                            ⚫ DESCONTINUADO: ${descontinuados}
-                        </span>
-                    ` : ''}
-                </div>
-
-                <h3>📋 Peças do Orçamento</h3>
-                <div style="overflow-x:auto;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th style="min-width:70px;">Código</th>
-                            <th style="min-width:100px;">Descrição</th>
-                            <th style="min-width:50px;text-align:center;">Qtd</th>
-                            <th style="min-width:70px;text-align:center;">Posição</th>
-                            <th style="min-width:80px;text-align:right;">Preço</th>
-                            <th style="min-width:150px;">📝 OBS</th>
-                            <th style="min-width:120px;">📋 Status</th>
-                            <th style="min-width:80px;text-align:center;">📷 Foto</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
-
-            orcamento.forEach(item => {
-                const statusItem = item.status_item || 'OK';
-                let statusColor = '#00b894';
-                let statusIcon = '✅';
-                if (statusItem === 'EM FALTA') {
-                    statusColor = '#e94560';
-                    statusIcon = '🔴';
-                } else if (statusItem === 'DESCONTINUADO') {
-                    statusColor = '#666';
-                    statusIcon = '⚫';
-                }
-
-                html += `
-                    <tr>
-                        <td><strong>${item.codigo || '-'}</strong></td>
-                        <td>${item.descricao || '-'}</td>
-                        <td style="text-align:center;"><strong>${item.qtd || 0}</strong></td>
-                        <td style="text-align:center;"><strong>#${item.codigo_manual || '-'}</strong></td>
-                        <td style="text-align:right;">R$ ${(item.preco_unitario || 0).toFixed(2)}</td>
-                        <td style="font-size:11px;">
-                            ${item.observacao ? `
-                                <div style="background:#fff3cd; padding:5px; border-radius:4px; border-left:3px solid #f8b81f;">
-                                    ${item.observacao}
-                                </div>
-                            ` : '-'}
-                        </td>
-                        <td style="text-align:center; font-weight:700; color:${statusColor};">
-                            ${statusIcon} ${statusItem}
-                        </td>
-                        <td style="text-align:center;">
-                            ${item.foto_url ? `
-                                <img src="${item.foto_url}" 
-                                     style="max-width:60px; max-height:60px; border-radius:4px; border:2px solid #1a237e; cursor:pointer;"
-                                     onclick="window.open('${item.foto_url}', '_blank')">
-                            ` : '-'}
-                        </td>
-                    </tr>
-                `;
-            });
-
-            html += `
-                    </tbody>
-                </table>
-                </div>
-                
-                <div class="total-orcamento" style="border-top:2px solid #00b894; color:#00b894;">
-                    TOTAL: R$ ${totalGeral.toFixed(2)}
-                </div>
-            `;
-
-            if (p.observacoes_tecnico) {
-                html += `
-                    <div style="background:#fff3cd; padding:12px; border-radius:8px; margin-top:15px; border-left:4px solid #f8b81f;">
-                        <strong>📝 Observações Gerais do Técnico:</strong><br>
-                        <span style="font-size:13px;">${p.observacoes_tecnico}</span>
-                    </div>
-                `;
-            }
-
-        } else {
-            // SEM ORÇAMENTO - Só peças solicitadas
-            html += `
-                <h3>📋 Peças Solicitadas</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Posição</th>
-                            <th>Descrição</th>
-                            <th>Produto</th>
-                            <th style="text-align:center;">Variação</th>
-                            <th style="text-align:center;">Qtd</th>
-                            <th>Manual</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
-
-            if (itens.length === 0) {
-                html += `<tr><td colspan="6" class="empty">Nenhum item</td></tr>`;
-            } else {
-                itens.forEach(item => {
-                    const variacao = item.variacao || 'N/A';
-                    const produtoItem = item.manual_nome || nomeProduto;
-                    html += `
-                        <tr>
-                            <td><strong>#${item.numero}</strong></td>
-                            <td>${item.nome}</td>
-                            <td><span class="produto-tag">${produtoItem}</span></td>
-                            <td style="text-align:center;"><span class="variacao-tag">${variacao}</span></td>
-                            <td style="text-align:center;">${item.qtd}</td>
-                            <td>
-                                <button class="btn-manual-linha" onclick="abrirManual('${produtoItem}', '${variacao}')">📖</button>
-                            </td>
-                        </tr>
-                    `;
-                });
-            }
-
-            html += `</tbody></table>`;
-        }
-
-        // Imagem do esquema
-        if (p.imagem_url) {
-            html += `
-                <div class="imagem-esquema">
-                    <h3>📷 Esquema do Produto</h3>
-                    <img src="${p.imagem_url}" alt="Esquema do produto" onerror="this.style.display='none'">
-                    <button onclick="verImagemEsquema('${p.imagem_url}')" 
-                            style="position:absolute; top:10px; right:10px; background:#1a237e; color:white; border:none; padding:5px 15px; border-radius:6px; cursor:pointer; font-weight:600; font-size:12px;">
-                        🔍 Ampliar
-                    </button>
-                </div>
-            `;
-        }
-
-        // Botões de ação
-        html += `
-            <div style="margin-top:20px; display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap;">
-                <button class="btn-fechar" onclick="fecharModal()">🔙 Fechar</button>
-                
-                ${mostrarOrcamento && temOrcamento ? `
-                    <button onclick="imprimirPedido(${p.id})" 
-                            style="background:#00b894; color:white; border:none; padding:10px 30px; border-radius:8px; cursor:pointer; font-weight:600;">
-                        🖨️ Imprimir Orçamento
-                    </button>
-                ` : ''}
-                
-                ${p.status === 'CONFIRMADO_TECNICO' ? `<button class="btn-enviar" onclick="finalizarPedido(${p.id})">✅ Finalizar</button>` : ''}
-                
-                ${p.status === 'FINALIZADO' && !p.status_separado ? `
-                    <button class="btn-enviar" style="background:#6c5ce7;" onclick="fecharModal(); marcarSeparado(${p.id})">📦 MARCAR COMO SEPARADO</button>
-                ` : ''}
-                
-                ${p.status === 'ORCAMENTO_RECUSADO' ? `<button class="btn-enviar" style="background:#f39c12;" onclick="fecharModal(); abrirOrcamento(${p.id})">🛠️ Corrigir</button>` : ''}
-            </div>
-        `;
-
-        body.innerHTML = html;
-        modal.classList.add('active');
-
-    } catch (error) {
-        body.innerHTML = `<p class="empty">❌ Erro: ${error.message}</p>`;
-        modal.classList.add('active');
-    }
-}
         // ============================================
         // IMPRIMIR PEDIDO (mantém igual ao anterior)
         // ============================================
