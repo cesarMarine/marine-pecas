@@ -2275,6 +2275,61 @@ app.get('/api/precos/buscar/:codigo', async (req, res) => {
 });
 
 // ============================================
+// RESETAR PEDIDO PARA STATUS INICIAL (AGUARDANDO)
+// ============================================
+app.put('/api/pedidos/:id/resetar', async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        console.log(`🔄 Resetando pedido ${id} para AGUARDANDO...`);
+
+        // Verifica se o pedido existe
+        const { data: pedidoAntes } = await supabase
+            .from('orcamentos')
+            .select('numero_chamado, status')
+            .eq('id', id)
+            .single();
+
+        if (!pedidoAntes) {
+            return res.status(404).json({ success: false, error: 'Pedido não encontrado' });
+        }
+
+        // Atualiza para status inicial
+        const { data, error } = await supabase
+            .from('orcamentos')
+            .update({
+                status: 'AGUARDANDO',
+                orcamento: [],           // Limpa orçamento
+                valor_total: 0,          // Zera valor
+                observacoes_tecnico: null,
+                motivo_recusa: null,
+                // 🔥 Mantém: numero_cliente, cliente_*, vendedor_*, itens
+                reeditado_pelo_vendedor: false,
+                status_separado: false,
+                data_separado: null,
+                recebido: false,
+                data_recebimento: null,
+                atualizado_em: new Date().toISOString()
+            })
+            .eq('id', id)
+            .select();
+
+        if (error) throw error;
+
+        console.log(`✅ Pedido ${pedidoAntes.numero_chamado} resetado para AGUARDANDO`);
+
+        res.json({ 
+            success: true, 
+            message: `Pedido resetado para AGUARDANDO`,
+            pedido: data[0]
+        });
+    } catch (error) {
+        console.error('❌ Erro ao resetar pedido:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// ============================================
 // SERVIDOR DE IMAGENS LOCAL
 // ============================================
 // ============================================

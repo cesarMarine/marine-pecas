@@ -114,6 +114,16 @@
         .btn-reprovar:hover { background: #e67e22; }
         .btn-cancelar { background: #e94560; color: white; }
         .btn-cancelar:hover { background: #c62828; }
+        .btn-resetar { 
+    background: #9b59b6; 
+    color: white; 
+}
+.btn-resetar:hover { 
+    background: #8e44ad; 
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(155, 89, 182, 0.3);
+}
+
         .btn-devolver { background: #6c5ce7; color: white; }
         .btn-devolver:hover { background: #5a4bd1; }
         .btn-editar { background: #0984e3; color: white; }
@@ -368,6 +378,42 @@
         // ============================================
         // CARREGAR PEDIDOS
         // ============================================
+
+        // ============================================
+// RESETAR PEDIDO PARA AGUARDANDO
+// ============================================
+async function resetarPedido(id, numeroChamado) {
+    const confirmMsg = `🔄 RESETAR PEDIDO?\n\n` +
+        `Chamado: ${numeroChamado}\n\n` +
+        `O pedido voltará para o status inicial "AGUARDANDO".\n\n` +
+        `⚠️ ATENÇÃO:\n` +
+        `• O orçamento será APAGADO\n` +
+        `• O valor total será ZERADO\n` +
+        `• As observações do técnico serão perdidas\n` +
+        `• Os dados do cliente e vendedor serão MANTIDOS\n\n` +
+        `Deseja continuar?`;
+
+    if (!confirm(confirmMsg)) return;
+
+    try {
+        const res = await fetch(`/api/pedidos/${id}/resetar`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+            alert(`✅ Pedido ${numeroChamado} resetado para AGUARDANDO!`);
+            fecharModal();
+            carregarPedidos();
+        } else {
+            alert('❌ Erro: ' + data.error);
+        }
+    } catch (error) {
+        alert('❌ Erro: ' + error.message);
+    }
+}
         async function carregarPedidos() {
             const status = document.getElementById('filtro-status').value;
             const busca = document.getElementById('filtro-busca').value.trim();
@@ -453,9 +499,11 @@
                             
                             ${p.status === 'ENVIADO_CLIENTE' ? `<button class="btn-acao btn-aprovar" onclick="confirmarComTecnico(${p.id})">✅ OK Técnico</button>` : ''}
                             
-                            ${p.status !== 'CANCELADO' && p.status !== 'FINALIZADO' ? `
-                                <button class="btn-acao btn-cancelar" onclick="cancelarPedido(${p.id})">🗑️ Deletar</button>
-                            ` : ''}
+${p.status !== 'CANCELADO' && p.status !== 'FINALIZADO' ? `
+    <button class="btn-acao btn-cancelar" onclick="cancelarPedido(${p.id})">🗑️ Deletar</button>
+` : ''}
+
+<button class="btn-acao btn-resetar" onclick="resetarPedido(${p.id}, '${p.numero_chamado}')" title="Voltar para AGUARDANDO">🔄 Resetar</button>
                         </td>
                     `;
                     tbody.appendChild(tr);
