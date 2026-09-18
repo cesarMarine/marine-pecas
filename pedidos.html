@@ -745,9 +745,11 @@ ${p.status !== 'CANCELADO' && p.status !== 'FINALIZADO' ? `
                         
                         ${p.status === 'ENVIADO_CLIENTE' ? `<button class="btn-enviar" style="background:#00b894;" onclick="confirmarComTecnico(${p.id})">✅ OK Técnico</button>` : ''}
                         
-                        ${p.status !== 'CANCELADO' && p.status !== 'FINALIZADO' ? `
-                            <button class="btn-enviar" style="background:#e94560;" onclick="cancelarPedido(${p.id})">🗑️ Deletar Chamado</button>
-                        ` : ''}
+${p.status !== 'CANCELADO' && p.status !== 'FINALIZADO' ? `
+    <button class="btn-enviar" style="background:#e94560;" onclick="cancelarPedido(${p.id})">🗑️ Deletar Chamado</button>
+` : ''}
+
+<button class="btn-enviar" style="background:#9b59b6;" onclick="resetarPedido(${p.id}, '${p.numero_chamado}')">🔄 Resetar</button>
                     </div>
                 `;
 
