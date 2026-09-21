@@ -2774,26 +2774,32 @@ orcamentoSalvo.forEach(o => {
 
                 // PASSO 3: Vincular códigos
                 for (const item of orcamentoAtual) {
-                    if (item.codigo && item.codigo_manual && pedidoAtual) {
-                        try {
-                            await fetch('/api/pecas-codigos', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({
-                                    manual_id: pedidoAtual.manual_id || null,
-                                    numero_peca: String(item.codigo_manual),
-                                    variacao: item.variacao || 'N/A',
-                                    codigo: item.codigo,
-                                    descricao: item.descricao || '',
-                                    compatibilidade: item.compatibilidade || '',
-                                    foto_url: item.foto_url || '',
-                                    observacao: item.observacao || '',
-                                    status_item: item.status_item || 'OK'
-                                })
-                            });
-                        } catch (e) {}
-                    }
-                }
+    // 🔥 USA O item.numero (número da peça solicitada) — NÃO o codigo_manual
+    const numeroPecaCorreto = String(item.numero || '').trim();
+
+    if (item.codigo && numeroPecaCorreto && numeroPecaCorreto !== '—' && pedidoAtual) {
+        try {
+            await fetch('/api/pecas-codigos', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    manual_id: pedidoAtual.manual_id || null,
+                    numero_peca: numeroPecaCorreto,  // ✅ USA item.numero
+                    variacao: item.variacao || 'N/A',
+                    codigo: item.codigo,
+                    descricao: item.descricao || '',
+                    compatibilidade: item.compatibilidade || '',
+                    foto_url: item.foto_url || '',
+                    observacao: item.observacao || '',
+                    status_item: item.status_item || 'OK'
+                })
+            });
+            console.log(`✅ Peça #${numeroPecaCorreto} vinculada ao código ${item.codigo}`);
+        } catch (e) {
+            console.warn(`⚠️ Erro ao vincular peça #${numeroPecaCorreto}:`, e);
+        }
+    }
+}
 
                 // PASSO 4: Salvar orçamento + limpar flag reeditado
                 const res = await fetch(`/api/pedidos/${id}/orcamento`, {
