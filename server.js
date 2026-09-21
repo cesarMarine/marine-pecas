@@ -2007,6 +2007,9 @@ app.post('/api/upload-foto-orcamento', upload.single('file'), async (req, res) =
         res.status(500).json({ success: false, error: error.message });
     }
 });
+// ============================================
+// VINCULAR CÓDIGO À PEÇA (DELETE + INSERT)
+// ============================================
 app.post('/api/pecas-codigos', async (req, res) => {
     try {
         const {
@@ -2021,43 +2024,61 @@ app.post('/api/pecas-codigos', async (req, res) => {
             status_item
         } = req.body;
         
-        if (!manual_id || !numero_peca || !codigo) {
+        if (!numero_peca || !codigo) {
             return res.status(400).json({ 
                 success: false, 
-                error: 'manual_id, numero_peca e codigo são obrigatórios' 
+                error: 'numero_peca e codigo são obrigatórios' 
             });
         }
+
+        const manualIdFinal = manual_id || null;
+        const variacaoFinal = variacao || 'N/A';
+        const numeroPecaFinal = String(numero_peca);
         
-        const dados = {
-            manual_id,
-            numero_peca: String(numero_peca),
-            variacao: variacao || 'N/A',
-            codigo: codigo,
-            descricao: descricao || '',
-            compatibilidade: compatibilidade || '',
-            foto_url: foto_url || '',
-            observacao: observacao || '',
-            status_item: status_item || 'OK',
-            atualizado_em: new Date().toISOString()
-        };
+        console.log(`🔗 Vinculando peça #${numeroPecaFinal} (${variacaoFinal}) ao código ${codigo}`);
+
+        // 🔥 DELETA registro antigo (se existir)
+        let deleteQuery = supabase
+            .from('pecas_codigos')
+            .delete()
+            .eq('numero_peca', numeroPecaFinal)
+            .eq('variacao', variacaoFinal);
         
+        if (manualIdFinal === null) {
+            deleteQuery = deleteQuery.is('manual_id', null);
+        } else {
+            deleteQuery = deleteQuery.eq('manual_id', manualIdFinal);
+        }
+        
+        await deleteQuery;
+        
+        // 🔥 INSERE o novo
         const { data, error } = await supabase
             .from('pecas_codigos')
-            .upsert(dados, { 
-                onConflict: 'manual_id,numero_peca,variacao',
-                ignoreDuplicates: false 
+            .insert({
+                manual_id: manualIdFinal,
+                numero_peca: numeroPecaFinal,
+                variacao: variacaoFinal,
+                codigo: codigo,
+                descricao: descricao || '',
+                compatibilidade: compatibilidade || '',
+                foto_url: foto_url || '',
+                observacao: observacao || '',
+                status_item: status_item || 'OK',
+                atualizado_em: new Date().toISOString()
             })
             .select()
             .single();
         
         if (error) throw error;
         
-        // 🔥 BUSCA O PREÇO ATUAL PARA RETORNAR
         const { data: precoData } = await supabase
             .from('precos_referencia')
             .select('preco')
             .eq('codigo', codigo)
             .maybeSingle();
+        
+        console.log(`✅ Peça #${numeroPecaFinal} vinculada ao código ${codigo}`);
         
         res.json({ 
             success: true, 
