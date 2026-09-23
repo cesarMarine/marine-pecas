@@ -2014,6 +2014,7 @@ app.post('/api/pecas-codigos', async (req, res) => {
     try {
         const {
             manual_id,
+            produto_nome,        // ← NOVO
             numero_peca,
             variacao,
             codigo,
@@ -2032,17 +2033,19 @@ app.post('/api/pecas-codigos', async (req, res) => {
         }
 
         const manualIdFinal = manual_id || null;
+        const produtoNomeFinal = (produto_nome || '').trim();
         const variacaoFinal = variacao || 'N/A';
         const numeroPecaFinal = String(numero_peca);
         
-        console.log(`🔗 Vinculando peça #${numeroPecaFinal} (${variacaoFinal}) ao código ${codigo}`);
+        console.log(`🔗 Vinculando peça #${numeroPecaFinal} (${variacaoFinal}) [${produtoNomeFinal || 'sem produto'}] ao código ${codigo}`);
 
-        // 🔥 DELETA registro antigo (se existir)
+        // 🔥 DELETA registro antigo — AGORA COM produto_nome
         let deleteQuery = supabase
             .from('pecas_codigos')
             .delete()
             .eq('numero_peca', numeroPecaFinal)
-            .eq('variacao', variacaoFinal);
+            .eq('variacao', variacaoFinal)
+            .eq('produto_nome', produtoNomeFinal);   // ← CHAVE NOVA
         
         if (manualIdFinal === null) {
             deleteQuery = deleteQuery.is('manual_id', null);
@@ -2052,11 +2055,12 @@ app.post('/api/pecas-codigos', async (req, res) => {
         
         await deleteQuery;
         
-        // 🔥 INSERE o novo
+        // 🔥 INSERE o novo — COM produto_nome
         const { data, error } = await supabase
             .from('pecas_codigos')
             .insert({
                 manual_id: manualIdFinal,
+                produto_nome: produtoNomeFinal,   // ← NOVO
                 numero_peca: numeroPecaFinal,
                 variacao: variacaoFinal,
                 codigo: codigo,
@@ -2078,7 +2082,7 @@ app.post('/api/pecas-codigos', async (req, res) => {
             .eq('codigo', codigo)
             .maybeSingle();
         
-        console.log(`✅ Peça #${numeroPecaFinal} vinculada ao código ${codigo}`);
+        console.log(`✅ Peça #${numeroPecaFinal} (${variacaoFinal}) [${produtoNomeFinal}] vinculada ao código ${codigo}`);
         
         res.json({ 
             success: true, 

@@ -2314,7 +2314,8 @@ const orcamentoPorChave = {};
 orcamentoSalvo.forEach(o => {
     const num = String(o.numero || o.codigo_manual || '');
     const variacao = (o.variacao || 'N/A').trim().toUpperCase();
-    const chave = `${num}__${variacao}`;
+    const nomeProd = String(o.manual_nome || '').split('|')[0].trim().toUpperCase();
+    const chave = `${nomeProd}__${num}__${variacao}`;
     if (num) orcamentoPorChave[chave] = o;
 });
 
@@ -2323,8 +2324,9 @@ orcamentoSalvo.forEach(o => {
 itens.forEach(item => {
     const num = String(item.numero);
     const variacaoItem = (item.variacao || 'N/A').trim().toUpperCase();
-    const chave = `${num}__${variacaoItem}`;
-    const orc = orcamentoPorChave[chave];  // 🔥 Busca pela chave única
+    const nomeProdItem = String(item.manual_nome || nomeProduto || '').split('|')[0].trim().toUpperCase();
+    const chave = `${nomeProdItem}__${num}__${variacaoItem}`;
+    const orc = orcamentoPorChave[chave];
 
     // 🔥 Pega o nome do produto específico deste item
     // Se o item.manual_nome tiver "|", pega só o primeiro
@@ -2364,11 +2366,14 @@ orcamentoSalvo.forEach(o => {
     const num = String(o.numero || o.codigo_manual || '');
     const variacao = (o.variacao || 'N/A').trim().toUpperCase();
     
-    // 🔥 Verifica por número E variação
-    const jaExiste = itens.some(i => 
-        String(i.numero) === num && 
-        (i.variacao || 'N/A').trim().toUpperCase() === variacao
-    );
+// 🔥 Verifica por número E variação E produto
+const nomeProdO = String(o.manual_nome || '').split('|')[0].trim().toUpperCase();
+const jaExiste = itens.some(i => {
+    const nomeProdI = String(i.manual_nome || '').split('|')[0].trim().toUpperCase();
+    return String(i.numero) === num && 
+           (i.variacao || 'N/A').trim().toUpperCase() === variacao &&
+           nomeProdI === nomeProdO;   // ← NOVO
+});
     
     if (!jaExiste) {
         let nomeProdutoItem = o.manual_nome || nomeProduto || 'Produto';
@@ -2880,22 +2885,23 @@ async function salvarOrcamento(id) {
 
             if (item.codigo && numeroPecaCorreto && numeroPecaCorreto !== '—' && pedidoAtual) {
                 try {
-                    await fetch('/api/pecas-codigos', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            manual_id: pedidoAtual.manual_id || null,
-                            numero_peca: numeroPecaCorreto,
-                            variacao: item.variacao || 'N/A',
-                            codigo: item.codigo,
-                            descricao: item.descricao || '',
-                            compatibilidade: item.compatibilidade || '',
-                            foto_url: item.foto_url || '',
-                            observacao: item.observacao || '',
-                            status_item: item.status_item || 'OK'
-                        })
-                    });
-                    console.log(`✅ Peça #${numeroPecaCorreto} (${item.variacao}) vinculada ao código ${item.codigo}`);
+await fetch('/api/pecas-codigos', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+        manual_id: pedidoAtual.manual_id || null,
+        produto_nome: String(item.manual_nome || pedidoAtual.manual_nome || 'SEM_PRODUTO').split('|')[0].trim() || 'SEM_PRODUTO',
+        numero_peca: numeroPecaCorreto,
+        variacao: item.variacao || 'N/A',
+        codigo: item.codigo,
+        descricao: item.descricao || '',
+        compatibilidade: item.compatibilidade || '',
+        foto_url: item.foto_url || '',
+        observacao: item.observacao || '',
+        status_item: item.status_item || 'OK'
+    })
+});
+                    console.log(`✅ Peça #${numeroPecaCorreto} (${item.variacao}) [${item.manual_nome}] → ${item.codigo}`);
                 } catch (e) {
                     console.warn(`⚠️ Não foi possível vincular código à peça #${numeroPecaCorreto}:`, e);
                 }
