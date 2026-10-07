@@ -856,7 +856,7 @@
             padding: 8px 20px;
             border-radius: 6px;
             cursor: pointer;
-            margin: 10px 0 10px 10px;
+            margin: 10px 0 10px 0;
             font-weight: 700;
             font-size: 13px;
             transition: 0.3s;
@@ -1550,12 +1550,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // ============================================
         // 🔥 ABRIR MANUAL COM VARIAÇÃO CORRETA
         // ============================================
-        // ============================================
-// ABRIR MANUAL COM VARIAÇÃO CORRETA
-// ============================================
-// ============================================
-// ABRIR MANUAL COM VARIAÇÃO CORRETA (VERSÃO MELHORADA)
-// ============================================
 function abrirManual(nomeProduto, variacao, numeroPeca = null) {
     abrirManualModal(nomeProduto, variacao, numeroPeca);
 }
@@ -1818,13 +1812,6 @@ function abrirManual(nomeProduto, variacao, numeroPeca = null) {
         }
 
         // ============================================
-        // ABRIR ORÇAMENTO
-        // ============================================
-        // ============================================
-// ABRIR ORÇAMENTO (COM TUDO: PEÇAS SOLICITADAS + ORÇAMENTO + OBS + STATUS + FOTO)
-// ============================================
-
-        // ============================================
         // MODAL BUSCAR CÓDIGO (TÉCNICO ADICIONA MANUAL)
         // ============================================
         function abrirModalBuscarCodigo() {
@@ -1961,6 +1948,8 @@ function abrirManual(nomeProduto, variacao, numeroPeca = null) {
 
             // 🔥 ADICIONA COMO NOVA LINHA NO ORÇAMENTO
             orcamentoAtual.push({
+                numero: '—',
+                nome_solicitado: 'PEÇA POR CÓDIGO',
                 codigo: codigoEncontrado.codigo || '',
                 descricao: codigoEncontrado.descricao || '',
                 qtd: 1,
@@ -1971,10 +1960,11 @@ function abrirManual(nomeProduto, variacao, numeroPeca = null) {
                 descricao_manual: codigoEncontrado.descricao_manual || '',
                 compatibilidade: codigoEncontrado.compatibilidade || '',
                 variacao: pedidoAtual?.itens?.[0]?.variacao || 'N/A',
-                manual_nome: pedidoAtual?.manual_nome || 'Produto',
+                manual_nome: 'PEÇA AVULSA',
                 observacao: '',
                 status_item: 'OK',
-                foto_url: ''
+                foto_url: '',
+                avulsa: true
             });
 
             // Fecha o modal e atualiza a tabela
@@ -1983,21 +1973,6 @@ function abrirManual(nomeProduto, variacao, numeroPeca = null) {
 
             alert(`✅ Peça "${codigoEncontrado.descricao}" adicionada ao orçamento!`);
         }
-
-        // ============================================
-        // GERAR LINHAS DO ORÇAMENTO
-        // ============================================
-        // ============================================
-// GERAR LINHAS DA TABELA DE ORÇAMENTO
-// ============================================
-// ============================================
-// GERAR LINHAS UNIFICADAS (Peça Solicitada + Orçamento em UMA linha)
-// ============================================
-// ============================================
-// GERAR LINHAS UNIFICADAS (COM PRODUTO E VARIAÇÃO)
-// ============================================
-
-
 
 // ============================================
 // GERAR LINHAS UNIFICADAS (LAYOUT COMPACTO)
@@ -2031,31 +2006,30 @@ function gerarLinhasUnificadas(podeEditar = true) {
 
         if (podeEditar) {
             // 🔥 MODO EDIÇÃO - LAYOUT COMPACTO
-           html += `
-    <tr id="linha-${index}" style="${item.avulsa ? 'background:#fff8e1;' : ''}">
-        <td style="text-align:center; padding:4px;">
-            <strong style="color:#e94560; font-size:11px;">#${item.numero || '—'}</strong>
-        </td>
-        <td style="font-size:11px; padding:4px; max-width:120px;">
-            <strong>${item.nome_solicitado || 'PEÇA AVULSA'}</strong>
-            ${item.avulsa ? `<br><span style="font-size:9px; color:#f39c12; font-weight:700;">🧾 AVULSA</span>` : ''}
-            ${item.nome_solicitado === '(adicionado manual)' ? `<br><span style="font-size:9px; color:#6c5ce7; font-weight:700;">➕ ADD</span>` : ''}
-        </td>
+            html += `
+                <tr id="linha-${index}" style="${item.avulsa ? 'background:#fff8e1;' : ''}">
+                    <td style="text-align:center; padding:4px;">
+                        <strong style="color:#e94560; font-size:11px;">#${item.numero || '—'}</strong>
+                    </td>
+                    <td style="font-size:11px; padding:4px; max-width:120px;">
+                        <strong>${item.nome_solicitado || 'PEÇA AVULSA'}</strong>
+                        ${item.avulsa ? `<br><span style="font-size:9px; color:#f39c12; font-weight:700;">🧾 AVULSA</span>` : ''}
+                    </td>
                     <td style="font-size:10px; padding:4px; max-width:110px;">
                         <span class="produto-tag" style="font-size:9px; padding:2px 6px;">${produtoNomeItem}</span>
                     </td>
                     <td style="text-align:center; padding:4px;">
                         <span class="variacao-tag" style="font-size:9px;">${variacao}</span>
                     </td>
-<td style="text-align:center; padding:4px;">
-    ${item.avulsa ? `
-        <span style="font-size:11px; color:#ccc;" title="Peça avulsa — sem manual">—</span>
-    ` : `
-        <button class="btn-manual-linha" onclick="abrirManual('${produtoNomeItem}', '${variacao}', '${item.numero}')" 
-                title="Ver Peça #${item.numero} no Manual"
-                style="padding:3px 7px; font-size:11px;">📖</button>
-    `}
-</td>
+                    <td style="text-align:center; padding:4px;">
+                        ${item.avulsa ? `
+                            <span style="font-size:11px; color:#ccc;" title="Peça avulsa — sem manual">—</span>
+                        ` : `
+                            <button class="btn-manual-linha" onclick="abrirManual('${produtoNomeItem}', '${variacao}', '${item.numero}')" 
+                                    title="Ver Peça #${item.numero} no Manual"
+                                    style="padding:3px 7px; font-size:11px;">📖</button>
+                        `}
+                    </td>
                     <td style="text-align:center; padding:4px;">
                         <input type="number" min="1" value="${item.qtd || 1}" 
                                style="width:45px;text-align:center;padding:3px;font-size:11px;" 
@@ -2066,17 +2040,17 @@ function gerarLinhasUnificadas(podeEditar = true) {
                                onblur="buscarPreco(this, ${index})"
                                onkeydown="if(event.key==='Enter') buscarPreco(this, ${index})"
                                placeholder="Código" 
-                               style="text-transform:uppercase;padding:3px;font-size:11px;width:100%;">
+                               style="text-transform:uppercase;padding:3px;font-size:11px;width:100%;${item.avulsa ? 'background:#fff8e1; border:2px solid #f39c12;' : ''}">
                     </td>
                     <td style="padding:4px;">
                         <input type="text" value="${item.descricao || ''}" 
                                onchange="atualizarOrcamento(${index}, 'descricao', this.value)" 
                                placeholder="Descrição" 
-                               style="padding:3px;font-size:11px;width:100%;">
+                               style="padding:3px;font-size:11px;width:100%;${item.avulsa ? 'background:#fff8e1; border:2px solid #f39c12;' : ''}">
                     </td>
                     <td style="text-align:right; padding:4px;">
                         <input type="number" step="0.01" min="0" value="${item.preco_unitario || 0}" 
-                               style="width:70px;text-align:right;padding:3px;font-size:11px;" 
+                               style="width:70px;text-align:right;padding:3px;font-size:11px;${item.avulsa ? 'background:#fff8e1; border:2px solid #f39c12;' : ''}" 
                                onchange="atualizarOrcamento(${index}, 'preco_unitario', parseFloat(this.value) || 0)">
                     </td>
                     <td style="text-align:right;font-weight:bold;font-size:11px;padding:4px;">R$ ${total.toFixed(2)}</td>
@@ -2112,6 +2086,13 @@ function gerarLinhasUnificadas(podeEditar = true) {
                         ` : ''}
                     </td>
                     <td style="text-align:center; padding:4px;">
+                        <button onclick="toggleEditarLivre(${index})" 
+                                title="${item.avulsa ? 'Voltar a buscar no banco pelo código' : 'Editar código/descrição/preço livremente'}"
+                                style="background:${item.avulsa ? '#f39c12' : '#e0e0e0'}; color:${item.avulsa ? 'white' : '#333'}; border:none; padding:3px 7px; border-radius:4px; cursor:pointer; font-size:11px; font-weight:600;">
+                            ${item.avulsa ? '🔓' : '🔒'}
+                        </button>
+                    </td>
+                    <td style="text-align:center; padding:4px;">
                         <button class="btn-remove-linha" onclick="removerLinhaOrcamento(${index})" 
                                 title="Remover" style="padding:3px 7px; font-size:11px;">✕</button>
                     </td>
@@ -2119,16 +2100,15 @@ function gerarLinhasUnificadas(podeEditar = true) {
             `;
         } else {
             // 🔥 MODO VISUALIZAÇÃO - LAYOUT COMPACTO
-           html += `
-    <tr style="${item.avulsa ? 'background:#fff8e1;' : ''}">
-        <td style="text-align:center; padding:4px;">
-            <strong style="color:#e94560; font-size:11px;">#${item.numero || '—'}</strong>
-        </td>
-        <td style="font-size:11px; padding:4px; max-width:120px;">
-            <strong>${item.nome_solicitado || 'PEÇA AVULSA'}</strong>
-            ${item.avulsa ? `<br><span style="font-size:9px; color:#f39c12; font-weight:700;">🧾 AVULSA</span>` : ''}
-            ${item.nome_solicitado === '(adicionado manual)' ? `<br><span style="font-size:9px; color:#6c5ce7; font-weight:700;">➕ ADD</span>` : ''}
-        </td>
+            html += `
+                <tr style="${item.avulsa ? 'background:#fff8e1;' : ''}">
+                    <td style="text-align:center; padding:4px;">
+                        <strong style="color:#e94560; font-size:11px;">#${item.numero || '—'}</strong>
+                    </td>
+                    <td style="font-size:11px; padding:4px; max-width:120px;">
+                        <strong>${item.nome_solicitado || 'PEÇA AVULSA'}</strong>
+                        ${item.avulsa ? `<br><span style="font-size:9px; color:#f39c12; font-weight:700;">🧾 AVULSA</span>` : ''}
+                    </td>
                     <td style="font-size:10px; padding:4px; max-width:110px;">
                         <span class="produto-tag" style="font-size:9px; padding:2px 6px;">${produtoNomeItem}</span>
                     </td>
@@ -2136,9 +2116,13 @@ function gerarLinhasUnificadas(podeEditar = true) {
                         <span class="variacao-tag" style="font-size:9px;">${variacao}</span>
                     </td>
                     <td style="text-align:center; padding:4px;">
-                        <button class="btn-manual-linha" onclick="abrirManual('${produtoNomeItem}', '${variacao}', '${item.numero}')" 
-                                title="Ver Peça #${item.numero} no Manual"
-                                style="padding:3px 7px; font-size:11px;">📖</button>
+                        ${item.avulsa ? `
+                            <span style="font-size:11px; color:#ccc;">—</span>
+                        ` : `
+                            <button class="btn-manual-linha" onclick="abrirManual('${produtoNomeItem}', '${variacao}', '${item.numero}')" 
+                                    title="Ver Peça #${item.numero} no Manual"
+                                    style="padding:3px 7px; font-size:11px;">📖</button>
+                        `}
                     </td>
                     <td style="text-align:center; padding:4px;"><strong style="font-size:11px;">${item.qtd || 0}</strong></td>
                     <td style="padding:4px;"><strong style="font-size:11px;">${item.codigo || '-'}</strong></td>
@@ -2170,6 +2154,7 @@ function gerarLinhasUnificadas(podeEditar = true) {
 
     return html;
 }
+
 // ============================================
 // MODAL DE OBSERVAÇÃO (campo compacto)
 // ============================================
@@ -2278,8 +2263,33 @@ function atualizarTabelaOrcamento() {
         totalDiv.textContent = `TOTAL: R$ ${totalGeral.toFixed(2)}`;
     }
 }
+
 // ============================================
-// ABRIR ORÇAMENTO (TUDO EM UMA LINHA SÓ)
+// 🔥 TOGGLE EDITAR LIVRE (AVULSA <-> NORMAL)
+// ============================================
+function toggleEditarLivre(index) {
+    const item = orcamentoAtual[index];
+    if (!item) return;
+
+    if (item.avulsa) {
+        // 🔓 Estava avulsa → volta a tentar buscar no banco
+        item.avulsa = false;
+        
+        if (item.codigo) {
+            buscarPreco({ value: item.codigo }, index);
+        } else {
+            atualizarTabelaOrcamento();
+        }
+    } else {
+        // 🔒 Estava normal → libera pra editar livre
+        item.avulsa = true;
+        item.preco_base = 0;  // zera o preço base (agora é manual)
+        atualizarTabelaOrcamento();
+    }
+}
+
+// ============================================
+// ABRIR ORÇAMENTO
 // ============================================
 async function abrirOrcamento(id) {
     const modal = document.getElementById('modal-orcamento');
@@ -2310,46 +2320,40 @@ async function abrirOrcamento(id) {
         const podeEditar = p.status === 'EM_ANALISE_TECNICA' || p.status === 'ORCAMENTO_RECUSADO';
 
         // ============================================
-        // MONTA O ARRAY UNIFICADO: SOLICITADAS + ORÇAMENTO
+        // MONTA O ARRAY UNIFICADO
         // ============================================
-        // Pega os itens solicitados e enriquece com dados do orçamento
         const itensUnificados = [];
 
-// 🔥 MAPEIA POR numero + variacao (evita sobrescrever)
-const orcamentoPorChave = {};
-orcamentoSalvo.forEach(o => {
-    const num = String(o.numero || o.codigo_manual || '');
-    const variacao = (o.variacao || 'N/A').trim().toUpperCase();
-    const nomeProd = String(o.manual_nome || '').split('|')[0].trim().toUpperCase();
-    const chave = `${nomeProd}__${num}__${variacao}`;
-    if (num) orcamentoPorChave[chave] = o;
-});
+        // 🔥 MAPEIA POR numero + variacao + produto (evita sobrescrever)
+        const orcamentoPorChave = {};
+        orcamentoSalvo.forEach(o => {
+            const num = String(o.numero || o.codigo_manual || '');
+            const variacao = (o.variacao || 'N/A').trim().toUpperCase();
+            const nomeProd = String(o.manual_nome || '').split('|')[0].trim().toUpperCase();
+            const chave = `${nomeProd}__${num}__${variacao}`;
+            if (num) orcamentoPorChave[chave] = o;
+        });
 
         // Adiciona os itens solicitados
-// Adiciona os itens solicitados
-itens.forEach(item => {
-    const num = String(item.numero);
-    const variacaoItem = (item.variacao || 'N/A').trim().toUpperCase();
-    const nomeProdItem = String(item.manual_nome || nomeProduto || '').split('|')[0].trim().toUpperCase();
-    const chave = `${nomeProdItem}__${num}__${variacaoItem}`;
-    const orc = orcamentoPorChave[chave];
+        itens.forEach(item => {
+            const num = String(item.numero);
+            const variacaoItem = (item.variacao || 'N/A').trim().toUpperCase();
+            const nomeProdItem = String(item.manual_nome || nomeProduto || '').split('|')[0].trim().toUpperCase();
+            const chave = `${nomeProdItem}__${num}__${variacaoItem}`;
+            const orc = orcamentoPorChave[chave];
 
-    // 🔥 Pega o nome do produto específico deste item
-    // Se o item.manual_nome tiver "|", pega só o primeiro
-    let nomeProdutoItem = item.manual_nome || nomeProduto || 'Produto';
-    if (nomeProdutoItem.includes('|')) {
-        nomeProdutoItem = nomeProdutoItem.split('|')[0].trim();
-    }
+            let nomeProdutoItem = item.manual_nome || nomeProduto || 'Produto';
+            if (nomeProdutoItem.includes('|')) {
+                nomeProdutoItem = nomeProdutoItem.split('|')[0].trim();
+            }
 
-    itensUnificados.push({
-        // Dados da peça solicitada
-        numero: item.numero,
-        nome_solicitado: item.nome,
-        qtd_solicitada: item.qtd,
-        variacao: item.variacao || 'N/A',
-        manual_nome: nomeProdutoItem,  // ← Nome específico
-        
-                // Dados do orçamento (se existir)
+            itensUnificados.push({
+                numero: item.numero,
+                nome_solicitado: item.nome,
+                qtd_solicitada: item.qtd,
+                variacao: item.variacao || 'N/A',
+                manual_nome: nomeProdutoItem,
+                
                 codigo: orc?.codigo || '',
                 descricao: orc?.descricao || '',
                 qtd: orc?.qtd || item.qtd,
@@ -2362,39 +2366,37 @@ itens.forEach(item => {
                 observacao: orc?.observacao || '',
                 status_item: orc?.status_item || 'OK',
                 foto_url: orc?.foto_url || '',
+                avulsa: orc?.avulsa || false,
                 tem_orcamento: !!orc
             });
         });
 
-        // Adiciona peças do orçamento que NÃO estão nas solicitadas (adicionadas manualmente pelo técnico)
         // Adiciona peças do orçamento que NÃO estão nas solicitadas
-orcamentoSalvo.forEach(o => {
-    const num = String(o.numero || o.codigo_manual || '');
-    const variacao = (o.variacao || 'N/A').trim().toUpperCase();
-    
-// 🔥 Verifica por número E variação E produto
-const nomeProdO = String(o.manual_nome || '').split('|')[0].trim().toUpperCase();
-const jaExiste = itens.some(i => {
-    const nomeProdI = String(i.manual_nome || '').split('|')[0].trim().toUpperCase();
-    return String(i.numero) === num && 
-           (i.variacao || 'N/A').trim().toUpperCase() === variacao &&
-           nomeProdI === nomeProdO;   // ← NOVO
-});
-    
-    if (!jaExiste) {
-        let nomeProdutoItem = o.manual_nome || nomeProduto || 'Produto';
-        if (nomeProdutoItem.includes('|')) {
-            nomeProdutoItem = nomeProdutoItem.split('|')[0].trim();
-        }
-        // ... (resto do código continua igual)
-        
-        itensUnificados.push({
-            numero: o.codigo_manual || '—',
-            nome_solicitado: '(adicionado manual)',
-            qtd_solicitada: 0,
-            variacao: o.variacao || 'N/A',
-            manual_nome: nomeProdutoItem,  // ← Corrigido
+        orcamentoSalvo.forEach(o => {
+            const num = String(o.numero || o.codigo_manual || '');
+            const variacao = (o.variacao || 'N/A').trim().toUpperCase();
             
+            const nomeProdO = String(o.manual_nome || '').split('|')[0].trim().toUpperCase();
+            const jaExiste = itens.some(i => {
+                const nomeProdI = String(i.manual_nome || '').split('|')[0].trim().toUpperCase();
+                return String(i.numero) === num && 
+                       (i.variacao || 'N/A').trim().toUpperCase() === variacao &&
+                       nomeProdI === nomeProdO;
+            });
+            
+            if (!jaExiste) {
+                let nomeProdutoItem = o.manual_nome || nomeProduto || 'Produto';
+                if (nomeProdutoItem.includes('|')) {
+                    nomeProdutoItem = nomeProdutoItem.split('|')[0].trim();
+                }
+                
+                itensUnificados.push({
+                    numero: o.codigo_manual || '—',
+                    nome_solicitado: '(adicionado manual)',
+                    qtd_solicitada: 0,
+                    variacao: o.variacao || 'N/A',
+                    manual_nome: nomeProdutoItem,
+                    
                     codigo: o.codigo || '',
                     descricao: o.descricao || '',
                     qtd: o.qtd || 1,
@@ -2407,22 +2409,22 @@ const jaExiste = itens.some(i => {
                     observacao: o.observacao || '',
                     status_item: o.status_item || 'OK',
                     foto_url: o.foto_url || '',
+                    avulsa: o.avulsa || false,
                     tem_orcamento: true
                 });
             }
         });
 
-        // Recalcula preços com câmbio/coeficiente atuais (só em modo edição)
+        // Recalcula preços com câmbio/coeficiente atuais (só em modo edição e não avulsa)
         if (podeEditar) {
             itensUnificados.forEach(item => {
-                if (item.tem_orcamento && item.preco_base > 0) {
+                if (item.tem_orcamento && item.preco_base > 0 && !item.avulsa) {
                     item.preco_unitario = parseFloat((item.preco_base * cambio * coeficiente).toFixed(2));
                     item.total = item.preco_unitario * item.qtd;
                 }
             });
         }
 
-        // Salva no orçamentoAtual para usar nas funções
         orcamentoAtual = itensUnificados;
 
         // ============================================
@@ -2468,7 +2470,7 @@ const jaExiste = itens.some(i => {
         }
 
         // ============================================
-        // ALERTA DE DIVERGÊNCIA (só finalizado/separado)
+        // ALERTA DE DIVERGÊNCIA
         // ============================================
         if (modoVisualizacao && orcamentoSalvo.length > 0) {
             const numerosOrcados = orcamentoSalvo.map(o => String(o.codigo_manual || '')).filter(n => n);
@@ -2506,17 +2508,16 @@ const jaExiste = itens.some(i => {
         if (podeEditar) {
             html += `
                 <div style="margin: 15px 0;">
-                    <button class="btn-add-linha" onclick="adicionarLinhaOrcamento()">➕ Adicionar Linha</button>
                     <button class="btn-add-manual" onclick="abrirModalBuscarCodigo()">🔍 Adicionar Peça por Código</button>
                     <span style="margin-left: 10px; color: #666; font-size: 12px;">
-                        💡 Preencha o CÓDIGO para buscar o preço automaticamente
+                        💡 Clique em <strong>🔒</strong> em qualquer linha para editá-la livremente (código, descrição e preço manuais)
                     </span>
                 </div>
             `;
         }
 
         // ============================================
-        // TABELA UNIFICADA (UMA LINHA POR PEÇA)
+        // TABELA UNIFICADA
         // ============================================
         html += `
             <div style="overflow-x:auto; overflow-y:auto; max-height:500px; border-radius:8px; border:1px solid #e0e0e0;">
@@ -2536,7 +2537,7 @@ const jaExiste = itens.some(i => {
         <th style="min-width:50px;text-align:center; padding:6px 4px;">📝</th>
         <th style="min-width:90px; padding:6px 4px;">📋 Status</th>
         <th style="min-width:55px;text-align:center; padding:6px 4px;">📷</th>
-        ${podeEditar ? '<th style="min-width:45px;text-align:center; padding:6px 4px;">✕</th>' : ''}
+        ${podeEditar ? '<th style="min-width:40px;text-align:center; padding:6px 4px;" title="Editar livre">🔒</th><th style="min-width:45px;text-align:center; padding:6px 4px;">✕</th>' : ''}
     </tr>
 </thead>
                 <tbody id="tabela-orcamento">
@@ -2559,7 +2560,7 @@ const jaExiste = itens.some(i => {
         `;
 
         // ============================================
-        // RESUMO DE CONFERÊNCIA (finalizado/separado)
+        // RESUMO DE CONFERÊNCIA
         // ============================================
         if (modoVisualizacao && orcamentoSalvo.length > 0) {
             const totalSolicitado = itens.reduce((sum, item) => sum + (parseInt(item.qtd) || 0), 0);
@@ -2659,6 +2660,7 @@ const jaExiste = itens.some(i => {
         modal.classList.add('active');
     }
 }
+
         async function uploadFotoOrcamento(event, index) {
             const file = event.target.files[0];
             if (!file) return;
@@ -2690,59 +2692,42 @@ const jaExiste = itens.some(i => {
         }
 
         async function buscarPreco(input, index) {
-    const codigo = input.value.trim().toUpperCase();
-    if (!codigo) return;
+            const codigo = input.value.trim().toUpperCase();
+            if (!codigo) return;
 
-    try {
-        const res = await fetch(`/api/precos/${codigo}`);
-        const data = await res.json();
+            // 🔥 Se já está avulsa, NÃO busca no banco
+            if (orcamentoAtual[index].avulsa) {
+                console.log(`🔓 Linha #${index} está avulsa — não busca no banco`);
+                return;
+            }
 
-        if (data.success && data.preco) {
-            // ✅ Achou no banco
-            const p = data.preco;
-            orcamentoAtual[index].codigo = codigo;
-            orcamentoAtual[index].preco_base = p.preco;
-            const precoCalculado = p.preco * globalCambio * globalCoeficiente;
-            orcamentoAtual[index].preco_unitario = parseFloat(precoCalculado.toFixed(2));
-            orcamentoAtual[index].descricao = p.descricao || orcamentoAtual[index].descricao;
-            orcamentoAtual[index].compatibilidade = p.compatibilidade || '';
-            orcamentoAtual[index].total = orcamentoAtual[index].preco_unitario * orcamentoAtual[index].qtd;
-            orcamentoAtual[index].avulsa = false;
-            atualizarTabelaOrcamento();
-        } else {
-            // ⚠️ NÃO achou → marca como avulsa e deixa o técnico preencher
-            orcamentoAtual[index].codigo = codigo;
-            orcamentoAtual[index].avulsa = true;
-            atualizarTabelaOrcamento();
-            console.log(`⚠️ Código ${codigo} não existe na base — linha marcada como AVULSA.`);
+            try {
+                const res = await fetch(`/api/precos/${codigo}`);
+                const data = await res.json();
+
+                if (data.success && data.preco) {
+                    // ✅ Achou no banco
+                    const p = data.preco;
+                    orcamentoAtual[index].codigo = codigo;
+                    orcamentoAtual[index].preco_base = p.preco;
+                    const precoCalculado = p.preco * globalCambio * globalCoeficiente;
+                    orcamentoAtual[index].preco_unitario = parseFloat(precoCalculado.toFixed(2));
+                    orcamentoAtual[index].descricao = p.descricao || orcamentoAtual[index].descricao;
+                    orcamentoAtual[index].compatibilidade = p.compatibilidade || '';
+                    orcamentoAtual[index].total = orcamentoAtual[index].preco_unitario * orcamentoAtual[index].qtd;
+                    orcamentoAtual[index].avulsa = false;
+                    atualizarTabelaOrcamento();
+                } else {
+                    // ⚠️ NÃO achou → marca como avulsa
+                    orcamentoAtual[index].codigo = codigo;
+                    orcamentoAtual[index].avulsa = true;
+                    atualizarTabelaOrcamento();
+                    console.log(`⚠️ Código ${codigo} não existe na base — linha marcada como AVULSA.`);
+                }
+            } catch (error) {
+                console.error('❌ Erro ao buscar preço:', error);
+            }
         }
-    } catch (error) {
-        console.error('❌ Erro ao buscar preço:', error);
-    }
-}
-
-function adicionarLinhaOrcamento() {
-    orcamentoAtual.push({
-        numero: '—',                      // 🔥 some o #undefined
-        nome_solicitado: 'PEÇA AVULSA',   // 🔥 nome limpo
-        variacao: 'N/A',                  // 🔥 sem variação do manual
-        manual_nome: 'PEÇA AVULSA',       // 🔥 não puxa nome gigante
-        codigo: '',
-        descricao: '',
-        qtd: 1,
-        preco_base: 0,
-        preco_unitario: 0,
-        total: 0,
-        codigo_manual: '',
-        descricao_manual: '',
-        compatibilidade: '',
-        observacao: '',
-        status_item: 'OK',
-        foto_url: '',
-        avulsa: true                      // 🔥 marca como avulsa
-    });
-    atualizarTabelaOrcamento();
-}
 
         function removerLinhaOrcamento(index) {
             if (orcamentoAtual.length <= 1) {
@@ -2756,18 +2741,22 @@ function adicionarLinhaOrcamento() {
         function atualizarOrcamento(index, campo, valor) {
             orcamentoAtual[index][campo] = valor;
             const item = orcamentoAtual[index];
-            if (campo === 'preco_unitario') item.preco_base = parseFloat(valor) || 0;
-            item.total = (item.preco_unitario || 0) * (item.qtd || 0);
-            if (campo !== 'observacao' && campo !== 'descricao') {
+            if (campo === 'preco_unitario') {
+                if (!item.avulsa) item.preco_base = parseFloat(valor) || 0;
+                item.total = (parseFloat(valor) || 0) * (item.qtd || 0);
+            } else {
+                item.total = (item.preco_unitario || 0) * (item.qtd || 0);
+            }
+            if (campo !== 'observacao' && campo !== 'descricao' && campo !== 'qtd') {
+                atualizarTabelaOrcamento();
+            } else if (campo === 'qtd') {
                 atualizarTabelaOrcamento();
             }
         }
 
         // ============================================
         // SALVAR ORÇAMENTO
-// ============================================
-// SALVAR ORÇAMENTO (COM VALIDAÇÃO DE VARIAÇÃO)
-// ============================================
+        // ============================================
 async function salvarOrcamento(id) {
     const observacoes = document.getElementById('obs-tecnico')?.value || '';
 
@@ -2783,24 +2772,18 @@ async function salvarOrcamento(id) {
     const avisos = [];
 
     for (const item of orcamentoAtual) {
-        if (!item.codigo || !item.descricao) continue;
+        if (!item.codigo || !item.descricao || item.avulsa) continue;
 
         const desc = (item.descricao || '').toUpperCase();
         const variacaoLinha = (item.variacao || '').toUpperCase();
 
-        // Detecta variação do código pela descrição
         let variacaoDoCodigo = null;
-
-        // LH = ESQUERDA
         if (/\bLH\b/.test(desc) || /LEFT/.test(desc) || /ESQUERD/.test(desc)) {
             variacaoDoCodigo = 'ESQUERDA';
-        }
-        // RH = DIREITA
-        else if (/\bRH\b/.test(desc) || /RIGHT/.test(desc) || /DIREIT/.test(desc)) {
+        } else if (/\bRH\b/.test(desc) || /RIGHT/.test(desc) || /DIREIT/.test(desc)) {
             variacaoDoCodigo = 'DIREITA';
         }
 
-        // Verifica se a linha está ESQUERDA mas o código é DIREITA
         const linhaEsquerda = /ESQUERD|LH|LEFT/.test(variacaoLinha);
         const linhaDireita = /DIREIT|RH|RIGHT/.test(variacaoLinha);
 
@@ -2825,7 +2808,6 @@ async function salvarOrcamento(id) {
         }
     }
 
-    // 🔥 SE TEM AVISOS, MOSTRA E PERGUNTA SE CONTINUA
     if (avisos.length > 0) {
         let mensagem = '⚠️ ATENÇÃO — CÓDIGOS COM VARIAÇÃO DIFERENTE:\n\n';
         avisos.forEach(a => {
@@ -2841,21 +2823,18 @@ async function salvarOrcamento(id) {
         }
     }
 
-    // ============================================
-    // CONFIRMAÇÃO FINAL
-    // ============================================
     if (!confirm('Finalizar orçamento e enviar para o vendedor?')) return;
 
     try {
         // ============================================
-        // PASSO 1: Buscar preços ATUAIS de todos os códigos
+        // PASSO 1: Buscar preços ATUAIS (só não-avulsas)
         // ============================================
         console.log('🔄 Recalculando preços com câmbio e coeficiente atuais...');
         
         for (let i = 0; i < orcamentoAtual.length; i++) {
             const item = orcamentoAtual[i];
             
-            if (item.codigo) {
+            if (item.codigo && !item.avulsa) {
                 try {
                     const precoRes = await fetch(`/api/precos/${encodeURIComponent(item.codigo)}`);
                     const precoData = await precoRes.json();
@@ -2877,10 +2856,10 @@ async function salvarOrcamento(id) {
         }
 
         // ============================================
-        // PASSO 2: Salvar/atualizar base de preços
+        // PASSO 2: Salvar/atualizar base de preços (só não-avulsas)
         // ============================================
         for (const item of orcamentoAtual) {
-            if (item.codigo && (item.preco_base || 0) > 0) {
+            if (item.codigo && !item.avulsa && (item.preco_base || 0) > 0) {
                 try {
                     await fetch('/api/precos', {
                         method: 'POST',
@@ -2902,45 +2881,43 @@ async function salvarOrcamento(id) {
         }
 
         // ============================================
-        // PASSO 3: Vincular códigos às peças específicas
+        // PASSO 3: Vincular códigos (só não-avulsas)
         // ============================================
-for (const item of orcamentoAtual) {
-    // 🔥 USA item.numero (não codigo_manual)
-    const numeroPecaCorreto = String(item.numero || '').trim();
+        for (const item of orcamentoAtual) {
+            const numeroPecaCorreto = String(item.numero || '').trim();
 
-    // 🔥 PULA peças avulsas (não têm posição no manual)
-    const ehAvulsa = item.avulsa === true 
-                     || !numeroPecaCorreto 
-                     || numeroPecaCorreto === '—' 
-                     || numeroPecaCorreto === 'undefined'
-                     || numeroPecaCorreto === 'null';
+            const ehAvulsa = item.avulsa === true 
+                             || !numeroPecaCorreto 
+                             || numeroPecaCorreto === '—' 
+                             || numeroPecaCorreto === 'undefined'
+                             || numeroPecaCorreto === 'null';
 
-    if (item.codigo && !ehAvulsa && pedidoAtual) {
-        try {
-            await fetch('/api/pecas-codigos', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    manual_id: pedidoAtual.manual_id || null,
-                    produto_nome: String(item.manual_nome || pedidoAtual.manual_nome || 'SEM_PRODUTO').split('|')[0].trim() || 'SEM_PRODUTO',
-                    numero_peca: numeroPecaCorreto,
-                    variacao: item.variacao || 'N/A',
-                    codigo: item.codigo,
-                    descricao: item.descricao || '',
-                    compatibilidade: item.compatibilidade || '',
-                    foto_url: item.foto_url || '',
-                    observacao: item.observacao || '',
-                    status_item: item.status_item || 'OK'
-                })
-            });
-            console.log(`✅ Peça #${numeroPecaCorreto} (${item.variacao}) [${item.manual_nome}] → ${item.codigo}`);
-        } catch (e) {
-            console.warn(`⚠️ Não foi possível vincular código à peça #${numeroPecaCorreto}:`, e);
+            if (item.codigo && !ehAvulsa && pedidoAtual) {
+                try {
+                    await fetch('/api/pecas-codigos', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            manual_id: pedidoAtual.manual_id || null,
+                            produto_nome: String(item.manual_nome || pedidoAtual.manual_nome || 'SEM_PRODUTO').split('|')[0].trim() || 'SEM_PRODUTO',
+                            numero_peca: numeroPecaCorreto,
+                            variacao: item.variacao || 'N/A',
+                            codigo: item.codigo,
+                            descricao: item.descricao || '',
+                            compatibilidade: item.compatibilidade || '',
+                            foto_url: item.foto_url || '',
+                            observacao: item.observacao || '',
+                            status_item: item.status_item || 'OK'
+                        })
+                    });
+                    console.log(`✅ Peça #${numeroPecaCorreto} (${item.variacao}) [${item.manual_nome}] → ${item.codigo}`);
+                } catch (e) {
+                    console.warn(`⚠️ Não foi possível vincular código à peça #${numeroPecaCorreto}:`, e);
+                }
+            } else if (ehAvulsa) {
+                console.log(`🧾 Peça avulsa #${item.codigo} — não vinculada ao manual (correto)`);
+            }
         }
-    } else if (ehAvulsa) {
-        console.log(`🧾 Peça avulsa #${item.codigo} — não vinculada ao manual (correto)`);
-    }
-}
 
         // ============================================
         // PASSO 4: Salvar o orçamento no pedido
@@ -2970,14 +2947,7 @@ for (const item of orcamentoAtual) {
 }
 
         // ============================================
-        // VER DETALHES
-        // ============================================
-        // ============================================
-// VER DETALHES (COM OBS, STATUS, FOTO E COMPARAÇÃO)
-// ============================================/*
-
-        // ============================================
-        // IMPRIMIR PEDIDO (mantém igual ao anterior)
+        // IMPRIMIR PEDIDO
         // ============================================
         async function imprimirPedido(id) {
             try {
