@@ -572,6 +572,26 @@
             box-shadow: 0 4px 12px rgba(0, 184, 148, 0.4);
         }
 
+        /* 🔥 BOTÃO CONFIG PERSONALIZADA DO MANUAL */
+        .btn-config-manual {
+            background: #6c5ce7;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 8px;
+            width: 100%;
+            transition: 0.2s;
+        }
+        .btn-config-manual:hover { background: #5a4bd1; transform: translateY(-2px); }
+        .btn-config-manual.personalizado {
+            background: #f39c12;
+        }
+        .btn-config-manual.personalizado:hover { background: #e67e22; }
+
         .status-msg {
             margin-top: 10px;
             font-size: 14px;
@@ -787,6 +807,12 @@
 
                     <button class="btn-adicionar-hotspot" onclick="adicionarHotspotManual()">➕ Adicionar Hotspot Manual</button>
                     <button class="btn-salvar" onclick="salvarHotspots()">💾 SALVAR HOTSPOTS</button>
+
+                    <!-- 🔥 BOTÃO CONFIG PERSONALIZADA -->
+                    <button class="btn-config-manual" id="btn-config-manual" onclick="abrirConfigManual()">
+                        🎨 Ajustar Tamanho Só Deste Manual
+                    </button>
+
                     <div class="status-msg" id="status-msg"></div>
                 </div>
 
@@ -823,6 +849,7 @@
         let olhoAberto = true;
         let pinSelecionado = null;
         let acaoPosSenha = null;
+        let configCustomManualAtual = null;   // 🔥 config custom do manual aberto (ou null)
 
         let config = {
             tamanhoFonte: 12,
@@ -994,7 +1021,7 @@
         }
 
         // ============================================
-        // CONFIGURAÇÕES
+        // CONFIGURAÇÕES GLOBAIS
         // ============================================
         async function carregarConfiguracoes() {
             try {
@@ -1043,32 +1070,41 @@
         }
 
         // ============================================
-        // APLICAR CONFIGURAÇÕES (GLOBAL - TODOS OS MANUAIS)
+        // APLICAR CONFIGURAÇÕES (PRIORIDADE: CUSTOM > GLOBAL)
         // ============================================
         function aplicarConfiguracoes() {
-            const tamanho = parseInt(document.getElementById('config-tamanho-fonte').value) || 12;
-            const cor = document.getElementById('config-cor-pin').value;
-            const corFonte = document.getElementById('config-cor-fonte').value;
-            const estilo = document.getElementById('config-estilo').value;
+            // 🔥 Se o manual tem config custom, usa ela; senão, usa a global
+            let tamanho, cor, corFonte, estilo;
+
+            if (configCustomManualAtual) {
+                tamanho = configCustomManualAtual.tamanho_fonte || 12;
+                cor = configCustomManualAtual.cor_pin || '#e94560';
+                corFonte = configCustomManualAtual.cor_fonte || '#ffffff';
+                estilo = String(configCustomManualAtual.estilo || '1');
+                console.log(`🎨 Usando config PERSONALIZADA do manual: ${tamanho}px`);
+            } else {
+                tamanho = parseInt(document.getElementById('config-tamanho-fonte').value) || 12;
+                cor = document.getElementById('config-cor-pin').value;
+                corFonte = document.getElementById('config-cor-fonte').value;
+                estilo = document.getElementById('config-estilo').value;
+                console.log(`🌐 Usando config GLOBAL: ${tamanho}px`);
+            }
+
             const estiloClass = ESTILOS[estilo] ? ESTILOS[estilo].class : 'pin-estilo-1';
 
-            // 🔥 Calcula tamanho do pino proporcional à fonte
             let paddingVertical = 2;
             let paddingHorizontal = 5;
             let minSize = 0;
 
             if (['1', '2'].includes(estilo)) {
-                // Círculo e Quadrado
                 paddingVertical = Math.max(2, Math.round(tamanho * 0.25));
                 paddingHorizontal = Math.max(4, Math.round(tamanho * 0.5));
                 minSize = Math.max(tamanho + 10, 22);
             } else if (['3', '4', '5', '8'].includes(estilo)) {
-                // Sem fundo / borda / transparente / pontilhado
                 paddingVertical = Math.max(0, Math.round(tamanho * 0.1));
                 paddingHorizontal = Math.max(2, Math.round(tamanho * 0.25));
                 minSize = 0;
             } else if (['6', '7'].includes(estilo)) {
-                // Fundo ajustado / ajustado com borda
                 paddingVertical = Math.max(1, Math.round(tamanho * 0.15));
                 paddingHorizontal = Math.max(3, Math.round(tamanho * 0.35));
                 minSize = 0;
@@ -1098,6 +1134,185 @@
                 pin.style.alignItems = 'center';
                 pin.style.justifyContent = 'center';
             });
+        }
+
+        // ============================================
+        // CONFIG PERSONALIZADA DO MANUAL
+        // ============================================
+        function atualizarBotaoConfigManual() {
+            const btn = document.getElementById('btn-config-manual');
+            if (!btn) return;
+            if (configCustomManualAtual) {
+                btn.classList.add('personalizado');
+                btn.textContent = '🎨 Tamanho Personalizado (Ativo)';
+            } else {
+                btn.classList.remove('personalizado');
+                btn.textContent = '🎨 Ajustar Tamanho Só Deste Manual';
+            }
+        }
+
+        function abrirConfigManual() {
+            if (!manualAtual) {
+                alert('⚠️ Abra um manual primeiro!');
+                return;
+            }
+
+            const temCustom = configCustomManualAtual !== null;
+            const tam = temCustom ? configCustomManualAtual.tamanho_fonte : 
+                        parseInt(document.getElementById('config-tamanho-fonte').value) || 12;
+            const cor = temCustom ? configCustomManualAtual.cor_pin : 
+                        document.getElementById('config-cor-pin').value;
+            const corFonte = temCustom ? configCustomManualAtual.cor_fonte : 
+                             document.getElementById('config-cor-fonte').value;
+            const estilo = temCustom ? String(configCustomManualAtual.estilo) : 
+                           document.getElementById('config-estilo').value;
+
+            const modalHtml = `
+                <div style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:3000; display:flex; align-items:center; justify-content:center; padding:20px;" id="modal-config-manual">
+                    <div style="background:white; padding:30px; border-radius:16px; max-width:520px; width:100%; box-shadow:0 20px 60px rgba(0,0,0,0.4);">
+                        <h2 style="color:#6c5ce7; margin-bottom:10px;">🎨 Tamanho Personalizado</h2>
+                        <p style="color:#666; font-size:13px; margin-bottom:20px;">
+                            Manual: <strong>${manualAtual.nome}</strong><br>
+                            Esta config só vale pra <strong>este manual</strong>. Os outros continuam com a global.
+                        </p>
+
+                        <div style="background:#f8f9fa; padding:15px; border-radius:8px; margin-bottom:15px;">
+                            <label style="display:flex; align-items:center; gap:10px; cursor:pointer; font-weight:700;">
+                                <input type="checkbox" id="check-custom-manual" ${temCustom ? 'checked' : ''} 
+                                       onchange="toggleCustomManual()">
+                                Usar configuração personalizada neste manual
+                            </label>
+                        </div>
+
+                        <div id="campos-custom" style="display:${temCustom ? 'block' : 'none'}; opacity:${temCustom ? '1' : '0.5'};">
+                            <div style="display:flex; gap:15px; flex-wrap:wrap; margin-bottom:15px;">
+                                <div>
+                                    <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">Tamanho:</label>
+                                    <input type="number" id="custom-tamanho" value="${tam}" min="4" max="60" 
+                                           style="padding:8px; border:2px solid #ddd; border-radius:6px; width:80px;">
+                                    <span style="font-size:12px;">px</span>
+                                </div>
+                                <div>
+                                    <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">Cor:</label>
+                                    <input type="color" id="custom-cor-pin" value="${cor}" 
+                                           style="width:50px; height:36px; border:2px solid #ddd; border-radius:6px; cursor:pointer;">
+                                </div>
+                                <div>
+                                    <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">Cor Fonte:</label>
+                                    <input type="color" id="custom-cor-fonte" value="${corFonte}" 
+                                           style="width:50px; height:36px; border:2px solid #ddd; border-radius:6px; cursor:pointer;">
+                                </div>
+                                <div>
+                                    <label style="font-size:12px; font-weight:700; display:block; margin-bottom:4px;">Estilo:</label>
+                                    <select id="custom-estilo" style="padding:8px; border:2px solid #ddd; border-radius:6px;">
+                                        <option value="1" ${estilo==='1'?'selected':''}>🔴 Círculo</option>
+                                        <option value="2" ${estilo==='2'?'selected':''}>🔵 Quadrado</option>
+                                        <option value="3" ${estilo==='3'?'selected':''}>⬜ Sem Fundo</option>
+                                        <option value="4" ${estilo==='4'?'selected':''}>⬜ Borda</option>
+                                        <option value="5" ${estilo==='5'?'selected':''}>🌫️ Transparente</option>
+                                        <option value="6" ${estilo==='6'?'selected':''}>📝 Fundo Ajustado</option>
+                                        <option value="7" ${estilo==='7'?'selected':''}>📦 Ajustado c/ borda</option>
+                                        <option value="8" ${estilo==='8'?'selected':''}>┈ Pontilhado</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="display:flex; gap:10px; margin-top:20px;">
+                            <button onclick="fecharModalConfigManual()" 
+                                    style="flex:1; padding:12px; background:#e0e0e0; color:#333; border:none; border-radius:8px; cursor:pointer; font-weight:700;">
+                                ❌ Cancelar
+                            </button>
+                            ${temCustom ? `
+                                <button onclick="removerConfigManual()" 
+                                        style="padding:12px 20px; background:#e94560; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:700;">
+                                    🗑️ Remover
+                                </button>
+                            ` : ''}
+                            <button onclick="salvarConfigManual()" 
+                                    style="flex:1; padding:12px; background:#6c5ce7; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:700;">
+                                💾 Salvar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            const antigo = document.getElementById('modal-config-manual');
+            if (antigo) antigo.remove();
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+        }
+
+        function fecharModalConfigManual() {
+            const m = document.getElementById('modal-config-manual');
+            if (m) m.remove();
+        }
+
+        function toggleCustomManual() {
+            const check = document.getElementById('check-custom-manual');
+            const campos = document.getElementById('campos-custom');
+            campos.style.display = check.checked ? 'block' : 'none';
+            campos.style.opacity = check.checked ? '1' : '0.5';
+        }
+
+        async function salvarConfigManual() {
+            const check = document.getElementById('check-custom-manual');
+
+            if (!check.checked) {
+                await removerConfigManual();
+                return;
+            }
+
+            const config = {
+                tamanho_fonte: parseInt(document.getElementById('custom-tamanho').value) || 12,
+                cor_pin: document.getElementById('custom-cor-pin').value,
+                cor_fonte: document.getElementById('custom-cor-fonte').value,
+                estilo: parseInt(document.getElementById('custom-estilo').value)
+            };
+
+            try {
+                const res = await fetch(`/api/manuais/${encodeURIComponent(manualAtual.nome)}/config-custom`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ config })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    configCustomManualAtual = config;
+                    aplicarConfiguracoes();
+                    fecharModalConfigManual();
+                    atualizarBotaoConfigManual();
+                    alert('✅ Config personalizada salva!');
+                } else {
+                    alert('❌ ' + data.error);
+                }
+            } catch (e) {
+                alert('❌ Erro: ' + e.message);
+            }
+        }
+
+        async function removerConfigManual() {
+            if (!confirm('🗑️ Remover config personalizada? Volta a usar a global.')) return;
+
+            try {
+                const res = await fetch(`/api/manuais/${encodeURIComponent(manualAtual.nome)}/config-custom`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ config: null })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    configCustomManualAtual = null;
+                    aplicarConfiguracoes();
+                    fecharModalConfigManual();
+                    atualizarBotaoConfigManual();
+                    alert('✅ Config removida — usando global');
+                }
+            } catch (e) {
+                alert('❌ Erro: ' + e.message);
+            }
         }
 
         // ============================================
@@ -1138,6 +1353,7 @@
                 manualAtual = data;
                 hotspots = data.hotspots || [];
                 pecas = data.pecas || [];
+                configCustomManualAtual = data.config_custom || null;   // 🔥 Carrega config custom
 
                 img.src = data.imagemUrl;
                 img.style.display = 'block';
@@ -1151,6 +1367,7 @@
                 renderizarPinos();
                 renderizarLista();
                 aplicarConfiguracoes();
+                atualizarBotaoConfigManual();   // 🔥 Atualiza visual do botão
 
             } catch (error) {
                 alert('❌ ' + error.message);

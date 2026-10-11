@@ -37,9 +37,6 @@ const resend = new Resend(process.env.RESEND_API_KEY || 're_JEK32jYq_JRQQ5dnpcV2
 // ============================================
 // CONFIGURAÇÃO DO MULTER (UPLOAD DE IMAGENS)
 // ============================================
-// ============================================
-// CONFIGURAÇÃO DO MULTER (UPLOAD DE IMAGENS)
-// ============================================
 const storage = multer.memoryStorage();
 const upload = multer({
     storage: storage,
@@ -255,10 +252,7 @@ app.use(express.static(__dirname));
 // ============================================
 
 // ============================================
-// ROTA DE UPLOAD DE IMAGEM (CORRIGIDA)
-// ============================================
-// ============================================
-// ROTA DE UPLOAD DE IMAGEM (VERSÃO SIMPLIFICADA)
+// ROTA DE UPLOAD DE IMAGEM
 // ============================================
 app.post('/api/upload-imagem', upload.single('file'), async (req, res) => {
     console.log('📤 Upload iniciado');
@@ -271,12 +265,10 @@ app.post('/api/upload-imagem', upload.single('file'), async (req, res) => {
 
         console.log(`📁 Arquivo: ${req.file.originalname}, ${req.file.size} bytes`);
 
-        // Nome único para o arquivo
         const ext = path.extname(req.file.originalname);
         const name = path.basename(req.file.originalname, ext).replace(/[^a-zA-Z0-9]/g, '_');
         const fileName = `${name}_${Date.now()}${ext}`;
 
-        // Upload para o Supabase
         const { data, error } = await supabase.storage
             .from('icones')
             .upload(fileName, req.file.buffer, {
@@ -376,27 +368,11 @@ app.get('/api/manuais-lista', async (req, res) => {
 // ============================================
 // ROTAS DE CONSULTA
 // ============================================
-/*
-app.get('/api/manuais', async (req, res) => {
-    try {
-        const { data: manuais, error } = await supabase
-            .from('manuais')
-            .select('*')
-            .order('nome_base', { ascending: true });
-
-        if (error) throw error;
-        res.json({ success: true, manuais });
-    } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
-    }
-});
-*/
 app.get('/api/esquemas/:nome', async (req, res) => {
     try {
         const nomeBase = decodeURIComponent(req.params.nome).trim();
         console.log(`🔍 Buscando manual: "${nomeBase}"`);
 
-        // 🔥 USAR ILIKE PARA BUSCAR IGNORANDO CASE E ESPAÇOS
         const { data: manual, error: erroManual } = await supabase
             .from('manuais')
             .select('*')
@@ -441,7 +417,8 @@ app.get('/api/esquemas/:nome', async (req, res) => {
             imagemUrl: imagemUrl.publicUrl,
             pecas: pecas || [],
             hotspots: hotspots || [],
-            totalHotspots: hotspots?.length || 0
+            totalHotspots: hotspots?.length || 0,
+            config_custom: manual.config_custom || null   // 🔥 NOVO - config personalizada do manual
         });
 
     } catch (error) {
@@ -449,6 +426,37 @@ app.get('/api/esquemas/:nome', async (req, res) => {
         res.status(500).json({ success: false, error: error.message });
     }
 });
+
+// ============================================
+// 🔥 NOVA ROTA: SALVAR CONFIG PERSONALIZADA DO MANUAL
+// ============================================
+app.put('/api/manuais/:nome/config-custom', async (req, res) => {
+    try {
+        const nomeBase = decodeURIComponent(req.params.nome);
+        const { config } = req.body;   // null = remove custom, objeto = salva
+
+        console.log(`🎨 Config custom pra "${nomeBase}":`, config);
+
+        const { data, error } = await supabase
+            .from('manuais')
+            .update({ config_custom: config })
+            .ilike('nome_base', nomeBase)
+            .select()
+            .single();
+
+        if (error) throw error;
+
+        res.json({ 
+            success: true, 
+            message: config ? 'Config personalizada salva' : 'Config removida (volta pra global)',
+            manual: data
+        });
+    } catch (error) {
+        console.error('❌ Erro ao salvar config custom:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
 app.put('/api/manuais/:nome/hotspots', async (req, res) => {
     try {
         const nomeBase = req.params.nome.replace(/[^a-zA-Z0-9_\- ]/g, '').trim();
@@ -481,7 +489,7 @@ app.put('/api/manuais/:nome/hotspots', async (req, res) => {
 });
 
 // ============================================
-// ROTAS DE CONFIGURAÇÃO DE ESTILOS
+// ROTAS DE CONFIGURAÇÃO DE ESTILOS (GLOBAL)
 // ============================================
 app.get('/api/config-estilos', async (req, res) => {
     try {
@@ -545,50 +553,7 @@ app.delete('/api/grupos/:id', async (req, res) => {
         res.status(500).json({ success: false, error: error.message });
     }
 });
-/*
-app.get('/api/subgrupos', async (req, res) => {
-    try {
-        const { data, error } = await supabase.from('subgrupos').select('*').order('ordem', { ascending: true });
-        if (error) throw error;
-        res.json({ success: true, subgrupos: data });
-    } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
-    }
-});
 
-app.get('/api/subgrupos/:grupoId', async (req, res) => {
-    try {
-        const { data, error } = await supabase.from('subgrupos').select('*').eq('grupo_id', req.params.grupoId).order('ordem', { ascending: true });
-        if (error) throw error;
-        res.json({ success: true, subgrupos: data });
-    } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
-    }
-});
-
-app.post('/api/subgrupos', async (req, res) => {
-    try {
-        const { grupo_id, nome, icone_url } = req.body;
-        const { data, error } = await supabase.from('subgrupos')
-            .insert({ grupo_id, nome, icone_url })
-            .select();
-        if (error) throw error;
-        res.json({ success: true, subgrupo: data[0] });
-    } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
-    }
-});
-
-app.delete('/api/subgrupos/:id', async (req, res) => {
-    try {
-        const { error } = await supabase.from('subgrupos').delete().eq('id', req.params.id);
-        if (error) throw error;
-        res.json({ success: true });
-    } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
-    }
-});
-*/
 app.get('/api/produtos', async (req, res) => {
     try {
         const { data: produtos, error } = await supabase
@@ -965,18 +930,17 @@ app.post('/api/pedidos', async (req, res) => {
 
         if (error) throw error;
 
+        const { data: vendedorData } = await supabase
+            .from('vendedores')
+            .select('email')
+            .eq('id', vendedor_id)
+            .single();
 
-const { data: vendedorData } = await supabase
-    .from('vendedores')
-    .select('email')
-    .eq('id', vendedor_id)
-    .single();
-
-if (vendedorData?.email) {
-    const assunto = `🔔 Novo Pedido - ${numero_chamado}`;
-    const mensagem = templateEmailVendedor(cliente_nome, cliente_cnpj, numero_chamado, total_itens);
-    await enviarEmail(vendedorData.email, assunto, mensagem);
-}
+        if (vendedorData?.email) {
+            const assunto = `🔔 Novo Pedido - ${numero_chamado}`;
+            const mensagem = templateEmailVendedor(cliente_nome, cliente_cnpj, numero_chamado, total_itens);
+            await enviarEmail(vendedorData.email, assunto, mensagem);
+        }
 
         res.json({ 
             success: true, 
@@ -990,9 +954,6 @@ if (vendedorData?.email) {
     }
 });
 
-// ============================================
-// DELETAR PEDIDO (Cancelar/Deletar)
-// ============================================
 app.delete('/api/pedidos/:id', async (req, res) => {
     try {
         const id = req.params.id;
@@ -1010,15 +971,12 @@ app.delete('/api/pedidos/:id', async (req, res) => {
         res.status(500).json({ success: false, error: error.message });
     }
 });
-// ============================================
-// NÚMERO DO CLIENTE (VENDEDOR)
-// ============================================
+
 app.put('/api/pedidos/:id/numero-cliente', async (req, res) => {
     try {
         const { id } = req.params;
         const { numero_cliente } = req.body;
         
-        // 🔥 VALIDAÇÃO: precisa ser número inteiro
         if (numero_cliente === undefined || numero_cliente === null || numero_cliente === '') {
             return res.status(400).json({ success: false, error: 'Número do cliente é obrigatório' });
         }
@@ -1044,9 +1002,6 @@ app.put('/api/pedidos/:id/numero-cliente', async (req, res) => {
     }
 });
 
-// ============================================
-// MARCAR PEDIDO COMO SEPARADO (TÉCNICO)
-// ============================================
 app.put('/api/pedidos/:id/separado', async (req, res) => {
     try {
         const { id } = req.params;
@@ -1071,22 +1026,23 @@ app.put('/api/pedidos/:id/separado', async (req, res) => {
         res.status(500).json({ success: false, error: error.message });
     }
 });
+
 app.put('/api/pedidos/:id/status', async (req, res) => {
     try {
         const { status, motivo_recusa } = req.body;
         const id = req.params.id;
 
-const statusValidos = [
-    'AGUARDANDO', 
-    'EM_ANALISE_TECNICA', 
-    'ORCAMENTO_FINALIZADO', 
-    'ENVIADO_CLIENTE', 
-    'FINALIZADO', 
-    'CANCELADO',
-    'CONFIRMADO_TECNICO',
-    'ORCAMENTO_RECUSADO',
-    'SEPARADO'
-];
+        const statusValidos = [
+            'AGUARDANDO', 
+            'EM_ANALISE_TECNICA', 
+            'ORCAMENTO_FINALIZADO', 
+            'ENVIADO_CLIENTE', 
+            'FINALIZADO', 
+            'CANCELADO',
+            'CONFIRMADO_TECNICO',
+            'ORCAMENTO_RECUSADO',
+            'SEPARADO'
+        ];
 
         if (!statusValidos.includes(status)) {
             return res.status(400).json({ success: false, error: 'Status inválido' });
@@ -1097,7 +1053,6 @@ const statusValidos = [
             atualizado_em: new Date().toISOString()
         };
 
-        // Salva o motivo da recusa se existir
         if (motivo_recusa !== undefined) {
             updates.motivo_recusa = motivo_recusa || null;
         }
@@ -1106,7 +1061,7 @@ const statusValidos = [
             'EM_ANALISE_TECNICA': 'data_analise_tecnica',
             'ORCAMENTO_FINALIZADO': 'data_orcamento_finalizado',
             'ENVIADO_CLIENTE': 'data_enviado_cliente',
-            'CONFIRMADO_TECNICO': 'data_confirmado_tecnico',  // 🔥 NOVO
+            'CONFIRMADO_TECNICO': 'data_confirmado_tecnico',
             'FINALIZADO': 'data_finalizado'
         };
 
@@ -1122,7 +1077,6 @@ const statusValidos = [
 
         if (error) throw error;
 
-        // 🔥 E-MAIL 1: Quando muda para CONFIRMADO_TECNICO (Vendedor aprovou)
         if (status === 'CONFIRMADO_TECNICO') {
             const pedido = data[0];
             const assunto = `✅ Pedido Aprovado - ${pedido.numero_chamado}`;
@@ -1134,7 +1088,6 @@ const statusValidos = [
             await enviarEmail('anderson@marinefishing.com.br', assunto, mensagem);
         }
 
-        // 🔥 E-MAIL 2: Quando muda para ENVIADO_CLIENTE (Vendedor envia para o cliente)
         if (status === 'ENVIADO_CLIENTE') {
             const pedido = data[0];
             const valor_total = pedido.valor_total || 0;
@@ -1157,14 +1110,13 @@ const statusValidos = [
 });
 
 // ============================================
-// DELETAR MANUAL INTEIRO (imagem + excel + peças + hotspots)
+// DELETAR MANUAL INTEIRO
 // ============================================
 app.delete('/api/manuais/:nome', async (req, res) => {
     try {
         const nomeBase = decodeURIComponent(req.params.nome);
         console.log(`🗑️ Deletando manual: ${nomeBase}`);
 
-        // 1. Busca o manual
         const { data: manual, error: erroBusca } = await supabase
             .from('manuais')
             .select('id')
@@ -1175,12 +1127,10 @@ app.delete('/api/manuais/:nome', async (req, res) => {
             return res.status(404).json({ success: false, error: 'Manual não encontrado' });
         }
 
-        // 2. Deleta peças e hotspots (cascade)
         await supabase.from('pecas_catalogo').delete().eq('manual_id', manual.id);
         await supabase.from('hotspots').delete().eq('manual_id', manual.id);
         await supabase.from('pecas_codigos').delete().eq('manual_id', manual.id);
 
-        // 3. Deleta o manual
         const { error: erroDelete } = await supabase
             .from('manuais')
             .delete()
@@ -1188,7 +1138,6 @@ app.delete('/api/manuais/:nome', async (req, res) => {
 
         if (erroDelete) throw erroDelete;
 
-        // 4. Deleta a imagem do Storage
         const nomeLimpo = nomeBase
             .normalize('NFD')
             .replace(/[\u0300-\u036f]/g, '')
@@ -1245,7 +1194,7 @@ app.put('/api/manuais/:nome/revisado', async (req, res) => {
 // ============================================
 app.get('/api/manuais', async (req, res) => {
     try {
-        const { filtro } = req.query; // 'todos', 'revisados', 'nao_revisados'
+        const { filtro } = req.query;
 
         let query = supabase
             .from('manuais')
@@ -1261,7 +1210,6 @@ app.get('/api/manuais', async (req, res) => {
         const { data: manuais, error } = await query;
         if (error) throw error;
 
-        // Adiciona contador de peças
         for (const manual of manuais) {
             const { count } = await supabase
                 .from('pecas_catalogo')
@@ -1307,7 +1255,6 @@ app.put('/api/pedidos/:id/orcamento', async (req, res) => {
             atualizado_em: new Date().toISOString()
         };
 
-        // 🔥 LIMPA A FLAG DE REEDITADO
         if (limpar_reeditado === true) {
             updates.reeditado_pelo_vendedor = false;
             updates.motivo_reedicao = null;
@@ -1607,13 +1554,10 @@ app.delete('/api/precos/:codigo', async (req, res) => {
     }
 });
 
-
-
 // ============================================
 // ROTAS DE EDIÇÃO - GRUPOS E SUBGRUPOS
 // ============================================
 
-// 🔹 BUSCAR GRUPO POR ID
 app.get('/api/grupos/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -1634,7 +1578,6 @@ app.get('/api/grupos/:id', async (req, res) => {
     }
 });
 
-// 🔹 ATUALIZAR GRUPO
 app.put('/api/grupos/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -1662,64 +1605,11 @@ app.put('/api/grupos/:id', async (req, res) => {
         res.status(500).json({ success: false, error: error.message });
     }
 });
-/*
-// 🔹 BUSCAR SUBGRUPO POR ID
-app.get('/api/subgrupos/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { data, error } = await supabase
-            .from('subgrupos')
-            .select('*')
-            .eq('id', id)
-            .single();
-            
-        if (error) {
-            return res.status(404).json({ success: false, error: 'Subgrupo não encontrado' });
-        }
-        
-        res.json({ success: true, subgrupo: data });
-    } catch (error) {
-        console.error('❌ Erro ao buscar subgrupo:', error);
-        res.status(500).json({ success: false, error: error.message });
-    }
-});
-
-// 🔹 ATUALIZAR SUBGRUPO
-app.put('/api/subgrupos/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { grupo_id, nome, icone_url } = req.body;
-        
-        if (!grupo_id || !nome) {
-            return res.status(400).json({ success: false, error: 'Grupo e nome são obrigatórios' });
-        }
-        
-        const { data, error } = await supabase
-            .from('subgrupos')
-            .update({ 
-                grupo_id, 
-                nome, 
-                icone_url: icone_url || '' 
-            })
-            .eq('id', id)
-            .select()
-            .single();
-            
-        if (error) throw error;
-        
-        res.json({ success: true, subgrupo: data });
-    } catch (error) {
-        console.error('❌ Erro ao atualizar subgrupo:', error);
-        res.status(500).json({ success: false, error: error.message });
-    }
-});
-*/
 
 // ============================================
 // ROTAS DE SUBGRUPOS - VERSÃO CORRIGIDA
 // ============================================
 
-// 1️⃣ Buscar subgrupo por ID (mais específico - PRIMEIRO)
 app.get('/api/subgrupos/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -1748,7 +1638,6 @@ app.get('/api/subgrupos/:id', async (req, res) => {
     }
 });
 
-// 2️⃣ Buscar subgrupos por grupo_id
 app.get('/api/subgrupos/:grupoId', async (req, res) => {
     try {
         const grupoId = parseInt(req.params.grupoId);
@@ -1769,7 +1658,6 @@ app.get('/api/subgrupos/:grupoId', async (req, res) => {
     }
 });
 
-// 3️⃣ Listar todos os subgrupos
 app.get('/api/subgrupos', async (req, res) => {
     try {
         const { data, error } = await supabase
@@ -1784,7 +1672,6 @@ app.get('/api/subgrupos', async (req, res) => {
     }
 });
 
-// 4️⃣ Criar subgrupo
 app.post('/api/subgrupos', async (req, res) => {
     try {
         const { grupo_id, nome, icone_url } = req.body;
@@ -1804,7 +1691,6 @@ app.post('/api/subgrupos', async (req, res) => {
     }
 });
 
-// 5️⃣ Atualizar subgrupo (PUT)
 app.put('/api/subgrupos/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -1834,7 +1720,6 @@ app.put('/api/subgrupos/:id', async (req, res) => {
     }
 });
 
-// 6️⃣ Deletar subgrupo
 app.delete('/api/subgrupos/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -1854,37 +1739,7 @@ app.delete('/api/subgrupos/:id', async (req, res) => {
         res.status(500).json({ success: false, error: error.message });
     }
 });
-// 🔹 DELETAR GRUPO (JÁ EXISTE, MAS VAMOS GARANTIR)
-app.delete('/api/grupos/:id', async (req, res) => {
-    try {
-        const { error } = await supabase
-            .from('grupos')
-            .delete()
-            .eq('id', req.params.id);
-            
-        if (error) throw error;
-        res.json({ success: true });
-    } catch (error) {
-        console.error('❌ Erro ao deletar grupo:', error);
-        res.status(500).json({ success: false, error: error.message });
-    }
-});
 
-// 🔹 DELETAR SUBGRUPO (JÁ EXISTE, MAS VAMOS GARANTIR)
-app.delete('/api/subgrupos/:id', async (req, res) => {
-    try {
-        const { error } = await supabase
-            .from('subgrupos')
-            .delete()
-            .eq('id', req.params.id);
-            
-        if (error) throw error;
-        res.json({ success: true });
-    } catch (error) {
-        console.error('❌ Erro ao deletar subgrupo:', error);
-        res.status(500).json({ success: false, error: error.message });
-    }
-});
 // ============================================
 // CONFIGURAÇÃO GLOBAL DO TÉCNICO
 // ============================================
@@ -1942,28 +1797,6 @@ app.post('/api/config-tecnico', async (req, res) => {
     }
 });
 
-
-// ============================================
-// DELETAR PEDIDO
-// ============================================
-app.delete('/api/pedidos/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
-        
-        const { error } = await supabase
-            .from('orcamentos')
-            .delete()
-            .eq('id', id);
-            
-        if (error) throw error;
-        
-        res.json({ success: true, message: 'Pedido deletado com sucesso' });
-    } catch (error) {
-        console.error('❌ Erro ao deletar pedido:', error);
-        res.status(500).json({ success: false, error: error.message });
-    }
-});
-
 // ============================================
 // UPLOAD DE FOTO DO ORÇAMENTO
 // ============================================
@@ -2007,6 +1840,7 @@ app.post('/api/upload-foto-orcamento', upload.single('file'), async (req, res) =
         res.status(500).json({ success: false, error: error.message });
     }
 });
+
 // ============================================
 // VINCULAR CÓDIGO À PEÇA (DELETE + INSERT)
 // ============================================
@@ -2014,7 +1848,7 @@ app.post('/api/pecas-codigos', async (req, res) => {
     try {
         const {
             manual_id,
-            produto_nome,        // ← NOVO
+            produto_nome,
             numero_peca,
             variacao,
             codigo,
@@ -2039,13 +1873,12 @@ app.post('/api/pecas-codigos', async (req, res) => {
         
         console.log(`🔗 Vinculando peça #${numeroPecaFinal} (${variacaoFinal}) [${produtoNomeFinal || 'sem produto'}] ao código ${codigo}`);
 
-        // 🔥 DELETA registro antigo — AGORA COM produto_nome
         let deleteQuery = supabase
             .from('pecas_codigos')
             .delete()
             .eq('numero_peca', numeroPecaFinal)
             .eq('variacao', variacaoFinal)
-            .eq('produto_nome', produtoNomeFinal);   // ← CHAVE NOVA
+            .eq('produto_nome', produtoNomeFinal);
         
         if (manualIdFinal === null) {
             deleteQuery = deleteQuery.is('manual_id', null);
@@ -2055,12 +1888,11 @@ app.post('/api/pecas-codigos', async (req, res) => {
         
         await deleteQuery;
         
-        // 🔥 INSERE o novo — COM produto_nome
         const { data, error } = await supabase
             .from('pecas_codigos')
             .insert({
                 manual_id: manualIdFinal,
-                produto_nome: produtoNomeFinal,   // ← NOVO
+                produto_nome: produtoNomeFinal,
                 numero_peca: numeroPecaFinal,
                 variacao: variacaoFinal,
                 codigo: codigo,
@@ -2112,7 +1944,6 @@ app.get('/api/pecas-codigos/:manualId', async (req, res) => {
         const { data: codigos, error } = await query;
         if (error) throw error;
         
-        // 🔥 BUSCAR PREÇOS ATUAIS de todos os códigos
         const codigosComPreco = await Promise.all(
             (codigos || []).map(async (c) => {
                 if (!c.codigo) return { ...c, preco_base: 0 };
@@ -2136,6 +1967,7 @@ app.get('/api/pecas-codigos/:manualId', async (req, res) => {
         res.status(500).json({ success: false, error: error.message });
     }
 });
+
 // ============================================
 // MARCAR PEDIDO COMO RECEBIDO
 // ============================================
@@ -2176,12 +2008,10 @@ app.put('/api/pedidos/:id/devolver-tecnico', async (req, res) => {
             return res.status(400).json({ success: false, error: 'Orçamento inválido' });
         }
 
-        // Recalcula valor total
         const valor_total = orcamento.reduce((sum, item) => {
             return sum + ((parseFloat(item.preco_unitario) || 0) * (parseInt(item.qtd) || 0));
         }, 0);
 
-        // Salva histórico da alteração
         const { data: pedidoAtual } = await supabase
             .from('orcamentos')
             .select('orcamento, historico_alteracoes')
@@ -2197,7 +2027,7 @@ app.put('/api/pedidos/:id/devolver-tecnico', async (req, res) => {
             orcamento_anterior: pedidoAtual?.orcamento || []
         });
 
-const { data, error } = await supabase
+        const { data, error } = await supabase
             .from('orcamentos')
             .update({
                 orcamento: orcamento,
@@ -2227,14 +2057,12 @@ app.delete('/api/pedidos/:id/cancelar-vendedor', async (req, res) => {
         const { id } = req.params;
         const { motivo } = req.body;
 
-        // Busca o pedido para pegar o email do técnico (se houver)
         const { data: pedido } = await supabase
             .from('orcamentos')
             .select('numero_chamado, cliente_nome, vendedor_nome')
             .eq('id', id)
             .single();
 
-        // Deleta o pedido
         const { error } = await supabase
             .from('orcamentos')
             .delete()
@@ -2242,7 +2070,6 @@ app.delete('/api/pedidos/:id/cancelar-vendedor', async (req, res) => {
 
         if (error) throw error;
 
-        // Envia email avisando o técnico
         if (pedido) {
             const assunto = `❌ Chamado CANCELADO PELO VENDEDOR - ${pedido.numero_chamado}`;
             const mensagem = `
@@ -2272,7 +2099,7 @@ app.delete('/api/pedidos/:id/cancelar-vendedor', async (req, res) => {
 });
 
 // ============================================
-// BUSCAR PREÇO DE UMA PEÇA PELO CÓDIGO (TÉCNICO ADICIONA MANUAL)
+// BUSCAR PREÇO DE UMA PEÇA PELO CÓDIGO
 // ============================================
 app.get('/api/precos/buscar/:codigo', async (req, res) => {
     try {
@@ -2300,7 +2127,7 @@ app.get('/api/precos/buscar/:codigo', async (req, res) => {
 });
 
 // ============================================
-// RESETAR PEDIDO PARA STATUS INICIAL (AGUARDANDO)
+// RESETAR PEDIDO PARA STATUS INICIAL
 // ============================================
 app.put('/api/pedidos/:id/resetar', async (req, res) => {
     try {
@@ -2308,7 +2135,6 @@ app.put('/api/pedidos/:id/resetar', async (req, res) => {
 
         console.log(`🔄 Resetando pedido ${id} para AGUARDANDO...`);
 
-        // Verifica se o pedido existe
         const { data: pedidoAntes } = await supabase
             .from('orcamentos')
             .select('numero_chamado, status')
@@ -2319,16 +2145,14 @@ app.put('/api/pedidos/:id/resetar', async (req, res) => {
             return res.status(404).json({ success: false, error: 'Pedido não encontrado' });
         }
 
-        // Atualiza para status inicial
         const { data, error } = await supabase
             .from('orcamentos')
             .update({
                 status: 'AGUARDANDO',
-                orcamento: [],           // Limpa orçamento
-                valor_total: 0,          // Zera valor
+                orcamento: [],
+                valor_total: 0,
                 observacoes_tecnico: null,
                 motivo_recusa: null,
-                // 🔥 Mantém: numero_cliente, cliente_*, vendedor_*, itens
                 reeditado_pelo_vendedor: false,
                 status_separado: false,
                 data_separado: null,
@@ -2354,24 +2178,6 @@ app.put('/api/pedidos/:id/resetar', async (req, res) => {
     }
 });
 
-// ============================================
-// SERVIDOR DE IMAGENS LOCAL
-// ============================================
-// ============================================
-// SERVIDOR DE IMAGENS LOCAL
-// ============================================
-/*
-app.get('/images/:splat(.*)', (req, res) => {
-    const imageName = decodeURIComponent(req.params.splat || '');
-    const imagePath = path.join(__dirname, 'esquemas', imageName);
-
-    if (fs.existsSync(imagePath)) {
-        res.sendFile(imagePath);
-    } else {
-        res.status(404).send('Imagem não encontrada');
-    }
-});
-*/
 // ============================================
 // INICIALIZAÇÃO DO SERVIDOR
 // ============================================
