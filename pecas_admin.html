@@ -711,40 +711,39 @@
             <span class="contador" id="contador-manuais">0 manual(is)</span>
         </div>
 
-        <!-- CONFIGURAÇÕES -->
-<!-- CONFIGURAÇÕES -->
-<div class="config-global" id="config-global">
-    <div class="grupo">
-        <label>Tamanho:</label>
-        <input type="number" id="config-tamanho-fonte" value="12" min="6" max="30" oninput="aplicarConfiguracoes()">
-        <label>px</label>
-    </div>
-    <div class="grupo">
-        <label>Cor:</label>
-        <input type="color" id="config-cor-pin" value="#e94560" oninput="aplicarConfiguracoes()">
-    </div>
-    <div class="grupo">
-        <label>Cor Fonte:</label>
-        <input type="color" id="config-cor-fonte" value="#ffffff" oninput="aplicarConfiguracoes()">
-    </div>
-    <div class="grupo">
-        <label>Estilo:</label>
-        <select id="config-estilo" onchange="aplicarConfiguracoes()">
-            <option value="1">🔴 Círculo</option>
-            <option value="2">🔵 Quadrado</option>
-            <option value="3">⬜ Sem Fundo</option>
-            <option value="4">⬜ Borda</option>
-            <option value="5">🌫️ Transparente</option>
-            <option value="6">📝 Fundo Ajustado</option>
-            <option value="7">📦 Ajustado c/ borda</option>
-            <option value="8">┈ Pontilhado</option>
-        </select>
-    </div>
-    <div class="grupo">
-        <button class="btn-salvar-config" onclick="salvarConfiguracoes()">💾 Salvar</button>
-        <span id="status-salvo" style="font-size:11px; color:#00b894; display:none;">✅ Salvo!</span>
-    </div>
-</div>
+        <!-- CONFIGURAÇÕES GLOBAIS -->
+        <div class="config-global" id="config-global">
+            <div class="grupo">
+                <label>Tamanho:</label>
+                <input type="number" id="config-tamanho-fonte" value="12" min="6" max="30" oninput="aplicarConfiguracoes()">
+                <label>px</label>
+            </div>
+            <div class="grupo">
+                <label>Cor:</label>
+                <input type="color" id="config-cor-pin" value="#e94560" oninput="aplicarConfiguracoes()">
+            </div>
+            <div class="grupo">
+                <label>Cor Fonte:</label>
+                <input type="color" id="config-cor-fonte" value="#ffffff" oninput="aplicarConfiguracoes()">
+            </div>
+            <div class="grupo">
+                <label>Estilo:</label>
+                <select id="config-estilo" onchange="aplicarConfiguracoes()">
+                    <option value="1">🔴 Círculo</option>
+                    <option value="2">🔵 Quadrado</option>
+                    <option value="3">⬜ Sem Fundo</option>
+                    <option value="4">⬜ Borda</option>
+                    <option value="5">🌫️ Transparente</option>
+                    <option value="6">📝 Fundo Ajustado</option>
+                    <option value="7">📦 Ajustado c/ borda</option>
+                    <option value="8">┈ Pontilhado</option>
+                </select>
+            </div>
+            <div class="grupo">
+                <button class="btn-salvar-config" onclick="salvarConfiguracoes()">💾 Salvar</button>
+                <span id="status-salvo" style="font-size:11px; color:#00b894; display:none;">✅ Salvo!</span>
+            </div>
+        </div>
 
         <!-- LISTA DE MANUAIS -->
         <div class="grid-manuais" id="grid-manuais">
@@ -785,6 +784,7 @@
                             <button id="btn-olho" onclick="toggleOlho()" style="background:#1a237e; color:white;">👁️</button>
                         </div>
                     </div>
+
                     <button class="btn-adicionar-hotspot" onclick="adicionarHotspotManual()">➕ Adicionar Hotspot Manual</button>
                     <button class="btn-salvar" onclick="salvarHotspots()">💾 SALVAR HOTSPOTS</button>
                     <div class="status-msg" id="status-msg"></div>
@@ -956,10 +956,8 @@
                 const data = await res.json();
 
                 if (data.success) {
-                    // Fecha o editor se estiver aberto
                     document.getElementById('editor-container').classList.remove('ativo');
                     manualAtual = null;
-                    // Recarrega a lista
                     carregarManuais();
                 } else {
                     alert('❌ ' + data.error);
@@ -1044,65 +1042,64 @@
             } catch (e) {}
         }
 
+        // ============================================
+        // APLICAR CONFIGURAÇÕES (GLOBAL - TODOS OS MANUAIS)
+        // ============================================
         function aplicarConfiguracoes() {
-    const tamanho = parseInt(document.getElementById('config-tamanho-fonte').value) || 12;
-    const cor = document.getElementById('config-cor-pin').value;
-    const corFonte = document.getElementById('config-cor-fonte').value;
-    const estilo = document.getElementById('config-estilo').value;
-    const estiloClass = ESTILOS[estilo] ? ESTILOS[estilo].class : 'pin-estilo-1';
+            const tamanho = parseInt(document.getElementById('config-tamanho-fonte').value) || 12;
+            const cor = document.getElementById('config-cor-pin').value;
+            const corFonte = document.getElementById('config-cor-fonte').value;
+            const estilo = document.getElementById('config-estilo').value;
+            const estiloClass = ESTILOS[estilo] ? ESTILOS[estilo].class : 'pin-estilo-1';
 
-    // 🔥 Calcula tamanho do pino proporcional à fonte
-    // Estilo círculo/quadrado → padding maior, min-size
-    // Estilo sem fundo → sem min-size, padding pequeno
-    let paddingVertical = 2;
-    let paddingHorizontal = 5;
-    let minSize = 0;
+            // 🔥 Calcula tamanho do pino proporcional à fonte
+            let paddingVertical = 2;
+            let paddingHorizontal = 5;
+            let minSize = 0;
 
-    if (['1', '2'].includes(estilo)) {
-        // Círculo e Quadrado: cresce junto com a fonte
-        paddingVertical = Math.max(2, Math.round(tamanho * 0.25));
-        paddingHorizontal = Math.max(4, Math.round(tamanho * 0.5));
-        minSize = Math.max(tamanho + 10, 22);
-    } else if (['3', '4', '5', '8'].includes(estilo)) {
-        // Sem fundo / borda / transparente / pontilhado: padding mínimo
-        paddingVertical = Math.max(0, Math.round(tamanho * 0.1));
-        paddingHorizontal = Math.max(2, Math.round(tamanho * 0.25));
-        minSize = 0;
-    } else if (['6', '7'].includes(estilo)) {
-        // Fundo ajustado / ajustado com borda: intermediário
-        paddingVertical = Math.max(1, Math.round(tamanho * 0.15));
-        paddingHorizontal = Math.max(3, Math.round(tamanho * 0.35));
-        minSize = 0;
-    }
+            if (['1', '2'].includes(estilo)) {
+                // Círculo e Quadrado
+                paddingVertical = Math.max(2, Math.round(tamanho * 0.25));
+                paddingHorizontal = Math.max(4, Math.round(tamanho * 0.5));
+                minSize = Math.max(tamanho + 10, 22);
+            } else if (['3', '4', '5', '8'].includes(estilo)) {
+                // Sem fundo / borda / transparente / pontilhado
+                paddingVertical = Math.max(0, Math.round(tamanho * 0.1));
+                paddingHorizontal = Math.max(2, Math.round(tamanho * 0.25));
+                minSize = 0;
+            } else if (['6', '7'].includes(estilo)) {
+                // Fundo ajustado / ajustado com borda
+                paddingVertical = Math.max(1, Math.round(tamanho * 0.15));
+                paddingHorizontal = Math.max(3, Math.round(tamanho * 0.35));
+                minSize = 0;
+            }
 
-    document.querySelectorAll('.pin-editor').forEach(pin => {
-        pin.classList.remove(
-            'pin-estilo-1', 'pin-estilo-2', 'pin-estilo-3',
-            'pin-estilo-4', 'pin-estilo-5', 'pin-estilo-6',
-            'pin-estilo-7', 'pin-estilo-8'
-        );
-        pin.classList.add(estiloClass);
+            document.querySelectorAll('.pin-editor').forEach(pin => {
+                pin.classList.remove(
+                    'pin-estilo-1', 'pin-estilo-2', 'pin-estilo-3',
+                    'pin-estilo-4', 'pin-estilo-5', 'pin-estilo-6',
+                    'pin-estilo-7', 'pin-estilo-8'
+                );
+                pin.classList.add(estiloClass);
 
-        pin.style.setProperty('--pin-cor', cor);
-        pin.style.setProperty('--pin-fonte-cor', corFonte);
-        pin.style.fontSize = tamanho + 'px';
-        pin.style.padding = `${paddingVertical}px ${paddingHorizontal}px`;
+                pin.style.setProperty('--pin-cor', cor);
+                pin.style.setProperty('--pin-fonte-cor', corFonte);
+                pin.style.fontSize = tamanho + 'px';
+                pin.style.padding = `${paddingVertical}px ${paddingHorizontal}px`;
 
-        if (minSize > 0) {
-            pin.style.minWidth = minSize + 'px';
-            pin.style.minHeight = minSize + 'px';
-            pin.style.display = 'flex';
-            pin.style.alignItems = 'center';
-            pin.style.justifyContent = 'center';
-        } else {
-            pin.style.minWidth = 'auto';
-            pin.style.minHeight = 'auto';
-            pin.style.display = 'flex';
-            pin.style.alignItems = 'center';
-            pin.style.justifyContent = 'center';
+                if (minSize > 0) {
+                    pin.style.minWidth = minSize + 'px';
+                    pin.style.minHeight = minSize + 'px';
+                } else {
+                    pin.style.minWidth = 'auto';
+                    pin.style.minHeight = 'auto';
+                }
+                pin.style.display = 'flex';
+                pin.style.alignItems = 'center';
+                pin.style.justifyContent = 'center';
+            });
         }
-    });
-}
+
         // ============================================
         // ABRIR MANUAL
         // ============================================
