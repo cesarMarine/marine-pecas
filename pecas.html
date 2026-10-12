@@ -1117,7 +1117,6 @@
                 padding-top: 20px;
                 border-top: 2px dashed #e8edf3;
             }
-            /* Esconde o botão de olho (já que no celular começa fechado) */
             #btn-olho { display: none !important; }
         }
     </style>
@@ -1387,11 +1386,9 @@
         let pinchStartZoom = 1;
         let initialTouchDistance = 0;
 
-        // 🔥 ENTRA EM FULLSCREEN
         function entrarZoomFullscreen(e) {
             if (isZoomFullscreen) return;
 
-            // Ignora se clicou em um PIN
             if (e.target.classList.contains('pin-peca')) return;
             if (e.target.closest('.pin-peca')) return;
             if (e.target.closest('.zoom-controls')) return;
@@ -1407,7 +1404,6 @@
             btnFechar.classList.add('ativo');
             document.body.classList.add('zoom-fullscreen-mode');
 
-            // Calcula ponto do toque para centralizar
             let clientX = e.clientX;
             let clientY = e.clientY;
             if (e.touches && e.touches[0]) {
@@ -1422,7 +1418,6 @@
             zoomLevel = 2;
             aplicarZoom();
 
-            // Centraliza no ponto tocado
             setTimeout(() => {
                 const novoScrollLeft = (xRelativo * zoomContainer.scrollWidth) - (zoomContainer.clientWidth / 2);
                 const novoScrollTop = (yRelativo * zoomContainer.scrollHeight) - (zoomContainer.clientHeight / 2);
@@ -1435,7 +1430,6 @@
             }, 300);
         }
 
-        // 🔥 SAI DO FULLSCREEN
         function sairZoomFullscreen() {
             if (!isZoomFullscreen) return;
 
@@ -1452,18 +1446,15 @@
             zoomReset();
         }
 
-        // 🔥 SETUP DOS GESTOS (PINCH + PAN)
         function setupZoomGestures() {
             const zoomContainer = document.getElementById('zoom-container');
 
             if (!zoomContainer) return;
 
-            // Remove listeners antigos
             zoomContainer.removeEventListener('touchstart', handleTouchStart);
             zoomContainer.removeEventListener('touchmove', handleTouchMove);
             zoomContainer.removeEventListener('touchend', handleTouchEnd);
 
-            // Adiciona novos
             zoomContainer.addEventListener('touchstart', handleTouchStart, { passive: false });
             zoomContainer.addEventListener('touchmove', handleTouchMove, { passive: false });
             zoomContainer.addEventListener('touchend', handleTouchEnd, { passive: true });
@@ -1473,7 +1464,6 @@
             if (!isZoomFullscreen) return;
 
             if (e.touches.length === 2) {
-                // 🔥 PINCH ZOOM
                 const touch1 = e.touches[0];
                 const touch2 = e.touches[1];
                 initialTouchDistance = Math.hypot(
@@ -1489,7 +1479,6 @@
             if (!isZoomFullscreen) return;
 
             if (e.touches.length === 2 && initialTouchDistance > 0) {
-                // 🔥 PINCH ZOOM
                 const touch1 = e.touches[0];
                 const touch2 = e.touches[1];
                 const currentDistance = Math.hypot(
@@ -1500,17 +1489,14 @@
                 const scale = currentDistance / initialTouchDistance;
                 let newZoom = pinchStartZoom * scale;
 
-                // Limita zoom entre 1 e 5
                 newZoom = Math.max(1, Math.min(5, newZoom));
 
-                // Atualiza o zoom em tempo real
                 zoomLevel = newZoom;
 
                 const wrapper = document.getElementById('imagem-wrapper');
                 wrapper.style.transform = `scale(${zoomLevel})`;
                 wrapper.style.transition = 'none';
 
-                // Atualiza o display
                 const zoomDisplay = document.getElementById('zoom-level');
                 if (zoomDisplay) {
                     zoomDisplay.textContent = Math.round(zoomLevel * 100) + '%';
@@ -1523,7 +1509,6 @@
         function handleTouchEnd(e) {
             if (e.touches.length < 2) {
                 initialTouchDistance = 0;
-                // Reativa transição
                 const wrapper = document.getElementById('imagem-wrapper');
                 if (wrapper) {
                     wrapper.style.transition = 'transform 0.25s ease';
@@ -1531,7 +1516,6 @@
             }
         }
 
-        // 🔥 CLIQUE SIMPLES NA IMAGEM (SÓ MOBILE)
         function setupToqueInteligente() {
             const diagrama = document.getElementById('diagrama-wrapper');
             
@@ -1545,7 +1529,6 @@
             if (e.target.closest('.zoom-controls')) return;
             if (e.target.closest('.btn-fechar-zoom')) return;
 
-            // 🔥 NO MOBILE: toque na imagem entra em fullscreen
             if (isMobile && !isZoomFullscreen) {
                 entrarZoomFullscreen(e);
             }
@@ -1570,7 +1553,7 @@
         }
 
         // ============================================
-        // CONFIGURAÇÕES
+        // CONFIGURAÇÕES GLOBAIS
         // ============================================
         async function carregarConfig() {
             try {
@@ -1594,22 +1577,43 @@
             }
         }
 
+        // ============================================
+        // 🔥 APLICAR ESTILOS (CUSTOM > GLOBAL)
+        // ============================================
         function aplicarEstilosPinos() {
+            // 🔥 Se o manual tem config custom, usa ela; senão, usa a global
+            let tamanho, cor, corFonte, estilo;
+
+            if (manualAtual && manualAtual.config_custom) {
+                const cc = manualAtual.config_custom;
+                tamanho = cc.tamanho_fonte || 12;
+                cor = cc.cor_pin || '#e94560';
+                corFonte = cc.cor_fonte || '#ffffff';
+                estilo = String(cc.estilo || '1');
+                console.log('🎨 Aplicando config PERSONALIZADA do manual:', tamanho, cor, estilo);
+            } else {
+                tamanho = configAtual.tamanhoFonte;
+                cor = configAtual.corPin;
+                corFonte = configAtual.corFonte;
+                estilo = configAtual.estilo;
+                console.log('🌐 Aplicando config GLOBAL:', tamanho, cor, estilo);
+            }
+
             document.querySelectorAll('.pin-peca').forEach(pin => {
                 pin.classList.remove('estilo-1', 'estilo-2', 'estilo-3', 'estilo-4', 'estilo-5', 'estilo-6', 'estilo-7', 'estilo-8');
-                pin.classList.add(`estilo-${configAtual.estilo}`);
-                pin.style.fontSize = `${configAtual.tamanhoFonte}px`;
+                pin.classList.add(`estilo-${estilo}`);
+                pin.style.fontSize = `${tamanho}px`;
                 
-                if (['1', '2', '6', '7'].includes(configAtual.estilo)) {
-                    pin.style.background = configAtual.corPin;
-                    pin.style.color = configAtual.corFonte;
+                if (['1', '2', '6', '7'].includes(estilo)) {
+                    pin.style.background = cor;
+                    pin.style.color = corFonte;
                 } else {
                     pin.style.background = 'transparent';
-                    pin.style.color = configAtual.corFonte;
+                    pin.style.color = corFonte;
                 }
                 
-                if (configAtual.estilo === '1' || configAtual.estilo === '2') {
-                    const size = Math.max(configAtual.tamanhoFonte + 10, 24);
+                if (estilo === '1' || estilo === '2') {
+                    const size = Math.max(tamanho + 10, 24);
                     pin.style.minWidth = size + 'px';
                     pin.style.minHeight = size + 'px';
                 } else {
@@ -1910,7 +1914,6 @@
                 const hotspots = data.hotspots || [];
                 const pecasLista = data.pecas || [];
 
-                // 🔥 NO MOBILE, OLHO FECHADO (PINs INVISÍVEIS)
                 olhoAberto = !isMobile;
 
                 const btnOlho = document.getElementById('btn-olho');
@@ -1948,6 +1951,7 @@
                     wrapper.appendChild(pin);
                 });
 
+                // 🔥 Aplica estilos (custom ou global)
                 aplicarEstilosPinos();
 
                 setTimeout(() => {
@@ -1956,7 +1960,6 @@
                     setupZoomGestures();
                 }, 100);
 
-                // 🔥 LISTA ORDENADA POR NÚMERO
                 gridPecas.innerHTML = '';
                 if (pecasLista.length > 0) {
                     const pecasOrdenadas = [...pecasLista].sort((a, b) => {
@@ -2330,14 +2333,12 @@
             }
         });
 
-        // 🔥 ESC PARA SAIR DO ZOOM
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && isZoomFullscreen) {
                 sairZoomFullscreen();
             }
         });
 
-        // 🔥 PREVINE SCROLL DO BODY NO MOBILE QUANDO ESTIVER EM FULLSCREEN
         document.addEventListener('touchmove', (e) => {
             if (isZoomFullscreen && e.target.closest('#zoom-container')) {
                 return;
