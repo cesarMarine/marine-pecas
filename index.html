@@ -884,9 +884,10 @@
                 const nomeLimpo = manual.nome_base.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9]/g, '_');
                 const imgUrl = `https://gjshdfnpzmitrerzrxkb.supabase.co/storage/v1/object/public/esquemas/${nomeLimpo}.jpg`;
                 
-                card.onclick = () => {
-                    window.location.href = `/pecas.html?manual=${encodeURIComponent(manual.nome_base)}`;
-                };
+card.onclick = () => {
+    // Vai pra busca da categoria, que vai deixar o cliente escolher
+    window.location.href = `/categoria.html?busca=${encodeURIComponent(manual.nome_base)}`;
+};
                 
                 card.innerHTML = `
                     <img src="${imgUrl}" alt="${manual.nome_base}" 
