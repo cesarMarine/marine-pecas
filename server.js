@@ -777,14 +777,12 @@ app.get('/api/pedidos', async (req, res) => {
     try {
         const { status, busca, vendedor_id } = req.query;
         
-        let query = supabase
-            .from('orcamentos')
-            .select('*')
-            .order('data_pedido', { ascending: false });
+        let query = supabase.from('orcamentos').select('*');
 
-        // 🔥 SE TIVER VENDEDOR LOGADO, FILTRA SÓ OS PEDIDOS DELE
+        // 🔥 FILTRO DO VENDEDOR (USA O ID DA TABELA VENDEDORES)
         if (vendedor_id) {
-            query = query.eq('vendedor_id', vendedor_id);
+            const idNumerico = parseInt(vendedor_id);
+            query = query.eq('vendedor_id', idNumerico);
         }
 
         if (status) {
@@ -795,25 +793,13 @@ app.get('/api/pedidos', async (req, res) => {
             query = query.or(`cliente_nome.ilike.%${busca}%,numero_chamado.ilike.%${busca}%`);
         }
 
-        const { data, error } = await query;
+        query = query.order('data_pedido', { ascending: false });
 
+        const { data, error } = await query;
         if (error) throw error;
 
-        const pedidosComVariacao = data.map(pedido => {
-            let variacoes = [];
-            if (pedido.itens && Array.isArray(pedido.itens)) {
-                variacoes = [...new Set(pedido.itens.map(item => item.variacao || 'N/A'))];
-            }
-            return {
-                ...pedido,
-                variacoes: variacoes,
-                variacoes_display: variacoes.join(', ')
-            };
-        });
-
-        res.json({ success: true, pedidos: pedidosComVariacao });
+        res.json({ success: true, pedidos: data });
     } catch (error) {
-        console.error('❌ Erro ao listar pedidos:', error);
         res.status(500).json({ success: false, error: error.message });
     }
 });
