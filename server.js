@@ -775,12 +775,17 @@ app.delete('/api/produtos/:id', async (req, res) => {
 
 app.get('/api/pedidos', async (req, res) => {
     try {
-        const { status, busca } = req.query;
+        const { status, busca, vendedor_id } = req.query;
         
         let query = supabase
             .from('orcamentos')
             .select('*')
             .order('data_pedido', { ascending: false });
+
+        // 🔥 SE TIVER VENDEDOR LOGADO, FILTRA SÓ OS PEDIDOS DELE
+        if (vendedor_id) {
+            query = query.eq('vendedor_id', vendedor_id);
+        }
 
         if (status) {
             query = query.eq('status', status);
