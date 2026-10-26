@@ -674,6 +674,16 @@ ${p.status !== 'CANCELADO' && p.status !== 'FINALIZADO' ? `
                     `;
                 });
 
+                                   // 🔥 MOSTRAR OBSERVAÇÕES DO TÉCNICO
+                if (p.observacoes_tecnico) {
+                    html += `
+                        <div style="background:#fff3cd; padding:15px; border-radius:8px; margin-top:20px; border-left:4px solid #f8b81f;">
+                            <strong style="color:#856404;">📝 Observações Gerais do Técnico:</strong><br>
+                            <span style="font-size:13px; color:#333;">${p.observacoes_tecnico}</span>
+                        </div>
+                    `;
+                }
+
                 if (p.orcamento && p.orcamento.length > 0) {
                     let totalGeral = 0;
                     html += `
@@ -705,14 +715,20 @@ ${p.status !== 'CANCELADO' && p.status !== 'FINALIZADO' ? `
                             statusIcon = '⚫';
                             statusCor = '#666';
                         }
+
+                        // 🔥 MÁGICA AQUI: Se não tem código mas tem número, mostra o número da peça
+                        const codigoExibir = item.codigo || (item.numero ? `#${item.numero}` : '-');
+                        
+                        // 🔥 MÁGICA AQUI: Se não tem descrição mas tem nome solicitado, mostra o nome
+                        const descExibir = item.descricao || item.nome_solicitado || '-';
                         
                         html += `
                             <tr>
-                                <td>${item.codigo || '-'}</td>
-                                <td>${item.descricao || '-'}</td>
+                                <td><strong>${codigoExibir}</strong></td>
+                                <td>${descExibir}</td>
                                 <td style="text-align:center;">${item.qtd || 0}</td>
-                                <td style="text-align:right;">R$ ${(item.preco_unitario || 0).toFixed(2)}</td>
-                                <td style="text-align:right;">R$ ${total.toFixed(2)}</td>
+                                <td style="text-align:right;">${item.preco_unitario > 0 ? `R$ ${item.preco_unitario.toFixed(2)}` : '-'}</td>
+                                <td style="text-align:right;">${total > 0 ? `R$ ${total.toFixed(2)}` : '-'}</td>
                                 <td style="text-align:center; color:${statusCor}; font-weight:700;">${statusIcon} ${item.status_item || 'OK'}</td>
                             </tr>
                         `;
@@ -730,7 +746,6 @@ ${p.status !== 'CANCELADO' && p.status !== 'FINALIZADO' ? `
                         </table>
                     `;
                 }
-
                 html += `
                     <div style="margin-top:20px; display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap;">
                         <button class="btn-fechar" onclick="fecharModal()">🔙 Fechar</button>
