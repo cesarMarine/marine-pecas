@@ -320,6 +320,22 @@
     </style>
 </head>
 <body>
+
+        <!-- 🔥 TELA DE LOGIN DO VENDEDOR -->
+    <div id="tela-login" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f0f2f5; display: flex; align-items: center; justify-content: center; z-index: 9999;">
+        <div style="background: white; padding: 40px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); max-width: 400px; width: 100%; text-align: center;">
+            <h1 style="color: #1a237e; margin-bottom: 10px; font-size: 24px;">📋 Painel do Vendedor</h1>
+            <p style="color: #666; margin-bottom: 20px; font-size: 14px;">Digite seu código de vendedor para acessar seus pedidos.</p>
+            
+            <input type="text" id="input-login-codigo" placeholder="Ex: 004" style="width: 100%; padding: 15px; font-size: 18px; text-align: center; border: 2px solid #ddd; border-radius: 8px; margin-bottom: 15px; text-transform: uppercase;" onkeydown="if(event.key==='Enter') fazerLogin()">
+            
+            <div id="erro-login" style="color: #e94560; font-size: 13px; font-weight: 600; margin-bottom: 15px; min-height: 20px;"></div>
+            
+            <button onclick="fazerLogin()" style="width: 100%; padding: 15px; background: #1a237e; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 700; cursor: pointer;">
+                Entrar
+            </button>
+        </div>
+    </div>
     <div class="container">
         <div class="header-top">
             <h1>📋 Painel do Vendedor</h1>
@@ -328,6 +344,12 @@
                 <a href="/admin" class="btn-voltar">← Voltar</a>
             </div>
         </div>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                <span id="total-pedidos" style="font-size: 14px; color: #666;">Carregando...</span>
+                <span id="nome-vendedor-logado" style="font-size: 13px; font-weight: bold; color: #1a237e; background: #e8eaf6; padding: 4px 10px; border-radius: 10px; display: none;"></span>
+                <button onclick="fazerLogout()" style="background: #e94560; color: white; border: none; padding: 6px 15px; border-radius: 8px; cursor: pointer; font-weight: 600; display: none;" id="btn-sair">Sair</button>
+                <a href="/admin" class="btn-voltar">← Voltar</a>
+            </div>
 
         <div class="card">
             <div class="filtros">
@@ -373,6 +395,65 @@
         </div>
     </div>
     <script>
+
+                let vendedorLogado = null;
+
+        // ============================================
+        // LOGIN E LOGOUT
+        // ============================================
+        async function fazerLogin() {
+            const input = document.getElementById('input-login-codigo');
+            const erroDiv = document.getElementById('erro-login');
+            const codigo = input.value.trim().toUpperCase();
+
+            if (!codigo) {
+                erroDiv.textContent = '⚠️ Digite seu código!';
+                return;
+            }
+
+            erroDiv.textContent = '⏳ Verificando...';
+
+            try {
+                const res = await fetch('/api/vendedores');
+                const data = await res.json();
+
+                if (data.success) {
+                    const vendedor = data.vendedores.find(v => String(v.codigo).toUpperCase() === codigo);
+                    
+                    if (vendedor) {
+                        vendedorLogado = vendedor;
+                        sessionStorage.setItem('vendedor_logado', JSON.stringify(vendedor));
+                        iniciarPainel();
+                    } else {
+                        erroDiv.textContent = '❌ Código de vendedor não encontrado!';
+                    }
+                }
+            } catch (error) {
+                erroDiv.textContent = '❌ Erro ao conectar com o servidor.';
+            }
+        }
+
+        function fazerLogout() {
+            sessionStorage.removeItem('vendedor_logado');
+            window.location.reload();
+        }
+
+        function iniciarPainel() {
+            // Esconde login, mostra painel
+            document.getElementById('tela-login').style.display = 'none';
+            document.querySelector('.container').style.display = 'block';
+            
+            // Mostra nome e botão sair
+            document.getElementById('nome-vendedor-logado').style.display = 'inline-block';
+            document.getElementById('nome-vendedor-logado').textContent = `${vendedorLogado.nome} (${vendedorLogado.codigo})`;
+            document.getElementById('btn-sair').style.display = 'inline-block';
+
+            // 🔥 DEFINE O FILTRO PADRÃO COMO "ORÇAMENTO_FINALIZADO" (Orçamento Pronto)
+            document.getElementById('filtro-status').value = 'ORCAMENTO_FINALIZADO';
+
+            // Carrega os pedidos
+            carregarPedidos();
+        }
         let pedidos = [];
 
         // ============================================
@@ -1257,7 +1338,17 @@ const res = await fetch(`/api/pedidos/${id}/devolver-tecnico`, {
             if (e.target === e.currentTarget) fecharModal();
         });
 
-        document.addEventListener('DOMContentLoaded', carregarPedidos);
+                document.addEventListener('DOMContentLoaded', () => {
+            // Verifica se o vendedor já estava logado na sessão
+            const logado = sessionStorage.getItem('vendedor_logado');
+            if (logado) {
+                vendedorLogado = JSON.parse(logado);
+                iniciarPainel();
+            } else {
+                document.querySelector('.container').style.display = 'none';
+                document.getElementById('input-login-codigo').focus();
+            }
+        });
     </script>
 </body>
 </html>
