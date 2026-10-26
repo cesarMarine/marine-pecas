@@ -496,6 +496,9 @@ async function resetarPedido(id, numeroChamado) {
     }
 }
         async function carregarPedidos() {
+            // Se não tem vendedor logado, não faz nada
+            if (!vendedorLogado) return;
+
             const status = document.getElementById('filtro-status').value;
             const busca = document.getElementById('filtro-busca').value.trim();
             const tbody = document.getElementById('tabela-pedidos');
@@ -506,9 +509,17 @@ async function resetarPedido(id, numeroChamado) {
             try {
                 let url = '/api/pedidos';
                 const params = new URLSearchParams();
+                
+                // 🔥 O SEGREDO ESTÁ AQUI: Adiciona o ID do vendedor logado
+                params.append('vendedor_id', vendedorLogado.id);
+
                 if (status) params.append('status', status);
                 if (busca) params.append('busca', busca);
+                
                 if (params.toString()) url += '?' + params.toString();
+
+                // 🔥 Vai aparecer no F12 Console a URL exata que estamos pedindo
+                console.log(`🔍 Buscando API: ${url} (Vendedor ID: ${vendedorLogado.id})`);
 
                 const res = await fetch(url);
                 const data = await res.json();
@@ -528,6 +539,7 @@ async function resetarPedido(id, numeroChamado) {
 
                 tbody.innerHTML = '';
                 pedidos.forEach(p => {
+                    // ... (o resto do código que monta a TR continua igual)
                     const tr = document.createElement('tr');
                     const statusClass = getStatusClass(p.status);
                     const statusLabel = getStatusLabel(p.status);
